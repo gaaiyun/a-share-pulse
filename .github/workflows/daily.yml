@@ -29,11 +29,13 @@ jobs:
           cache-dependency-path: requirements.txt
       - run: pip install -r requirements.txt
       - name: collect
+        id: collect
         run: python scripts/collect.py ${{ inputs.date && format('--date {0}', inputs.date) || '' }}
       - name: build
-        if: hashFiles('scripts/build.py') != ''
+        if: steps.collect.outputs.skipped != 'true'
         run: python scripts/build.py
       - name: commit data
+        if: steps.collect.outputs.skipped != 'true'
         run: |
           git config user.name "a-share-pulse-bot"
           git config user.email "a-share-pulse-bot@users.noreply.github.com"

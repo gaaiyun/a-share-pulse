@@ -9,6 +9,7 @@
 """
 import argparse
 import json
+import os
 import re
 import sys
 import time
@@ -352,7 +353,10 @@ def main():
     is_trade = days and days[-1] == d
     if not is_trade and not a.force:
         print(f'{d} 不是交易日，跳过')
-        (DATA / 'last_collect.json').write_text(json.dumps({'date': d.isoformat(), 'skipped': True}), encoding='utf-8')
+        # 不动 last_collect.json，页面底部的数据健康状况保持上个交易日的；告诉工作流跳过构建和提交
+        if os.environ.get('GITHUB_OUTPUT'):
+            with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
+                f.write('skipped=true\n')
         return 0
     d = days[-1]
     recent = days[-25:]
