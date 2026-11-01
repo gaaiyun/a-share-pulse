@@ -255,6 +255,18 @@ tr:hover td{background:var(--panel2)}
     <div class="card scroll"><table id="sim"></table></div>
   </section>
 
+  <section id="model_sec" hidden>
+    <div class="sh"><span class="no">08</span><h2>选股模型 · 验证记录</h2><p>先回测、再留出期检验，结果原样公开</p></div>
+    <p class="lede" id="model_lede"></p>
+    <div class="grid g32">
+      <div class="card"><h3>模型净值 vs 股票池等权 vs 中证1000</h3><p class="sub" id="model_sub"></p><div class="chart" id="c_model" style="height:340px"></div></div>
+      <div class="card"><h3>分年超额（相对股票池等权，费后）</h3><p class="sub">灰底为留出期：参数定稿后才第一次看</p><div class="scroll"><table id="model_years"></table></div></div>
+    </div>
+    <div class="card" style="margin-top:18px"><h3>A 股常见选股信号，在历史里到底灵不灵</h3>
+      <p class="sub">行业中性化后的 RankIC（因子值与未来 10 个交易日收益的秩相关，每 10 天一个截面）；绝对值 0.03 以上、且年年同号，才算稳定。“入模”为当前模型用到的信号</p>
+      <div class="scroll"><table id="model_factors"></table></div></div>
+  </section>
+
   <footer class="foot">
     <h3>方法与口径</h3>
     <div>情绪六项：上涨家数占比、涨停减跌停、炸板率（反向）、昨日涨停股今日平均涨幅、最高连板、首板晋级二板比例；各自取过去 250 个交易日的分位后平均。涨跌停按收盘价是否等于按昨收和板块涨跌幅限制算出的价格判断，不含北交所和当日无成交的股票。2016-01 至 2026-10-21 的情绪序列由历史日线回填（剔除上市不满 60 天的新股），之后每天增量采集。</div>
@@ -419,6 +431,29 @@ function texts() {
       ...[r.zt, r.dt, r.streak].map(v => h('td', {class: 'r num'}, v ?? '—')), h('td', {class: 'r num'}, r.up == null ? '—' : r.up + '%'),
       ...['k5', 'k20', 'micro5', 'micro20'].map(k => h('td', {class: 'r'}, span(r[k]))), h('td', {class: 'r num', style: 'color:var(--ink3)'}, r.dist)))));
 
+  // 选股模型验证记录
+  const MD = D.model;
+  if (MD) {
+    $('model_sec').hidden = false;
+    const dv = MD.stats.dev, ho = MD.stats.holdout, p1 = (v) => pct(v * 100, 1);
+    $('model_lede').textContent = '用 ' + dv.range.slice(0, 7) + ' 至 ' + dv.range.slice(-10, -3) + ' 的数据挑因子、定参数，开发期年化超额股票池等权 ' + p1(dv.ex_ew)
+      + '（信息比率 ' + dv.ir_ew.toFixed(2) + '）。参数锁定后才跑留出期 ' + ho.range.slice(0, 7) + ' 至 ' + ho.range.slice(-10, -3) + '：年化超额只有 ' + p1(ho.ex_ew)
+      + '（信息比率 ' + ho.ir_ew.toFixed(2) + '），2024 年国家队护盘时大幅跑赢，2025 年小盘高波动普涨时落后。结论：信号是真的，但集中持有 30 只的组合是防守风格，没通过验证，目前只做模拟跟踪，不发布个股。';
+    $('model_sub').textContent = MD.config + ' · 平均持有约 ' + Math.round(ho.hold_days) + ' 个交易日 · 开发期最大回撤 ' + p1(dv.mdd) + '、留出期 ' + p1(ho.mdd);
+    $('model_years').append(h('thead', null, h('tr', null, ...['年份', '模型', '等权', '中证1000', '超额'].map((x, i) => h('th', {class: i ? 'r' : ''}, x)))),
+      h('tbody', null, MD.years.map(r => h('tr', {style: r.holdout ? 'background:var(--panel2)' : ''}, h('td', {class: 'num'}, r.year + (r.holdout ? ' 留出' : '')),
+        ...['model', 'ew', 'csi1000', 'ex'].map(k => h('td', {class: 'r'}, span(r[k] * 100, p1(r[k]))))))));
+    const sorted = [...MD.factors].sort((a, b) => Math.abs(b.ic_dev) - Math.abs(a.ic_dev));
+    const f3 = (v) => v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(3);
+    $('model_factors').append(h('thead', null, h('tr', null, ...['信号', '怎么算', '开发期 IC', '留出期 IC', '同号年数', '结论', '入模'].map((x, i) => h('th', {class: i > 1 && i < 5 ? 'r' : ''}, x)))),
+      h('tbody', null, sorted.map(r => {
+        const same = Math.max(r.pos_years, r.neg_years), stable = Math.abs(r.ic_dev) >= 0.03 && same >= r.n_years - 1;
+        const verdict = !stable ? (Math.abs(r.ic_dev) < 0.015 ? '基本无效' : '有一点、不稳定') : (r.ic_dev > 0 ? '越高越好' : '越高越差');
+        return h('tr', null, h('td', null, r.name), h('td', {style: 'color:var(--ink2)'}, r.desc), h('td', {class: 'r num ' + cls(r.ic_dev)}, f3(r.ic_dev)),
+          h('td', {class: 'r num ' + cls(r.ic_ho)}, f3(r.ic_ho)), h('td', {class: 'r num'}, same + '/' + r.n_years), h('td', null, verdict), h('td', null, r.in_model ? '✓' : ''));
+      })));
+  }
+
   // 数据健康
   const C = D.collect;
   if (C && C.steps) $('health').append(h('div', null, '最近一次采集 ' + (C.at || C.date) + '：' + C.ok + '/' + C.total + ' 个来源成功'),
@@ -507,10 +542,16 @@ function drawCharts() {
     mk('c_etf', {xAxis: {data: ET.dates}, legend: {type: 'scroll', top: 0, left: 0, itemWidth: 14, itemHeight: 3, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z', textStyle: {color: css('--ink2'), fontSize: 11}}, grid: {top: 30},
       series: names.map((n, i) => line(n, ET.tracks[n].series, pal[i % pal.length], 1.8))});
   }
+  if (D.model) {
+    const MC = D.model.curve, hs = MC.d.findIndex(d => d >= D.model.holdout_start);
+    mk('c_model', {xAxis: {data: MC.d, axisLabel: {formatter: (v) => v.slice(0, 4)}}, legend: {top: 0, left: 0, itemWidth: 16, itemHeight: 3, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z', textStyle: {color: css('--ink2'), fontSize: 12}}, grid: {top: 30},
+      series: [line('模型', MC.nav, amber, 2, {markArea: {silent: true, itemStyle: {color: css('--panel2')}, label: {show: true, position: 'insideTop', color: ink3, fontSize: 11}, data: [[{xAxis: MC.d[hs], name: '留出期'}, {xAxis: MC.d[MC.d.length - 1]}]]}}),
+        line('股票池等权', MC.ew, cyan, 1.6), line('中证1000', MC.csi1000, ink3, 1.2)]});
+  }
   if (D.industries) {
     const I = [...D.industries].reverse();
     const ext = Math.max(...I.map(r => Math.abs(r.ret ?? 0))) * 1.3;
-    mk('c_ind', {grid: {left: 76, right: 58, top: 6, bottom: 20}, xAxis: {type: 'value', min: -extR, max: extR, boundaryGap: [0, 0], axisLabel: {formatter: '{value}%', color: ink3}, splitLine: {lineStyle: {color: css('--line')}}},
+    mk('c_ind', {grid: {left: 76, right: 58, top: 6, bottom: 20}, xAxis: {type: 'value', min: -ext, max: ext, boundaryGap: [0, 0], axisLabel: {formatter: '{value}%', color: ink3}, splitLine: {lineStyle: {color: css('--line')}}},
       yAxis: {type: 'category', data: I.map(r => r.name), axisLabel: {color: css('--ink2'), fontSize: 12}, axisTick: {show: false}, axisLine: {show: false}},
       tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}, formatter: (ps) => { const r = I[ps[0].dataIndex]; return `${r.name}<br>加权 ${pct(r.ret)} · 中位数 ${pct(r.med)}<br>上涨 ${r.up}% · 涨停 ${r.zt} · 跌停 ${r.dt}<br>成交占比 ${r.amt_share}% · PE中位数 ${r.pe_med ?? '—'}`; }},
       series: [{type: 'bar', data: I.map(r => ({value: r.ret, itemStyle: {color: r.ret >= 0 ? up : down}, label: {position: r.ret >= 0 ? 'right' : 'left'}})), barWidth: '62%',

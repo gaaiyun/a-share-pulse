@@ -465,6 +465,8 @@ def main():
         'industries': industries, 'movers': movers, 'concepts': concepts, 'ths': ths, 'etf': etf, 'lhb': lhb,
         'sent_series': sent_series, 'history_start': m['date'].iloc[0],
         'collect': json.loads((DATA / 'last_collect.json').read_text(encoding='utf-8')) if (DATA / 'last_collect.json').exists() else None,
+        # 选股模型的回测与留出期检验（研究在私有仓库做，这里只放统计和曲线）
+        'model': json.loads((DATA / 'model_backtest.json').read_text(encoding='utf-8')) if (DATA / 'model_backtest.json').exists() else None,
     }
     D['takeaways'] = takeaways(D)
     D['headline'] = headline(D)
