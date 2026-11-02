@@ -1,63 +1,63 @@
 {
- "date": "2026-11-02",
- "at": "2026-11-02 20:19",
- "ok": 11,
+ "date": "2026-11-03",
+ "at": "2026-11-03 04:25",
+ "ok": 9,
  "total": 11,
  "steps": [
   {
    "step": "指数日线",
    "ok": true,
-   "sec": 4.5
+   "sec": 6.0
   },
   {
    "step": "乐咕估值与宽度",
    "ok": true,
-   "sec": 17.6
+   "sec": 26.3
   },
   {
    "step": "两融账户",
    "ok": true,
-   "sec": 30.1
+   "sec": 13.4
   },
   {
    "step": "国债收益率",
    "ok": true,
-   "sec": 3.9
+   "sec": 4.7
   },
   {
    "step": "涨停池回填",
    "ok": true,
-   "sec": 4.9
+   "sec": 4.3
   },
   {
    "step": "新浪全市场截面",
    "ok": true,
-   "sec": 58.9
+   "sec": 50.8
   },
   {
    "step": "当日涨停池",
    "ok": true,
-   "sec": 4.2
+   "sec": 3.7
   },
   {
    "step": "行业与概念板块",
    "ok": true,
-   "sec": 7.4
+   "sec": 5.3
   },
   {
    "step": "龙虎榜",
-   "ok": true,
-   "sec": 8.6
+   "ok": false,
+   "err": "TypeError: 'NoneType' object is not subscriptable"
   },
   {
    "step": "上交所宽基ETF份额",
    "ok": true,
-   "sec": 9.2
+   "sec": 54.3
   },
   {
    "step": "赚钱效应(乐咕)",
-   "ok": true,
-   "sec": 1.0
+   "ok": false,
+   "err": "RuntimeError: 乐咕统计日期 2026-11-02 与采集日 2026-11-03 不符"
   }
  ]
 }
