@@ -173,11 +173,20 @@ details.docx>.doc{padding:0 18px 14px}
       <div class="card scroll"><table id="cand"></table></div>
     </section>
     <section>
-      <div class="sh"><span class="no">05</span><h2>复盘</h2><p>每个交易日晚上由云端任务按固定流程写，名单只取自模型</p></div>
+      <div class="sh"><span class="no">05</span><h2>监控</h2><p>风格有没有漂、成交有没有比回测贵、参数有没有被动过</p></div>
+      <p class="lede" id="mon_status"></p>
+      <div class="grid g32">
+        <div class="card"><h3>前 50 只的平均市值分位</h3><p class="sub">0 = 股票池里最小，1 = 最大 · 色带为回测 2024-01~2026-10 的 5%~95% 区间 · 没有持仓时按待买单算</p><div class="chart" id="c_size"></div></div>
+        <div class="card"><h3>今天的风格暴露</h3><div class="scroll"><table id="expo"></table></div>
+          <h3 style="margin-top:16px">成交质量</h3><p class="sub">盘中按均价成交相对开盘价的额外成本；为正表示比开盘成交更贵，回测滑点假设 0.10%</p><div class="scroll"><table id="fills"></table></div></div>
+      </div>
+    </section>
+    <section>
+      <div class="sh"><span class="no">06</span><h2>复盘</h2><p>每个交易日晚上由云端任务按固定流程写，名单只取自模型</p></div>
       <div class="card"><div class="rbar"><select id="rsel" aria-label="复盘日期"></select><span class="tag" id="rcount"></span></div><article class="doc" id="review"></article></div>
     </section>
     <section>
-      <div class="sh"><span class="no">06</span><h2>推送原文与研究笔记</h2><p>和微信里收到的是同一份</p></div>
+      <div class="sh"><span class="no">07</span><h2>推送原文与研究笔记</h2><p>和微信里收到的是同一份</p></div>
       <div id="docs"></div>
     </section>
     <footer class="foot">模拟组合用来积累样本外记录：按次日开盘价成交、计入费用，涨停买不进、跌停卖不出。回测和模拟收益都不代表未来，也不构成投资建议。</footer>
@@ -210,7 +219,7 @@ $('theme').onclick = () => {
   const cur = root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
   root.dataset.theme = cur === 'light' ? 'dark' : 'light';
   try { localStorage.setItem('asp-theme', root.dataset.theme); } catch (e) {}
-  if (V) drawNav();
+  if (V) { drawNav(); drawSize(); }
 };
 
 // ---------------- 解密：PBKDF2-SHA256 派生 AES-256-GCM 密钥，内容是 gzip 过的 JSON
@@ -269,6 +278,45 @@ function render(data) {
   const DN = {v1: '今日推送 · v1 名单与三个账户摘要', p14: '今日 · P14 完整持仓与调仓', lgb: '今日 · LGB 完整持仓与调仓'};
   const box = (title, html) => { const d = h('details', {class: 'docx'}, h('summary', null, title), h('article', {class: 'doc'})); d.querySelector('article').innerHTML = html; return d; };
   $('docs').replaceChildren(...Object.entries(V.docs).map(([k, html]) => box(DN[k] || k, html)), ...V.notes.map(n => box('笔记 · ' + n.name, n.html)));
+  renderMonitor();
+}
+
+const BN = {mix: '实操组合', p14: 'P14', lgb: 'LGB', v1: 'v1'};
+function renderMonitor() {
+  const M = V.monitor || {}, st = [];
+  if (M.frozen) st.push(M.frozen.ok ? '参数核对：和登记一致，模型参数没被动过。' : '参数核对：有 ' + M.frozen.diff.length + ' 处和登记不一致（' + M.frozen.diff.join('；') + '），这些改动没有经过样本外检验。');
+  if (M.lgb_year) st.push('LGB 在用 ' + M.lgb_year + ' 版模型' + (+V.date.slice(0, 4) > M.lgb_year ? '，已经过期，该做年度重训了。' : '，每年 1 月数仓财报同步完再重训。'));
+  $('mon_status').textContent = st.join(' ');
+  const E = M.exposure || [], last = E.length ? E[E.length - 1].date : null, today = E.filter(r => r.date === last);
+  const f2 = (v) => v === '' || v == null ? '—' : (+v).toFixed(2);
+  $('expo').replaceChildren(h('thead', null, h('tr', null, ...['账户', '口径', '只数', '市值分位', 'beta', '波动分位'].map((x, i) => h('th', {class: i > 1 ? 'r' : ''}, x)))),
+    h('tbody', null, today.length ? today.map(r => h('tr', null, h('td', null, BN[r.book] || r.book), h('td', {class: 'why'}, r.kind), h('td', {class: 'r num'}, r.n),
+      h('td', {class: 'r num'}, f2(r.size_pct)), h('td', {class: 'r num'}, f2(r.beta60)), h('td', {class: 'r num'}, f2(r.vol_pct)))).concat(
+      today.filter(r => r.alert).map(r => h('tr', null, h('td', {colspan: 6, style: 'color:var(--amber)'}, (BN[r.book] || r.book) + ' · ' + r.kind + '：' + r.alert))))
+      : [h('tr', null, h('td', {class: 'empty', colspan: 6}, '明天起开始记录'))]));
+  const F = M.fills || [], pp = (v) => v == null ? '—' : (v > 0 ? '+' : '') + (v * 100).toFixed(2) + '%';
+  $('fills').replaceChildren(h('thead', null, h('tr', null, ...['账户', '笔数', '平均', '买入', '卖出'].map((x, i) => h('th', {class: i ? 'r' : ''}, x)))),
+    h('tbody', null, F.length ? F.map(r => h('tr', null, h('td', null, BN[r.book] || r.book), h('td', {class: 'r num'}, r.n), h('td', {class: 'r num'}, pp(r.gap)), h('td', {class: 'r num'}, pp(r.buy)), h('td', {class: 'r num'}, pp(r.sell))))
+      : [h('tr', null, h('td', {class: 'empty', colspan: 5}, '还没有成交记录'))]));
+  drawSize();
+}
+function drawSize() {
+  const el = $('c_size'), M = V.monitor || {}, E = (M.exposure || []).filter(r => !String(r.kind).startsWith('前'));
+  let c = echarts.getInstanceByDom(el); if (c) c.dispose();
+  c = echarts.init(el, null, {renderer: 'canvas'});
+  const dates = [...new Set(E.map(r => r.date))].sort(), col = {p14: css('--s2'), lgb: css('--s3'), mix: css('--s4'), v1: css('--ink3')};
+  const ser = ['lgb', 'p14', 'mix'].map(k => {
+    const m = Object.fromEntries(E.filter(r => r.book === k).map(r => [r.date, r.size_pct === '' ? null : +r.size_pct]));
+    const ref = (M.size_ref || {})[k];
+    return {type: 'line', name: BN[k], data: dates.map(d => m[d] ?? null), showSymbol: dates.length < 30, symbolSize: 6, connectNulls: true,
+      lineStyle: {width: 2, color: col[k]}, itemStyle: {color: col[k]},
+      markArea: ref ? {silent: true, itemStyle: {color: col[k], opacity: .1}, data: [[{yAxis: ref[0]}, {yAxis: ref[4]}]]} : undefined};
+  });
+  c.setOption({animationDuration: 400, textStyle: {fontFamily: css('--cjk'), color: css('--ink2')}, grid: {left: 44, right: 14, top: 30, bottom: 26},
+    legend: {top: 0, left: 0, itemWidth: 16, itemHeight: 3, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z', textStyle: {color: css('--ink2'), fontSize: 12}},
+    tooltip: {trigger: 'axis', backgroundColor: css('--panel'), borderColor: css('--line2'), textStyle: {color: css('--ink'), fontSize: 12}, valueFormatter: (v) => v == null ? '—' : v.toFixed(2)},
+    xAxis: {type: 'category', data: dates, boundaryGap: dates.length < 3, axisLine: {lineStyle: {color: css('--line')}}, axisTick: {show: false}, axisLabel: {color: css('--ink3'), fontSize: 11, formatter: (v) => v.slice(5)}},
+    yAxis: {type: 'value', min: 0, max: 1, splitLine: {lineStyle: {color: css('--line')}}, axisLabel: {color: css('--ink3'), fontSize: 11}}, series: ser});
 }
 
 function showAcct(k) {
@@ -340,7 +388,7 @@ function drawNav() {
     yAxis: {type: 'value', scale: true, splitLine: {lineStyle: {color: line}}, axisLabel: {color: ink3, fontSize: 11, formatter: (v) => v.toFixed(3)}},
     series: [ser(A.name, n.nav, tone, 2.4), ser('股票池等权', n.ew, css('--ink2'), 1.4, true)]});
 }
-let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { const el = $('c_nav'); const c = el && echarts.getInstanceByDom(el); if (c) c.resize(); }, 150); });
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => ['c_nav', 'c_size'].forEach(id => { const el = $(id); const c = el && echarts.getInstanceByDom(el); if (c) c.resize(); }), 150); });
 </script>
 </body>
 </html>
