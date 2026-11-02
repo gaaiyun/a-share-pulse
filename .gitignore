@@ -2,3 +2,4 @@
 __pycache__/
 *.pyc
 probe_result.json
+/site/vault.json

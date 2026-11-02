@@ -1,0 +1,34 @@
+name: pages
+# 私有仓库更新实操页密文后（repository_dispatch: vault）只重新部署站点，不重新采集
+on:
+  repository_dispatch:
+    types: [vault]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: vault
+        run: |
+          if git fetch -q --depth 1 origin vault; then git show FETCH_HEAD:vault.json > site/vault.json; else echo "还没有 vault 分支"; fi
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

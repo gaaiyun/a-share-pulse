@@ -42,6 +42,11 @@ jobs:
           git add data site
           D=$(python -c "import json;print(json.load(open('data/last_collect.json'))['date'])")
           if git diff --cached --quiet; then echo "no change"; else git commit -m "chore(数据): $D 收盘数据" && git push; fi
+      # 实操页密文由私有仓库推到 vault 分支（单个提交、强推），部署时放进站点，不进 main 的历史
+      - name: vault
+        if: vars.PAGES_ON == '1'
+        run: |
+          if git fetch -q --depth 1 origin vault; then git show FETCH_HEAD:vault.json > site/vault.json; else echo "还没有 vault 分支"; fi
       - uses: actions/upload-pages-artifact@v3
         if: vars.PAGES_ON == '1'
         with:
@@ -50,6 +55,9 @@ jobs:
     needs: update
     if: vars.PAGES_ON == '1'
     runs-on: ubuntu-latest
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

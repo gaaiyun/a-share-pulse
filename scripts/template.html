@@ -139,9 +139,55 @@ tr:hover td{background:var(--panel2)}
 .health .ok{color:var(--down)}.health .bad{color:var(--up)}
 .reveal{opacity:0;transform:translateY(8px);animation:rv .6s ease forwards}
 @keyframes rv{to{opacity:1;transform:none}}
+
+/* 目录 */
+.toc{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none;margin:0 -24px;padding:0 24px;
+  background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.toc::-webkit-scrollbar{display:none}
+.toc a{flex:none;text-decoration:none;color:var(--ink3);font:13px/40px var(--cjk);padding:0 9px;border-bottom:2px solid transparent;margin-bottom:-1px}
+.toc a b{font:600 11px var(--mono);margin-right:5px}
+.toc a:hover,.toc a.on{color:var(--ink);border-bottom-color:var(--up)}
+.toc a.lock{margin-left:auto;color:var(--ink2);border:1px solid var(--line2);line-height:26px;padding:0 10px;margin-bottom:0}
+.toc a.lock:hover{border-color:var(--ink2)}
+section{scroll-margin-top:46px}
+
+/* 选股模型 */
+.g4{grid-template-columns:repeat(4,1fr)}
+.mcard{border-top:3px solid var(--tone);display:flex;flex-direction:column;gap:10px}
+.mcard .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.mcard .hd h3{margin:0}
+.mcard .tag{font-size:12px;color:var(--tone);border:1px solid currentColor;padding:0 6px;white-space:nowrap}
+.mcard .big{font:600 44px/1 var(--cond)}
+.mcard .cap{font-size:12px;color:var(--ink3)}
+.mcard .row{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);padding-top:8px}
+.mcard .row span{display:block;font-size:11.5px;color:var(--ink3)}.mcard .row b{font:600 18px/1.3 var(--cond)}
+.mcard p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.75}
+.mcard p.risk{color:var(--ink3);border-top:1px dashed var(--line);padding-top:8px}
+.hbar{display:grid;grid-template-columns:112px 1fr 50px;align-items:center;gap:10px;padding:3px 0;font-size:12.5px}
+.hbar .tr{height:10px;background:var(--panel2);border:1px solid var(--line)}
+.hbar .tr i{display:block;height:100%}
+.hbar small{font:12px var(--mono);color:var(--ink2);text-align:right}
+.hbar em{font-style:normal;color:var(--ink3);font-size:11.5px;margin-left:4px}
+.keys{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink3);margin:2px 0 8px}
+.keys i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px}
+.checks{list-style:none;margin:0;padding:0}
+.checks li{display:grid;grid-template-columns:18px 64px 1fr;gap:8px;padding:8px 0;border-top:1px dashed var(--line);font-size:12.5px;line-height:1.75;color:var(--ink2)}
+.checks li:first-child{border-top:0}
+.checks li b{font-weight:600;color:var(--ink)}
+.checks li i{font:600 13px/22px var(--mono);font-style:normal;text-align:center}
+.yt td,.yt th{text-align:right}.yt td:first-child,.yt th:first-child{text-align:left}
+.yt td.c{font-family:var(--mono);font-size:12.5px}
+.yt tfoot td{border-top:1px solid var(--line2);color:var(--ink2);font-family:var(--mono);font-size:12.5px}
+.subhead{display:flex;align-items:baseline;gap:12px;margin:30px 0 10px;padding-top:18px;border-top:1px dashed var(--line2)}
+.subhead h3{margin:0;font:600 16px var(--cjk)}.subhead p{margin:0;color:var(--ink3);font-size:12.5px}
+.vault-link{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:22px 0 10px;padding:16px 20px;border:1px solid var(--line2);border-left:3px solid var(--up);background:var(--panel);text-decoration:none}
+.vault-link:hover{border-color:var(--ink2);border-left-color:var(--up)}
+.vault-link b{display:block;font:600 16px var(--cjk)}.vault-link span{color:var(--ink3);font-size:12.5px}
+.vault-link em{font:600 13px var(--mono);font-style:normal;color:var(--up);white-space:nowrap}
 @media (max-width:1100px){.hero{grid-template-columns:1fr}.gauge{border-right:0;border-bottom:1px solid var(--line);padding-right:0}.takes{padding-left:0}
-  .g3{grid-template-columns:1fr 1fr}.g32,.g23{grid-template-columns:1fr}}
-@media (max-width:720px){.wrap{padding:0 14px}.g2,.g3{grid-template-columns:1fr}.stat{grid-template-columns:1fr 1fr}.stat div:nth-child(3){border-left:0}
+  .g3,.g4{grid-template-columns:1fr 1fr}.g32,.g23{grid-template-columns:1fr}}
+@media (max-width:720px){.wrap{padding:0 14px}.toc{margin:0 -14px;padding:0 14px}.g2,.g3,.g4{grid-template-columns:1fr}.stat{grid-template-columns:1fr 1fr}.stat div:nth-child(3){border-left:0}
+  .hbar{grid-template-columns:96px 1fr 46px}.checks li{grid-template-columns:18px 1fr}.checks li b{grid-column:2}.checks li span{grid-column:2}
   .stat div:nth-child(n+3){border-top:1px solid var(--line)}
   .logo h1{font-size:34px}.logo small{display:none}.temp .big{font-size:104px}.mast{flex-direction:column;align-items:flex-start}.meta{text-align:left}
   .takes li{grid-template-columns:1fr;gap:2px}.chart{height:240px}.chart.tall{height:280px}
@@ -156,6 +202,11 @@ tr:hover td{background:var(--panel2)}
     <div class="meta">数据日 <strong id="asof"></strong><br><span id="built"></span><button class="tbtn" id="theme" type="button">明/暗</button></div>
   </header>
   <div class="stale" id="stale"></div>
+  <nav class="toc" id="toc" aria-label="版块目录">
+    <a href="#s1"><b>01</b>情绪周期</a><a href="#s2"><b>02</b>涨停生态</a><a href="#s3"><b>03</b>宽度风格</a><a href="#s4"><b>04</b>估值利率</a>
+    <a href="#s5"><b>05</b>资金</a><a href="#s6"><b>06</b>行业题材</a><a href="#s7"><b>07</b>相似交易日</a><a href="#model_sec"><b>08</b>选股模型</a>
+    <a class="lock" href="vault.html">实操页 · 需密码</a>
+  </nav>
 
   <div class="hero">
     <div class="gauge reveal">
@@ -174,7 +225,7 @@ tr:hover td{background:var(--panel2)}
     </div>
   </div>
 
-  <section>
+  <section id="s1">
     <div class="sh"><span class="no">01</span><h2>情绪周期</h2><p>温度 = 六项短线指标在过去一年里的分位均值</p></div>
     <p class="lede">温度只回答“今天的短线环境在过去一年里算冷还是热”。下面的基准率告诉你：历史上处在同样温度或同样阶段之后，市场通常怎么走——它是参照系，不是预测。</p>
     <div class="grid g32">
@@ -184,7 +235,7 @@ tr:hover td{background:var(--panel2)}
     </div>
   </section>
 
-  <section>
+  <section id="s2">
     <div class="sh"><span class="no">02</span><h2>涨停生态</h2><p id="limit_date"></p></div>
     <p class="lede">A 股短线资金的温度计在涨停板上：连板高度决定空间，首板晋级率和昨日涨停溢价决定接力意愿，炸板率决定分歧。主线看的是同一方向能不能连续几天出涨停，而不是某一天涨得多。</p>
     <div class="stat num" id="limit_stat"></div>
@@ -199,7 +250,7 @@ tr:hover td{background:var(--panel2)}
     </div>
   </section>
 
-  <section>
+  <section id="s3">
     <div class="sh"><span class="no">03</span><h2>宽度与风格</h2><p>指数涨跌不等于多数股票的涨跌</p></div>
     <div class="grid g3">
       <div class="card"><h3>上涨家数占比</h3><p class="sub">%，近一年 · 细线为当日，粗线为 10 日均</p><div class="chart" id="c_up"></div></div>
@@ -212,7 +263,7 @@ tr:hover td{background:var(--panel2)}
     </div>
   </section>
 
-  <section>
+  <section id="s4">
     <div class="sh"><span class="no">04</span><h2>估值与利率</h2><p>股票相对债券贵不贵</p></div>
     <p class="lede">在低利率环境下，A 股最常用的长期锚是“股债利差”：沪深300 的盈利收益率（1/PE）减去 10 年国债收益率。利差越高，股票相对债券越便宜。</p>
     <div class="grid g32">
@@ -226,7 +277,7 @@ tr:hover td{background:var(--panel2)}
     </div>
   </section>
 
-  <section>
+  <section id="s5">
     <div class="sh"><span class="no">05</span><h2>资金</h2><p>杠杆、宽基 ETF 与龙虎榜</p></div>
     <div class="grid g3">
       <div class="card"><h3>融资余额</h3><p class="sub">亿元，近三年</p><div class="chart" id="c_mbal"></div></div>
@@ -240,7 +291,7 @@ tr:hover td{background:var(--panel2)}
     </div>
   </section>
 
-  <section>
+  <section id="s6">
     <div class="sh"><span class="no">06</span><h2>行业与题材</h2><p id="ind_date"></p></div>
     <div class="grid g32">
       <div class="card"><h3>申万一级行业</h3><p class="sub">当日，总市值加权 · 悬停看行业内中位数、上涨占比与涨跌停</p><div class="chart" id="c_ind" style="height:640px"></div></div>
@@ -249,21 +300,36 @@ tr:hover td{background:var(--panel2)}
     </div>
   </section>
 
-  <section>
+  <section id="s7">
     <div class="sh"><span class="no">07</span><h2>最像今天的交易日</h2><p>按情绪六项分位找最近邻</p></div>
     <p class="lede" id="sim_lede"></p>
     <div class="card scroll"><table id="sim"></table></div>
   </section>
 
   <section id="model_sec" hidden>
-    <div class="sh"><span class="no">08</span><h2>选股模型 · 验证记录</h2><p>先回测、再留出期检验，结果原样公开</p></div>
+    <div class="sh"><span class="no">08</span><h2>选股模型 · 回测验证</h2><p>先回测、再样本外检验，结果原样公开</p></div>
+    <p class="lede" id="m_lede"></p>
+    <div class="grid g4" id="m_cards"></div>
+    <div class="grid g32" style="margin-top:18px">
+      <div class="card"><div class="tabs" id="m_tabs"><button class="on" data-k="ex">累计超额</button><button data-k="nav">净值</button></div>
+        <p class="sub" id="m_curve_sub"></p><div class="chart" id="c_models" style="height:340px"></div></div>
+      <div class="card"><h3>分年超额（相对股票池等权，费后）</h3><p class="sub">2019 年起每一年都是样本外：参数和模型只用到这一年之前的数据</p><div class="scroll"><table class="yt" id="m_years"></table></div></div>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card"><h3>LGB 主要看什么</h3><p class="sub" id="m_lgb_sub"></p><div class="keys" id="m_lgb_keys"></div><div id="m_lgb"></div></div>
+      <div class="card"><h3>P14 的因子块权重</h3><p class="sub" id="m_p14_sub"></p><div id="m_p14"></div>
+        <h3 style="margin-top:18px">这些数字能信几分</h3><p class="sub">另一个子代理专门找茬（红队），逐行审查代码并独立复算后的结论</p><ul class="checks" id="m_checks"></ul></div>
+    </div>
+    <a class="vault-link" href="vault.html"><div><b>实操页：每日名单、持仓、调仓与复盘</b><span>按上面的模型每天收盘后自动生成。内容在浏览器里用密码解密，不公开</span></div><em>需要密码 →</em></a>
+
+    <div class="subhead"><h3>v1 的来历：开发期与留出期</h3><p>最早的版本，按“开发期定参数、留出期只看一次”检验</p></div>
     <p class="lede" id="model_lede"></p>
     <div class="grid g32">
-      <div class="card"><h3>模型净值 vs 股票池等权 vs 中证1000</h3><p class="sub" id="model_sub"></p><div class="chart" id="c_model" style="height:340px"></div></div>
-      <div class="card"><h3>分年超额（相对股票池等权，费后）</h3><p class="sub">灰底为留出期：参数定稿后才第一次看</p><div class="scroll"><table id="model_years"></table></div></div>
+      <div class="card"><h3>v1 净值 vs 股票池等权 vs 中证1000</h3><p class="sub" id="model_sub"></p><div class="chart" id="c_model" style="height:320px"></div></div>
+      <div class="card"><h3>v1 分年超额</h3><p class="sub">灰底为留出期：参数定稿后才第一次看</p><div class="scroll"><table id="model_years"></table></div></div>
     </div>
     <div class="card" style="margin-top:18px"><h3>A 股常见选股信号，在历史里到底灵不灵</h3>
-      <p class="sub">行业中性化后的 RankIC（因子值与未来 10 个交易日收益的秩相关，每 10 天一个截面）；绝对值 0.03 以上、且年年同号，才算稳定。“入模”为当前模型用到的信号</p>
+      <p class="sub">行业中性化后的 RankIC（因子值与未来 10 个交易日收益的秩相关，每 10 天一个截面）；绝对值 0.03 以上、且年年同号，才算稳定。“入模”为 v1 用到的信号</p>
       <div class="scroll"><table id="model_factors"></table></div></div>
   </section>
 
@@ -296,6 +362,7 @@ const pct = (v, n = 2) => v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(n) 
 const fx = (v, n = 0) => v == null ? '—' : Number(v).toLocaleString('zh-CN', {minimumFractionDigits: n, maximumFractionDigits: n});
 const span = (v, txt) => h('span', {class: 'num ' + cls(v)}, txt ?? pct(v));
 const WD = '日一二三四五六';
+const TONE = {flat: 'var(--ink3)', cyan: 'var(--s2)', amber: 'var(--s3)', violet: 'var(--s4)'};
 
 // ---------------- 主题
 const root = document.documentElement;
@@ -438,7 +505,7 @@ function texts() {
     const dv = MD.stats.dev, ho = MD.stats.holdout, p1 = (v) => pct(v * 100, 1);
     $('model_lede').textContent = '用 ' + dv.range.slice(0, 7) + ' 至 ' + dv.range.slice(-10, -3) + ' 的数据挑因子、定参数，开发期年化超额股票池等权 ' + p1(dv.ex_ew)
       + '（信息比率 ' + dv.ir_ew.toFixed(2) + '）。参数锁定后才跑留出期 ' + ho.range.slice(0, 7) + ' 至 ' + ho.range.slice(-10, -3) + '：年化超额只有 ' + p1(ho.ex_ew)
-      + '（信息比率 ' + ho.ir_ew.toFixed(2) + '），2024 年国家队护盘时大幅跑赢，2025 年小盘高波动普涨时落后。结论：信号是真的，但集中持有 30 只的组合是防守风格，没通过验证，目前只做模拟跟踪，不发布个股。';
+      + '（信息比率 ' + ho.ir_ew.toFixed(2) + '），2024 年国家队护盘时大幅跑赢，2025 年小盘高波动普涨时落后。结论：信号是真的，但集中持有 30 只的组合是防守风格，没通过验证。上面的 P14 和 LGB 就是在这之后改出来的。';
     $('model_sub').textContent = MD.config + ' · 平均持有约 ' + Math.round(ho.hold_days) + ' 个交易日 · 开发期最大回撤 ' + p1(dv.mdd) + '、留出期 ' + p1(ho.mdd);
     $('model_years').append(h('thead', null, h('tr', null, ...['年份', '模型', '等权', '中证1000', '超额'].map((x, i) => h('th', {class: i ? 'r' : ''}, x)))),
       h('tbody', null, MD.years.map(r => h('tr', {style: r.holdout ? 'background:var(--panel2)' : ''}, h('td', {class: 'num'}, r.year + (r.holdout ? ' 留出' : '')),
@@ -452,6 +519,46 @@ function texts() {
         return h('tr', null, h('td', null, r.name), h('td', {style: 'color:var(--ink2)'}, r.desc), h('td', {class: 'r num ' + cls(r.ic_dev)}, f3(r.ic_dev)),
           h('td', {class: 'r num ' + cls(r.ic_ho)}, f3(r.ic_ho)), h('td', {class: 'r num'}, same + '/' + r.n_years), h('td', null, verdict), h('td', null, r.in_model ? '✓' : ''));
       })));
+  }
+
+  // v2：三套模型 + 各半组合
+  const MM = MD?.models;
+  if (MM) {
+    const p1 = (v) => v == null ? '—' : pct(v * 100, 1);
+    $('m_lede').textContent = '三套模型放进同一个滚动样本外框架比较：从 ' + MM.start.slice(0, 4) + ' 年起，每一年只用这一年之前的数据定参数或训练模型，再拿到这一年去跑。'
+      + '收益已扣佣金、滑点和印花税，收盘出信号、次日开盘成交，涨停买不进、跌停卖不出。基准是“股票池等权”：同一批可选股票每天等权持有，比的是选股能力，不是大盘涨跌。'
+      + MM.live_since + ' 起三套都在做模拟跟踪；回测数字不等于实盘，卡片里的“实盘预期”是红队打过折的估计。';
+    $('m_cards').append(...MM.order.map(k => {
+      const s = MM.stats[k], m = MM.meta[k];
+      const cell = (a, b) => h('div', null, h('span', null, a), h('b', {class: 'num'}, b));
+      return h('div', {class: 'card mcard', style: '--tone:' + TONE[m.tone]},
+        h('div', {class: 'hd'}, h('h3', null, m.name), h('span', {class: 'tag'}, m.status)),
+        h('div', null, h('div', {class: 'big num ' + cls(s.ex)}, p1(s.ex)), h('div', {class: 'cap'}, '年化超额 · ' + MM.start.slice(0, 4) + ' 年起样本外')),
+        h('div', {class: 'row'}, cell('信息比率', s.ir.toFixed(2)), cell('超额最大回撤', p1(s.ex_mdd)), cell('跑赢年数', s.win_years)),
+        h('div', {class: 'row'}, cell('2019-2023', p1(s.ex_1923)), cell('2024 起', p1(s.ex_2426)), cell('实盘预期', m.expect)),
+        h('p', null, m.idea), h('p', {class: 'risk'}, '风险：' + m.risk));
+    }));
+    const NM = Object.fromEntries(MM.order.map(k => [k, MM.meta[k].name.split(' ')[0]]));
+    NM.mix = '各半';
+    $('m_curve_sub').textContent = MM.start + ' 至 ' + MM.end + ' · 周频 · 累计超额 = 模型净值 ÷ 股票池等权净值，向上表示跑赢';
+    const yrs = Object.keys(MM.years.v1);
+    const heat = (v) => v == null ? '' : `background:color-mix(in srgb, var(--${v >= 0 ? 'up' : 'down'}) ${Math.round(Math.min(Math.abs(v) / .25, 1) * 38)}%, transparent)`;
+    const S = MM.stats;
+    $('m_years').append(h('thead', null, h('tr', null, h('th', null, '年份'), ...MM.order.map(k => h('th', null, NM[k])))),
+      h('tbody', null, yrs.map(y => h('tr', null, h('td', {class: 'num'}, y + (y === MM.end.slice(0, 4) ? ' 至今' : '')),
+        ...MM.order.map(k => { const v = MM.years[k][y]; return h('td', {class: 'c ' + cls(v), style: heat(v)}, p1(v)); })))),
+      h('tfoot', null, [['年化超额', k => p1(S[k].ex)], ['信息比率', k => S[k].ir.toFixed(2)], ['平均持有', k => S[k].hold_days ? Math.round(S[k].hold_days) + ' 天' : '—'],
+        ['年换手', k => S[k].turnover ? S[k].turnover.toFixed(1) + ' 倍' : '—']].map(([a, f]) => h('tr', null, h('td', null, a), ...MM.order.map(k => h('td', null, f(k)))))));
+    const G = MM.lgb, GC = {'量价': 'var(--s2)', '财报': 'var(--s3)', '股东与事件': 'var(--s4)'};
+    $('m_lgb_sub').textContent = '当前在用的 ' + (G.train_end || '').slice(0, 4) + ' 年底训练版，' + G.n_features + ' 个特征按分裂增益的占比，前 15 个。LGB 是非线性模型，同一特征高低都可能加分，所以这里只看分量，不标方向';
+    $('m_lgb_keys').append(...Object.entries(G.by_group).map(([g, v]) => h('span', null, h('i', {style: 'background:' + GC[g]}), g + ' ' + Math.round(v * 100) + '%')));
+    const mx = G.top[0].share;
+    $('m_lgb').append(...G.top.map(r => h('div', {class: 'hbar'}, h('span', null, r.name), h('div', {class: 'tr'}, h('i', {style: `width:${r.share / mx * 100}%;background:${GC[r.group]}`})), h('small', null, (r.share * 100).toFixed(1) + '%'))));
+    $('m_p14_sub').textContent = '每个因子先在行业内标准化，正端截到 +' + MM.p14.cap + '，再按块加权求和；国家队持股已去掉。方向都按“越低波、越没被炒、越便宜越好”';
+    const pmx = Math.max(...MM.p14.blocks.map(b => b.w));
+    $('m_p14').append(...MM.p14.blocks.map(b => h('div', {class: 'hbar'}, h('span', null, b.block), h('div', {class: 'tr'}, h('i', {style: `width:${b.w / pmx * 100}%;background:var(--s2)`})),
+      h('small', null, Math.round(b.w * 100) + '%'))));
+    $('m_checks').append(...MM.checks.map(c => h('li', null, h('i', {style: 'color:' + (c.ok ? 'var(--s2)' : 'var(--amber)')}, c.ok ? '✓' : c.ok === false ? '!' : '≈'), h('b', null, c.k), h('span', null, c.t))));
   }
 
   // 数据健康
@@ -485,6 +592,9 @@ function mk(id, opt) {
 const line = (name, data, color, w = 2, extra = {}) => ({type: 'line', name, data, showSymbol: false, smooth: false, lineStyle: {width: w, color}, itemStyle: {color}, connectNulls: true, ...extra});
 const ma = (a, n) => a.map((_, i) => { const s = a.slice(Math.max(0, i - n + 1), i + 1).filter(v => v != null); return s.length ? +(s.reduce((x, y) => x + y, 0) / s.length).toFixed(2) : null; });
 const lastN = (o, n) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, v.slice(-n)]));
+// 多年日期轴：只在每年第一个点标年份，避免同一年份重复出现
+const yearAxis = (d) => ({data: d, axisLabel: {formatter: (v) => v.slice(0, 4), interval: (i, v) => i > 0 && d[i - 1].slice(0, 4) !== v.slice(0, 4)}});
+let mKind = 'ex';
 
 function drawCharts() {
   charts.splice(0).forEach(c => c.dispose());
@@ -521,14 +631,14 @@ function drawCharts() {
   const V = D.valuation;
   if (V.ebs) {
     const E = V.ebs.series, sorted = [...E.v].filter(v => v != null).sort((a, b) => a - b), q = (p) => sorted[Math.floor(p * (sorted.length - 1))];
-    mk('c_ebs', {grid: {right: 36}, xAxis: {data: E.d, axisLabel: {formatter: (v) => v.slice(0, 4)}}, yAxis: {axisLabel: {formatter: '{value}%'}},
+    mk('c_ebs', {grid: {right: 36}, xAxis: yearAxis(E.d), yAxis: {axisLabel: {formatter: '{value}%'}},
       series: [line('股债利差', E.v, amber, 1.8, {markArea: {silent: true, itemStyle: {color: css('--panel2')}, data: [[{yAxis: q(.2)}, {yAxis: q(.8)}]]},
         markLine: {silent: true, symbol: 'none', label: {color: ink3, fontSize: 10, formatter: (p) => p.name}, lineStyle: {color: ink3, type: 'dashed'},
           data: [{yAxis: q(.2), name: '20%'}, {yAxis: q(.8), name: '80%'}]}})]});
   }
-  if (V.pe) mk('c_pe', {xAxis: {data: V.pe.series.d, axisLabel: {formatter: (v) => v.slice(0, 4)}}, series: [line('PE中位数', V.pe.series.v, cyan, 1.6)]});
-  if (V.pb) mk('c_pb', {xAxis: {data: V.pb.series.d, axisLabel: {formatter: (v) => v.slice(0, 4)}}, series: [line('PB中位数', V.pb.series.v, cyan, 1.6)]});
-  if (V.below_net) mk('c_bn', {xAxis: {data: V.below_net.series.d, axisLabel: {formatter: (v) => v.slice(0, 4)}}, yAxis: {axisLabel: {formatter: '{value}%'}},
+  if (V.pe) mk('c_pe', {xAxis: yearAxis(V.pe.series.d), series: [line('PE中位数', V.pe.series.v, cyan, 1.6)]});
+  if (V.pb) mk('c_pb', {xAxis: yearAxis(V.pb.series.d), series: [line('PB中位数', V.pb.series.v, cyan, 1.6)]});
+  if (V.below_net) mk('c_bn', {xAxis: yearAxis(V.below_net.series.d), yAxis: {axisLabel: {formatter: '{value}%'}},
     series: [line('破净占比', V.below_net.series.v, s4, 1.6, {areaStyle: {color: s4, opacity: .12}})]});
   const M = D.leverage;
   if (M) {
@@ -544,10 +654,11 @@ function drawCharts() {
   }
   if (D.model) {
     const MC = D.model.curve, hs = MC.d.findIndex(d => d >= D.model.holdout_start);
-    mk('c_model', {xAxis: {data: MC.d, axisLabel: {formatter: (v) => v.slice(0, 4)}}, legend: {top: 0, left: 0, itemWidth: 16, itemHeight: 3, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z', textStyle: {color: css('--ink2'), fontSize: 12}}, grid: {top: 30},
-      series: [line('模型', MC.nav, amber, 2, {markArea: {silent: true, itemStyle: {color: css('--panel2')}, label: {show: true, position: 'insideTop', color: ink3, fontSize: 11}, data: [[{xAxis: MC.d[hs], name: '留出期'}, {xAxis: MC.d[MC.d.length - 1]}]]}}),
-        line('股票池等权', MC.ew, cyan, 1.6), line('中证1000', MC.csi1000, ink3, 1.2)]});
+    mk('c_model', {xAxis: yearAxis(MC.d), legend: {top: 0, left: 0, itemWidth: 16, itemHeight: 3, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z', textStyle: {color: css('--ink2'), fontSize: 12}}, grid: {top: 30},
+      series: [line('v1', MC.nav, ink3, 2, {markArea: {silent: true, itemStyle: {color: css('--panel2')}, label: {show: true, position: 'insideTop', color: ink3, fontSize: 11}, data: [[{xAxis: MC.d[hs], name: '留出期'}, {xAxis: MC.d[MC.d.length - 1]}]]}}),
+        line('股票池等权', MC.ew, cyan, 1.6), line('中证1000', MC.csi1000, css('--line2'), 1.2)]});
   }
+  drawModels();
   if (D.industries) {
     const I = [...D.industries].reverse();
     const ext = Math.max(...I.map(r => Math.abs(r.ret ?? 0))) * 1.3;
@@ -558,6 +669,32 @@ function drawCharts() {
         label: {show: true, formatter: (p) => pct(p.value), color: css('--ink2'), fontSize: 11, fontFamily: css('--mono')}}]});
   }
 }
+
+// 三套模型的曲线：累计超额（÷ 股票池等权）或净值，两个视图共用一张图
+function drawModels() {
+  const MM = D.model?.models; if (!MM) return;
+  const C = MM.curve, col = {v1: css('--ink3'), p14: css('--s2'), lgb: css('--s3'), mix: css('--s4')};
+  const name = {v1: 'v1', p14: 'P14', lgb: 'LGB', mix: 'P14+LGB 各半'};
+  const ser = MM.order.map(k => line(name[k], mKind === 'ex' ? C[k].map((v, i) => +(v / C.ew[i]).toFixed(4)) : C[k], col[k], k === 'mix' ? 2.6 : 1.7));
+  if (mKind === 'ex') ser[0].markLine = {silent: true, symbol: 'none', label: {show: false}, lineStyle: {color: css('--ink3'), type: 'dashed'}, data: [{yAxis: 1}]};
+  else ser.push(line('股票池等权', C.ew, css('--ink2'), 1.2, {lineStyle: {width: 1.2, color: css('--ink2'), type: 'dashed'}}), line('中证1000', C.csi1000, css('--line2'), 1.2));
+  const last = (n) => { const s = ser.find(x => x.name === n); return s ? s.data[s.data.length - 1] : null; };
+  mk('c_models', {xAxis: yearAxis(C.d), grid: {top: 34},
+    legend: {top: 0, left: 0, itemWidth: 16, itemHeight: 3, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z', textStyle: {color: css('--ink2'), fontSize: 12},
+      formatter: (n) => { const v = last(n); return v == null ? n : n + '  ' + (mKind === 'ex' ? pct((v - 1) * 100, 0) : v.toFixed(2)); }},
+    tooltip: {valueFormatter: (v) => v == null ? '—' : mKind === 'ex' ? pct((v - 1) * 100, 1) : v.toFixed(3)},
+    yAxis: {axisLabel: {formatter: (v) => mKind === 'ex' ? pct((v - 1) * 100, 0) : v.toFixed(1)}}, series: ser});
+}
+if ($('m_tabs')) $('m_tabs').onclick = (e) => { const b = e.target.closest('button'); if (!b) return; [...$('m_tabs').children].forEach(x => x.classList.toggle('on', x === b)); mKind = b.dataset.k; drawModels(); };
+
+// 目录：滚到哪个版块就高亮哪个
+(() => {
+  const links = [...document.querySelectorAll('#toc a[href^="#"]')], map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { links.forEach(a => a.classList.remove('on')); map.get(e.target.id)?.classList.add('on'); } }),
+    {rootMargin: '-45% 0px -50% 0px'});
+  map.forEach((_, id) => { const el = $(id); if (el) io.observe(el); });
+})();
 
 texts();
 drawCharts();

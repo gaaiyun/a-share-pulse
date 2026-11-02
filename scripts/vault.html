@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>A股实操</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230e1013'/><path d='M5 22 L12 14 L17 18 L27 7' stroke='%23f0433a' stroke-width='3' fill='none'/></svg>">
+<style>
+@font-face{font-family:Plex;src:url(assets/plexmono-400.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Plex;src:url(assets/plexmono-600.woff2) format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:Cond;src:url(assets/barlowcond-600.woff2) format('woff2');font-weight:600;font-display:swap}
+:root{
+  --bg:#0d0f12;--panel:#13161b;--panel2:#181c22;--line:#252a32;--line2:#323843;
+  --ink:#e7eaef;--ink2:#a7afbb;--ink3:#6c7584;
+  --up:#f0433a;--down:#18b26b;--amber:#f5a524;--cyan:#3fb4d6;
+  --s2:#2f9cc0;--s3:#c2820c;--s4:#8a78f0;
+  --cjk:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --mono:Plex,"SFMono-Regular",Consolas,var(--cjk);
+  --cond:Cond,"Arial Narrow",var(--cjk);
+}
+:root[data-theme="light"]{
+  --bg:#eef1f5;--panel:#ffffff;--panel2:#f6f8fb;--line:#dde2e9;--line2:#c9d0da;
+  --ink:#0f1318;--ink2:#46505e;--ink3:#7d8794;
+  --up:#d92d23;--down:#0f9257;--amber:#c27803;--cyan:#1478a6;
+  --s2:#1478a6;--s3:#c27803;--s4:#5b4bd6;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#eef1f5;--panel:#ffffff;--panel2:#f6f8fb;--line:#dde2e9;--line2:#c9d0da;
+    --ink:#0f1318;--ink2:#46505e;--ink3:#7d8794;
+    --up:#d92d23;--down:#0f9257;--amber:#c27803;--cyan:#1478a6;
+    --s2:#1478a6;--s3:#c27803;--s4:#5b4bd6;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 var(--cjk)}
+a{color:inherit}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--ink2)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 24px}
+.mast{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:28px 0 18px;border-bottom:2px solid var(--ink)}
+.logo{display:flex;align-items:baseline;gap:14px}
+.logo h1{margin:0;font:600 44px/1 var(--cond);letter-spacing:.5px}
+.logo h1 em{font-style:normal;color:var(--up)}
+.logo small{font:12px/1 var(--mono);color:var(--ink3);letter-spacing:3px}
+.meta{text-align:right;font:12px/1.7 var(--mono);color:var(--ink2)}
+.meta strong{color:var(--ink);font-weight:600;font-size:15px}
+.tbtn{display:inline-block;margin-left:10px;border:1px solid var(--line2);background:transparent;color:var(--ink2);font:12px var(--mono);padding:3px 9px;cursor:pointer;border-radius:2px;text-decoration:none}
+.tbtn:hover{color:var(--ink);border-color:var(--ink2)}
+.kicker{font:12px/1 var(--mono);color:var(--ink3);letter-spacing:2px}
+
+/* 门 */
+.gate{display:flex;justify-content:center;padding:12vh 0 20vh}
+.gcard{width:min(420px,100%);background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--up);padding:28px 28px 24px}
+.gcard h2{margin:12px 0 6px;font:600 22px/1.4 var(--cjk)}
+.gcard p{margin:0 0 18px;color:var(--ink2);font-size:13px;line-height:1.75}
+.gcard input[type=password]{width:100%;font:600 22px/1 var(--mono);letter-spacing:4px;padding:12px 14px;background:var(--bg);color:var(--ink);border:1px solid var(--line2);border-radius:2px;outline:none}
+.gcard input[type=password]:focus{border-color:var(--ink2)}
+.gcard label{display:flex;align-items:center;gap:8px;margin:12px 0 16px;color:var(--ink2);font-size:13px;cursor:pointer}
+.gcard button{width:100%;padding:11px;font:600 15px var(--cjk);background:var(--ink);color:var(--bg);border:0;border-radius:2px;cursor:pointer}
+.gcard button:disabled{opacity:.6;cursor:wait}
+.gcard .err{margin:12px 0 0;min-height:20px;color:var(--amber);font-size:13px}
+
+/* 版块 */
+section{padding:30px 0 8px;border-bottom:1px solid var(--line)}
+.sh{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+.sh .no{font:600 13px var(--mono);color:var(--up)}
+.sh h2{margin:0;font:600 22px/1.2 var(--cjk)}
+.sh p{margin:0;color:var(--ink3);font-size:13px}
+.lede{color:var(--ink2);max-width:900px;margin:0 0 14px;font-size:13.5px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:1fr 1fr}.g32{grid-template-columns:3fr 2fr}
+.card{background:var(--panel);border:1px solid var(--line);padding:16px 18px;min-width:0}
+.card h3{margin:0 0 4px;font:600 14px/1.4 var(--cjk)}
+.card .sub{margin:0 0 10px;color:var(--ink3);font-size:12px}
+.chart{width:100%;height:300px}
+.stat{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);background:var(--panel)}
+.stat div{padding:12px 14px;border-left:1px solid var(--line)}.stat div:first-child{border-left:0}
+.stat span{display:block;font-size:12px;color:var(--ink3)}.stat b{display:block;font:600 28px/1.15 var(--cond)}.stat em{font:12px var(--mono);font-style:normal;color:var(--ink2)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-weight:400;color:var(--ink3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line2);font-size:12px;white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right}
+td.code{font-family:var(--mono);color:var(--ink2);white-space:nowrap}
+td.why{color:var(--ink2);font-size:12.5px}
+tr:hover td{background:var(--panel2)}
+tr.bk td{color:var(--ink3)}
+.tabs{display:flex;gap:0;margin:0 0 12px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:none;background:none;border:0;border-bottom:2px solid transparent;color:var(--ink3);padding:7px 14px;font:13.5px var(--cjk);cursor:pointer;margin-bottom:-1px}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--tone,var(--up))}
+.tabs.big button{font-size:15px;padding:9px 16px}
+.tabs button i{display:inline-block;width:8px;height:8px;margin-right:7px;vertical-align:1px;background:var(--tone)}
+.scroll{overflow-x:auto}
+.hbar{display:grid;grid-template-columns:86px 1fr 48px;align-items:center;gap:10px;padding:3px 0;font-size:12.5px}
+.hbar .tr{height:10px;background:var(--panel2);border:1px solid var(--line)}
+.hbar .tr i{display:block;height:100%;background:var(--tone)}
+.hbar small{font:12px var(--mono);color:var(--ink2);text-align:right}
+.tag{display:inline-block;font:11px/1.5 var(--mono);color:var(--ink3);border:1px solid var(--line2);padding:0 5px;margin-left:4px;white-space:nowrap}
+.held{color:var(--up);font-size:12px}
+details.more summary{cursor:pointer;color:var(--ink3);font-size:12.5px;padding:8px 0}
+.empty{color:var(--ink3);font-size:13px;padding:10px 0}
+.rbar{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.rbar select{background:var(--bg);color:var(--ink);border:1px solid var(--line2);font:13px var(--mono);padding:5px 8px;border-radius:2px}
+.doc{font-size:14px;line-height:1.85;max-width:960px}
+.doc h1{font:600 20px/1.4 var(--cjk);margin:6px 0 12px}
+.doc h2{font:600 16px/1.4 var(--cjk);margin:22px 0 8px;padding-top:14px;border-top:1px dashed var(--line)}
+.doc h3{font:600 14.5px/1.4 var(--cjk);margin:16px 0 6px}
+.doc p,.doc li{color:var(--ink2)}
+.doc strong{color:var(--ink)}
+.doc blockquote{margin:10px 0;padding:6px 14px;border-left:3px solid var(--line2);background:var(--panel2);color:var(--ink2)}
+.doc blockquote p{margin:4px 0}
+.doc table{margin:8px 0 14px;display:block;overflow-x:auto}
+.doc code{font-family:var(--mono);font-size:12.5px}
+details.docx{background:var(--panel);border:1px solid var(--line);margin-bottom:10px}
+details.docx>summary{cursor:pointer;padding:12px 18px;font:600 14px var(--cjk);list-style:none;display:flex;justify-content:space-between}
+details.docx>summary::after{content:"展开";font:12px var(--mono);color:var(--ink3)}
+details.docx[open]>summary::after{content:"收起"}
+details.docx>.doc{padding:0 18px 14px}
+.foot{padding:28px 0 60px;color:var(--ink3);font-size:12.5px;line-height:1.8}
+@media (max-width:1100px){.g32{grid-template-columns:1fr}}
+@media (max-width:720px){.wrap{padding:0 14px}.g2{grid-template-columns:1fr}.stat{grid-template-columns:1fr 1fr}.stat div:nth-child(3){border-left:0}
+  .stat div:nth-child(n+3){border-top:1px solid var(--line)}.logo h1{font-size:34px}.logo small{display:none}.mast{flex-direction:column;align-items:flex-start}.meta{text-align:left}
+  .chart{height:240px}.scroll table{min-width:620px}.gcard{padding:22px 18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div class="logo"><h1>A股<em>实操</em></h1><small>PAPER&nbsp;BOOK</small></div>
+    <div class="meta">数据日 <strong id="asof">—</strong><br><span id="built"></span><a class="tbtn" href="./">← 看板</a><button class="tbtn" id="lockbtn" type="button" hidden>锁定</button><button class="tbtn" id="theme" type="button">明/暗</button></div>
+  </header>
+
+  <div class="gate" id="gate">
+    <form class="gcard" id="gform" autocomplete="off">
+      <div class="kicker">实操页 · 需要密码</div>
+      <h2>每日名单、持仓、调仓与复盘</h2>
+      <p>这一页的内容是加密存放的，只在你的浏览器里用密码解开；服务器和公开仓库里只有密文。</p>
+      <input id="pw" type="password" inputmode="numeric" autocomplete="off" placeholder="密码" aria-label="密码" required>
+      <label><input type="checkbox" id="remember"> 在这台设备上记住</label>
+      <button type="submit" id="go">解锁</button>
+      <p class="err" id="err" role="alert"></p>
+    </form>
+  </div>
+
+  <main id="app" hidden>
+    <section>
+      <div class="sh"><span class="no">01</span><h2>模拟账户</h2><p>收盘出信号、次日开盘价成交，计入佣金、滑点和印花税</p></div>
+      <div class="tabs big" id="acct_tabs"></div>
+      <p class="lede" id="acct_status"></p>
+      <div class="stat num" id="acct_stat"></div>
+      <div class="grid g32" style="margin-top:18px">
+        <div class="card"><h3>净值 vs 股票池等权</h3><p class="sub" id="nav_sub"></p><div class="chart" id="c_nav"></div></div>
+        <div class="card"><h3>行业分布</h3><p class="sub" id="ind_sub"></p><div id="ind_bars"></div></div>
+      </div>
+    </section>
+    <section>
+      <div class="sh"><span class="no">02</span><h2>下一交易日开盘</h2><p id="ord_sub"></p></div>
+      <div class="grid g2"><div class="card"><h3 id="buy_h">买入</h3><div class="scroll"><table id="buy"></table></div><div id="buy_more"></div></div>
+        <div class="card"><h3 id="sell_h">卖出</h3><div class="scroll"><table id="sell"></table></div></div></div>
+    </section>
+    <section>
+      <div class="sh"><span class="no">03</span><h2>持仓明细</h2><p id="hold_sub"></p></div>
+      <div class="card scroll"><table id="hold"></table></div>
+    </section>
+    <section>
+      <div class="sh"><span class="no">04</span><h2>今日排名</h2><p>每个模型打分最高的股票；理由取该股得分贡献最大的两项</p></div>
+      <div class="tabs" id="cand_tabs"><button class="on" data-k="p14">P14 前 30</button><button data-k="lgb">LGB 前 30</button><button data-k="v1_main">v1 主板前 30</button><button data-k="v1_gem">v1 创业板/科创板前 20</button></div>
+      <p class="lede" id="cand_note"></p>
+      <div class="card scroll"><table id="cand"></table></div>
+    </section>
+    <section>
+      <div class="sh"><span class="no">05</span><h2>复盘</h2><p>每个交易日晚上由云端任务按固定流程写，名单只取自模型</p></div>
+      <div class="card"><div class="rbar"><select id="rsel" aria-label="复盘日期"></select><span class="tag" id="rcount"></span></div><article class="doc" id="review"></article></div>
+    </section>
+    <section>
+      <div class="sh"><span class="no">06</span><h2>推送原文与研究笔记</h2><p>和微信里收到的是同一份</p></div>
+      <div id="docs"></div>
+    </section>
+    <footer class="foot">模拟组合用来积累样本外记录：按次日开盘价成交、计入费用，涨停买不进、跌停卖不出。回测和模拟收益都不代表未来，也不构成投资建议。</footer>
+  </main>
+</div>
+<script src="assets/echarts.min.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') e.className = v; else if (k === 'style') e.setAttribute('style', v); else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k instanceof Node ? k : document.createTextNode(String(k)));
+  return e;
+}
+const cls = (v) => v == null ? 'flat' : v > 0 ? 'up' : v < 0 ? 'down' : 'flat';
+const pct = (v, n = 1) => v == null || isNaN(v) ? '—' : (v > 0 ? '+' : '') + (v * 100).toFixed(n) + '%';
+const span = (v, n) => h('span', {class: 'num ' + cls(v)}, pct(v, n));
+const store = {get: (k) => { try { return sessionStorage.getItem(k) || localStorage.getItem(k); } catch (e) { return null; } },
+  set: (k, v, keep) => { try { (keep ? localStorage : sessionStorage).setItem(k, v); } catch (e) {} },
+  del: (k) => { try { sessionStorage.removeItem(k); localStorage.removeItem(k); } catch (e) {} }};
+const KEY = 'asp-vault';
+
+// ---------------- 主题
+const root = document.documentElement;
+try { const t = localStorage.getItem('asp-theme'); if (t) root.dataset.theme = t; } catch (e) {}
+$('theme').onclick = () => {
+  const cur = root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  root.dataset.theme = cur === 'light' ? 'dark' : 'light';
+  try { localStorage.setItem('asp-theme', root.dataset.theme); } catch (e) {}
+  if (V) drawNav();
+};
+
+// ---------------- 解密：PBKDF2-SHA256 派生 AES-256-GCM 密钥，内容是 gzip 过的 JSON
+const b64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+let ENC = null;
+async function decrypt(pw) {
+  if (!ENC) {
+    const r = await fetch('vault.json?t=' + Date.now(), {cache: 'no-store'});
+    if (!r.ok) throw new Error('missing');
+    ENC = await r.json();
+  }
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({name: 'PBKDF2', salt: b64(ENC.salt), iterations: ENC.iter, hash: 'SHA-256'}, base, {name: 'AES-GCM', length: 256}, false, ['decrypt']);
+  let plain;
+  try { plain = await crypto.subtle.decrypt({name: 'AES-GCM', iv: b64(ENC.iv)}, key, b64(ENC.ct)); } catch (e) { throw new Error('wrong'); }
+  const ds = new Blob([plain]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return JSON.parse(await new Response(ds).text());
+}
+async function unlock(pw, remember, quiet) {
+  $('go').disabled = true; $('err').textContent = quiet ? '' : '正在解密…';
+  try {
+    if (!window.crypto?.subtle || !window.DecompressionStream) throw new Error('old');
+    const data = await decrypt(pw);
+    store.set(KEY, pw, remember);
+    $('gate').hidden = true; $('app').hidden = false; $('lockbtn').hidden = false;
+    render(data);
+  } catch (e) {
+    store.del(KEY);
+    $('err').textContent = quiet ? '' : e.message === 'wrong' ? '密码不对。' : e.message === 'missing' ? '实操数据还没有发布。' : e.message === 'old' ? '这个浏览器不支持页面解密，换新版 Chrome / Edge / Safari 再试。' : '解密失败：' + e.message;
+    $('pw').select();
+  } finally { $('go').disabled = false; }
+}
+$('gform').onsubmit = (e) => { e.preventDefault(); unlock($('pw').value, $('remember').checked); };
+$('lockbtn').onclick = () => { store.del(KEY); location.reload(); };
+const saved = store.get(KEY);
+if (saved) unlock(saved, (() => { try { return !!localStorage.getItem(KEY); } catch (e) { return false; } })(), true); else $('pw').focus();
+
+// ---------------- 渲染
+let V = null, cur = null, cand = 'p14';
+const TONE = {mix: '--s4', p14: '--s2', lgb: '--s3', v1: '--ink3'};
+function render(data) {
+  V = data;
+  $('asof').textContent = V.date;
+  $('built').textContent = '生成于 ' + V.built + ' 北京时间';
+  $('acct_tabs').replaceChildren(...V.order.map(k => h('button', {'data-k': k, style: '--tone:var(' + TONE[k] + ')'}, h('i'), V.accounts[k].name)));
+  $('acct_tabs').onclick = (e) => { const b = e.target.closest('button'); if (b) showAcct(b.dataset.k); };
+  showAcct(V.order[0]);
+  $('cand_tabs').onclick = (e) => { const b = e.target.closest('button'); if (!b) return; cand = b.dataset.k; showCand(); };
+  showCand();
+  // 复盘
+  $('rcount').textContent = V.reviews.length + ' 篇';
+  $('rsel').replaceChildren(...V.reviews.map((r, i) => h('option', {value: i}, r.date)));
+  const showRev = () => { const r = V.reviews[+$('rsel').value]; $('review').innerHTML = r ? r.html : '<p class="empty">还没有复盘。</p>'; };
+  $('rsel').onchange = showRev; showRev();
+  // 推送原文与笔记
+  const DN = {v1: '今日推送 · v1 名单与三个账户摘要', p14: '今日 · P14 完整持仓与调仓', lgb: '今日 · LGB 完整持仓与调仓'};
+  const box = (title, html) => { const d = h('details', {class: 'docx'}, h('summary', null, title), h('article', {class: 'doc'})); d.querySelector('article').innerHTML = html; return d; };
+  $('docs').replaceChildren(...Object.entries(V.docs).map(([k, html]) => box(DN[k] || k, html)), ...V.notes.map(n => box('笔记 · ' + n.name, n.html)));
+}
+
+function showAcct(k) {
+  cur = k;
+  const A = V.accounts[k], tone = 'var(' + TONE[k] + ')';
+  [...$('acct_tabs').children].forEach(b => b.classList.toggle('on', b.dataset.k === k));
+  $('acct_status').textContent = A.status;
+  const n = A.nav, last = n.nav.length - 1, nav = n.nav[last], ew = n.ew[last];
+  const days = Math.max(0, n.d.length - 1);
+  $('acct_stat').replaceChildren(
+    h('div', null, h('span', null, '净值'), h('b', null, nav.toFixed(4)), h('em', {class: cls(nav - 1)}, '累计 ' + pct(nav - 1, 2))),
+    h('div', null, h('span', null, '相对股票池等权'), h('b', {class: cls(nav / ew - 1)}, pct(nav / ew - 1, 2)), h('em', null, '等权 ' + pct(ew - 1, 2))),
+    h('div', null, h('span', null, '持仓'), h('b', null, A.holdings.length + ' 只'), h('em', null, '现金 ' + Math.round(A.cash * 100) + '%')),
+    h('div', null, h('span', null, '运行'), h('b', null, days + ' 天'), h('em', null, '自 ' + (n.d[0] || A.start))));
+  $('nav_sub').textContent = '起点 = 1 · ' + (n.d[0] || '') + ' 起 · 已记 ' + n.d.length + ' 个交易日' + (n.d.length < 5 ? '，样本太少，先看方向不看幅度' : '');
+  drawNav();
+  // 行业：有持仓看持仓，没有就看待买队列
+  let ind = A.industry, sub = '按当前持仓市值占比';
+  if (!A.holdings.length) {
+    const q = A.pending.buy.filter(x => !x.backup), m = {};
+    q.forEach(x => { m[x.ind || '未归类'] = (m[x.ind || '未归类'] || 0) + 1 / q.length; });
+    ind = Object.entries(m).map(([i, w]) => ({ind: i, w})).sort((a, b) => b.w - a.w);
+    sub = '还没有持仓，按明天开盘的买入单统计（只数占比）';
+  }
+  $('ind_sub').textContent = sub;
+  const mx = Math.max(...ind.map(r => r.w), 0.01);
+  $('ind_bars').replaceChildren(...(ind.length ? ind.slice(0, 14).map(r => h('div', {class: 'hbar', style: '--tone:' + tone}, h('span', null, r.ind), h('div', {class: 'tr'}, h('i', {style: 'width:' + r.w / mx * 100 + '%'})), h('small', null, Math.round(r.w * 100) + '%')))
+    : [h('p', {class: 'empty'}, '无持仓')]));
+  // 调仓
+  const P = A.pending, main = P.buy.filter(x => !x.backup), bk = P.buy.filter(x => x.backup);
+  $('ord_sub').textContent = main.length || P.sell.length ? '按排名依次成交；遇涨停买不进、跌停卖不出就顺延' : '今天没有调仓单，持仓不动';
+  $('buy_h').textContent = '买入 ' + main.length + ' 只' + (bk.length ? '（另有 ' + bk.length + ' 只候补）' : '');
+  $('sell_h').textContent = '卖出 ' + P.sell.length + ' 只';
+  const otab = (rows) => rows.length ? [h('thead', null, h('tr', null, ...['代码', '名称', '行业', '理由', '批'].map(x => h('th', null, x)))),
+    h('tbody', null, rows.map(r => h('tr', {class: r.backup ? 'bk' : ''}, h('td', {class: 'code'}, r.code), h('td', null, r.name), h('td', {class: 'why'}, r.ind), h('td', {class: 'why'}, r.why || '—'), h('td', null, h('span', {class: 'tag'}, r.tranche)))))] : [h('tbody', null, h('tr', null, h('td', {class: 'empty'}, '无')))];
+  $('buy').replaceChildren(...otab(main));
+  $('sell').replaceChildren(...otab(P.sell));
+  $('buy_more').replaceChildren(...(bk.length ? [h('details', {class: 'more'}, h('summary', null, '候补 ' + bk.length + ' 只（前面有买不进的才轮到）'), h('table', null, ...otab(bk)))] : []));
+  // 持仓
+  $('hold_sub').textContent = A.holdings.length ? A.holdings.length + ' 只，按仓位排序 · 浮盈按今日收盘价' : '还没有持仓';
+  $('hold').replaceChildren(...(A.holdings.length ? [h('thead', null, h('tr', null, ...['代码', '名称', '行业', '仓位', '持有自', '成本', '现价', '浮盈', '理由', k === 'mix' ? '来源' : '批'].map((x, i) => h('th', {class: i >= 3 && i <= 7 ? 'r' : ''}, x)))),
+    h('tbody', null, A.holdings.map(r => h('tr', null, h('td', {class: 'code'}, r.code), h('td', null, r.name), h('td', {class: 'why'}, r.ind || '—'),
+      h('td', {class: 'r num'}, (r.w * 100).toFixed(1) + '%'), h('td', {class: 'r num'}, r.entry.slice(5)), h('td', {class: 'r num'}, r.entry_px.toFixed(2)), h('td', {class: 'r num'}, r.last_px.toFixed(2)),
+      h('td', {class: 'r'}, span(r.pnl)), h('td', {class: 'why'}, r.why || '—'), h('td', null, h('span', {class: 'tag'}, r.tranche)))))]
+    : [h('tbody', null, h('tr', null, h('td', {class: 'empty'}, '明天开盘按上面的买入单建仓。')))]));
+}
+
+function showCand() {
+  [...$('cand_tabs').children].forEach(b => b.classList.toggle('on', b.dataset.k === cand));
+  const rows = V.candidates[cand] || [], acct = {p14: 'p14', lgb: 'lgb', v1_main: 'v1', v1_gem: null}[cand];
+  const held = new Set((V.accounts[acct]?.holdings || []).map(r => r.code));
+  $('cand_note').textContent = {p14: 'P14：低波动、没被炒热、估值便宜的票排前面。', lgb: 'LGB：机器学习打分，近期偏好小市值、流动性折价、超跌的票，波动会比 P14 大。',
+    v1_main: 'v1：留出期没通过，只做观察对照。', v1_gem: '创业板/科创板：同一个 v1 模型，没有单独验证过，只作参考，不进模拟账户。'}[cand];
+  $('cand').replaceChildren(h('thead', null, h('tr', null, ...['排名', '代码', '名称', '行业', '得分', '理由', ''].map((x, i) => h('th', {class: i === 4 ? 'r' : ''}, x)))),
+    h('tbody', null, rows.map(r => h('tr', null, h('td', {class: 'num'}, r.rank), h('td', {class: 'code'}, r.code), h('td', null, r.name), h('td', {class: 'why'}, r.ind || '—'),
+      h('td', {class: 'r num'}, r.score == null ? '—' : r.score.toFixed(3)), h('td', {class: 'why'}, r.why || '—'), h('td', null, held.has(r.code) ? h('span', {class: 'held'}, '● 持有') : '')))));
+}
+
+function drawNav() {
+  const el = $('c_nav'), A = V.accounts[cur], n = A.nav;
+  let c = echarts.getInstanceByDom(el); if (c) c.dispose();
+  c = echarts.init(el, null, {renderer: 'canvas'});
+  const ink3 = css('--ink3'), line = css('--line'), tone = css(TONE[cur]);
+  const ser = (name, data, color, w, dash) => ({type: 'line', name, data, showSymbol: n.d.length < 30, symbolSize: 6, lineStyle: {width: w, color, type: dash ? 'dashed' : 'solid'}, itemStyle: {color}});
+  c.setOption({animationDuration: 400, textStyle: {fontFamily: css('--cjk'), color: css('--ink2')}, grid: {left: 52, right: 14, top: 30, bottom: 26},
+    legend: {top: 0, left: 0, itemWidth: 16, itemHeight: 3, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z', textStyle: {color: css('--ink2'), fontSize: 12}},
+    tooltip: {trigger: 'axis', backgroundColor: css('--panel'), borderColor: css('--line2'), textStyle: {color: css('--ink'), fontSize: 12}, valueFormatter: (v) => v == null ? '—' : v.toFixed(4)},
+    xAxis: {type: 'category', data: n.d, boundaryGap: false, axisLine: {lineStyle: {color: line}}, axisTick: {show: false}, axisLabel: {color: ink3, fontSize: 11, formatter: (v) => v.slice(5)}},
+    yAxis: {type: 'value', scale: true, splitLine: {lineStyle: {color: line}}, axisLabel: {color: ink3, fontSize: 11, formatter: (v) => v.toFixed(3)}},
+    series: [ser(A.name, n.nav, tone, 2.4), ser('股票池等权', n.ew, css('--ink2'), 1.4, true)]});
+}
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { const el = $('c_nav'); const c = el && echarts.getInstanceByDom(el); if (c) c.resize(); }, 150); });
+</script>
+</body>
+</html>
