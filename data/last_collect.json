@@ -1,63 +1,85 @@
 {
  "date": "2026-11-04",
- "at": "2026-11-04 20:33",
- "ok": 11,
- "total": 11,
+ "at": "2026-11-04 22:13",
+ "wave": "close",
+ "next": "2026-11-05",
+ "ok": 14,
+ "total": 15,
  "steps": [
   {
    "step": "指数日线",
    "ok": true,
-   "sec": 3.8
+   "sec": 5.6
   },
   {
    "step": "乐咕估值与宽度",
    "ok": true,
-   "sec": 20.4
+   "sec": 18.1
   },
   {
    "step": "两融账户",
    "ok": true,
-   "sec": 20.1
+   "sec": 30.8
   },
   {
    "step": "国债收益率",
-   "ok": true,
-   "sec": 4.1
+   "ok": false,
+   "err": "ConnectTimeout: HTTPSConnectionPool(host='datacenter.eastmoney.com', port=443): Max retries exceeded with url: /api/data/get?type=RPTA_WEB_TREASURYYIELD&sty=ALL&st=SOLAR_DATE&sr=-1&token=894050c76af8597a853f5b408b759f5d&p=3&ps=500&pageNo=3&pageNum=3 (Caused by ConnectTimeoutError(<HTTPSConnection(ho"
   },
   {
    "step": "涨停池回填",
    "ok": true,
-   "sec": 5.3
+   "sec": 0.0
   },
   {
    "step": "新浪全市场截面",
    "ok": true,
-   "sec": 62.5
+   "sec": 65.3
   },
   {
    "step": "当日涨停池",
    "ok": true,
-   "sec": 5.4
+   "sec": 6.0
   },
   {
    "step": "行业与概念板块",
    "ok": true,
-   "sec": 7.6
+   "sec": 5.0
   },
   {
    "step": "龙虎榜",
    "ok": true,
-   "sec": 4.2
+   "sec": 10.9
   },
   {
    "step": "上交所宽基ETF份额",
    "ok": true,
-   "sec": 12.3
+   "sec": 11.1
   },
   {
    "step": "赚钱效应(乐咕)",
    "ok": true,
-   "sec": 1.1
+   "sec": 1.0
+  },
+  {
+   "step": "财报与股东户数",
+   "ok": true,
+   "sec": 92.7
+  },
+  {
+   "step": "解禁",
+   "ok": true,
+   "sec": 11.2
+  },
+  {
+   "step": "新股与股息率",
+   "ok": true,
+   "sec": 6.2
+  },
+  {
+   "step": "全市场聚合",
+   "ok": true,
+   "sec": 2.3
   }
  ]
 }
