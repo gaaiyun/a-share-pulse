@@ -184,6 +184,72 @@ section{scroll-margin-top:46px}
 .vault-link:hover{border-color:var(--ink2);border-left-color:var(--up)}
 .vault-link b{display:block;font:600 16px var(--cjk)}.vault-link span{color:var(--ink3);font-size:12.5px}
 .vault-link em{font:600 13px var(--mono);font-style:normal;color:var(--up);white-space:nowrap}
+/* 图表工具条与全屏 */
+.chart{touch-action:pan-y}
+.cw{min-width:0}
+.ctools{display:flex;justify-content:flex-end;gap:2px;min-height:22px;margin:-2px 0 2px}
+.ctools button{background:none;border:1px solid transparent;color:var(--ink3);font:11px/20px var(--cjk);padding:0 6px;cursor:pointer;border-radius:2px}
+.ctools button:hover{color:var(--ink);border-color:var(--line2)}
+.fsv{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column}
+.fsv header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);font:600 14px var(--cjk)}
+.fsv header small{display:block;font:400 12px var(--cjk);color:var(--ink3)}
+.fsv .fsc{flex:1;min-height:0;touch-action:none}
+/* 头版四问 */
+.four{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;max-width:980px}
+.four a{display:block;text-decoration:none;background:var(--panel);border:1px solid var(--line);border-top:2px solid var(--tone);padding:11px 13px}
+.four a:hover{border-color:var(--ink3);border-top-color:var(--tone)}
+.four small{display:block;color:var(--ink3);font-size:12px}
+.four b{display:block;font:600 18px/1.35 var(--cjk);color:var(--tone);margin:2px 0 5px}
+.four p{margin:0;font-size:13px;line-height:1.7;color:var(--ink2)}
+details.more{margin-top:14px;border-top:1px dashed var(--line)}
+details.more>summary{cursor:pointer;color:var(--ink2);font-size:13px;padding:10px 0}
+.verdict{margin:6px 0 14px;padding:10px 14px;border-left:3px solid var(--amber);background:var(--amberbg);font-size:14px;line-height:1.75;max-width:980px}
+.verdict:empty{display:none}
+.kcards{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line);background:var(--panel)}
+.kcards div{padding:11px 13px;border-left:1px solid var(--line)}.kcards div:first-child{border-left:0}
+.kcards span{display:block;font-size:12px;color:var(--ink3);line-height:1.4}.kcards b{display:block;font:600 26px/1.2 var(--cond);margin-top:3px}.kcards em{font:12px var(--mono);font-style:normal;color:var(--ink2)}
+.hm td,.hm th{padding:5px 6px;text-align:center}.hm td.c{font:12px var(--mono);min-width:48px}
+.hm td:first-child,.hm th:first-child{text-align:left}
+.rot td.c{min-width:40px;font-size:11.5px;padding:4px 3px}.rot th{font-size:11px}
+.plays td,.plays th{text-align:right;white-space:nowrap}.plays td:first-child,.plays th:first-child{text-align:left}
+.plays small{display:block;color:var(--ink3);font-size:11.5px;font-weight:400}
+.strip{display:inline-flex;gap:1px;vertical-align:middle}.strip i{display:block;width:8px;height:18px;background:var(--panel2)}
+.say td{vertical-align:top}.say small{display:block;color:var(--ink3);font-size:12px}
+.vchip{display:inline-block;padding:0 7px;font-size:12px;line-height:20px;border:1px solid currentColor;white-space:nowrap}
+.vchip.flag{margin-left:6px;color:var(--amber)}
+.sortable th{cursor:pointer}.sortable th:hover{color:var(--ink)}
+.live{background:var(--panel2);margin:14px -24px 0;padding:18px 24px 18px;border:0;border-bottom:1px solid var(--line)}
+.pulse{color:var(--up)}.pulse::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--up);margin-right:6px;vertical-align:1px;animation:pl 1.6s infinite}
+@keyframes pl{50%{opacity:.25}}
+@media (prefers-reduced-motion: reduce){.pulse::before{animation:none}}
+@media (max-width:1100px){.kcards{grid-template-columns:repeat(3,1fr)}.kcards div:nth-child(4){border-left:0}.kcards div:nth-child(n+4){border-top:1px solid var(--line)}}
+/* 手机端 */
+@media (max-width:720px){
+  body{font-size:14px}
+  .sh{flex-wrap:wrap;gap:4px 10px}.sh p{width:100%}
+  section{padding:24px 0 6px}
+  .card{padding:12px}
+  .four{grid-template-columns:1fr}
+  .hero{display:flex;flex-direction:column}.gauge{padding:16px 0;order:2;border-bottom:0;border-top:1px solid var(--line)}.takes{padding:14px 0;order:1}
+  .temp .big{font-size:84px}.stage{font-size:18px;padding:6px 9px}
+  .headline{font-size:17px}
+  .note{font-size:12.5px;margin-top:10px}
+  .kcards{grid-template-columns:1fr 1fr}.kcards div{border-left:0;border-top:1px solid var(--line)}.kcards div:nth-child(even){border-left:1px solid var(--line)}.kcards div:nth-child(-n+2){border-top:0}.kcards b{font-size:23px}
+  .verdict{font-size:13.5px;padding:9px 11px}
+  .live{margin:12px -14px 0;padding:14px}
+  .ctools button{font-size:12px;line-height:26px;padding:0 8px}
+  .tabs button{padding:9px 12px}
+  .toc a{line-height:44px}
+  .scroll{-webkit-overflow-scrolling:touch}
+  .scroll table{min-width:0}
+  .scroll table.plays,.scroll table#sim,.scroll table#sectab,.scroll table.rot,.scroll table#lhb,.scroll table#seats{min-width:640px}
+  .scroll th:first-child,.scroll td:first-child{position:sticky;left:0;background:var(--panel);z-index:1}
+  table{font-size:12.5px}th{font-size:11.5px}td{padding:6px 6px}
+  .hm td.c{min-width:40px}
+  .say td:nth-child(n+3){white-space:nowrap}
+  .chart{height:230px}.chart.short{height:200px}.chart.tall{height:290px}
+  .foot{font-size:12px}
+}
 @media (max-width:1100px){.hero{grid-template-columns:1fr}.gauge{border-right:0;border-bottom:1px solid var(--line);padding-right:0}.takes{padding-left:0}
   .g3,.g4{grid-template-columns:1fr 1fr}.g32,.g23{grid-template-columns:1fr}}
 @media (max-width:720px){.wrap{padding:0 14px}.toc{margin:0 -14px;padding:0 14px}.g2,.g3,.g4{grid-template-columns:1fr}.stat{grid-template-columns:1fr 1fr}.stat div:nth-child(3){border-left:0}
@@ -191,7 +257,7 @@ section{scroll-margin-top:46px}
   .stat div:nth-child(n+3){border-top:1px solid var(--line)}
   .logo h1{font-size:34px}.logo small{display:none}.temp .big{font-size:104px}.mast{flex-direction:column;align-items:flex-start}.meta{text-align:left}
   .takes li{grid-template-columns:1fr;gap:2px}.chart{height:240px}.chart.tall{height:280px}
-  .scroll{overflow-x:auto}.scroll table{min-width:560px}}
+  .scroll{overflow-x:auto}}
 </style>
 </head>
 <body>
@@ -203,10 +269,21 @@ section{scroll-margin-top:46px}
   </header>
   <div class="stale" id="stale"></div>
   <nav class="toc" id="toc" aria-label="版块目录">
-    <a href="#s1"><b>01</b>情绪周期</a><a href="#s2"><b>02</b>涨停生态</a><a href="#s3"><b>03</b>宽度风格</a><a href="#s4"><b>04</b>估值利率</a>
-    <a href="#s5"><b>05</b>资金</a><a href="#s6"><b>06</b>行业题材</a><a href="#s7"><b>07</b>相似交易日</a><a href="#model_sec"><b>08</b>选股模型</a>
+    <a href="#s_play"><b>01</b>打法</a><a href="#s1"><b>02</b>情绪</a><a href="#s2"><b>03</b>涨停</a><a href="#s_feel"><b>04</b>持仓体感</a><a href="#s_style"><b>05</b>风格</a>
+    <a href="#s6"><b>06</b>行业</a><a href="#s5"><b>07</b>资金风险</a><a href="#s4"><b>08</b>估值</a><a href="#s_say"><b>09</b>说法</a><a href="#model_sec"><b>10</b>模型</a>
     <a class="lock" href="vault.html">实操页 · 需密码</a>
   </nav>
+
+  <section id="live" class="live" hidden>
+    <div class="sh"><span class="no pulse">盘中</span><h2>今天到现在</h2><p id="live_at"></p></div>
+    <div class="stat num" id="live_stat"></div>
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card"><h3>盘中情绪轨迹</h3><p class="sub">上涨家数占比，%</p><div class="chart short" id="c_live_up"></div></div>
+      <div class="card"><h3>涨停、炸板、跌停</h3><p class="sub">当前处于该状态的家数</p><div class="chart short" id="c_live_lim"></div></div>
+      <div class="card"><h3>今天开盘买入，现在浮盈</h3><p class="sub">按昨天收盘选股，今天开盘买入到现在，%</p><div id="live_plays"></div></div>
+    </div>
+    <div class="chips" id="live_sec" style="margin-top:12px"></div>
+  </section>
 
   <div class="hero">
     <div class="gauge reveal">
@@ -220,13 +297,19 @@ section{scroll-margin-top:46px}
     <div class="takes reveal" style="animation-delay:.12s">
       <div class="kicker">今日判断</div>
       <p class="headline" id="headline"></p>
-      <div class="kicker" style="margin-top:18px">分项要点 · 规则生成，数字可在下方逐项核对</div>
-      <ol id="takes"></ol>
+      <div class="four" id="four"></div>
+      <details class="more"><summary>分项要点（规则生成，数字可在下方逐项核对）</summary><ol id="takes"></ol></details>
     </div>
   </div>
 
+  <section id="s_play">
+    <div class="sh"><span class="no">01</span><h2>打法记分牌</h2><p>同样的规则跑全市场，看最近什么玩法真的赚钱</p></div>
+    <p class="verdict" id="v_play"></p>
+    <div class="card"><div class="scroll"><table id="plays" class="plays"></table></div>
+      <p class="legend-note" id="play_note"></p></div>
+  </section>
   <section id="s1">
-    <div class="sh"><span class="no">01</span><h2>情绪周期</h2><p>温度 = 六项短线指标在过去一年里的分位均值</p></div>
+    <div class="sh"><span class="no">02</span><h2>情绪周期</h2><p>温度 = 六项短线指标在过去一年里的分位均值</p></div>
     <p class="lede">温度只回答“今天的短线环境在过去一年里算冷还是热”。下面的基准率告诉你：历史上处在同样温度或同样阶段之后，市场通常怎么走——它是参照系，不是预测。</p>
     <div class="grid g32">
       <div class="card"><h3>情绪温度与涨跌停家数</h3><p class="sub">近两年 · 左：温度（灰为日值，彩色为 5 日均）；右：涨跌停家数</p><div class="grid g2" style="gap:8px"><div class="chart" id="c_temp"></div><div class="chart" id="c_limit"></div></div><p class="legend-note" id="limit_cap"></p></div>
@@ -234,9 +317,8 @@ section{scroll-margin-top:46px}
         <h3 style="margin-top:16px">历史基准率</h3><p class="sub" id="rate_sub"></p><div class="scroll"><table id="rates"></table></div></div>
     </div>
   </section>
-
   <section id="s2">
-    <div class="sh"><span class="no">02</span><h2>涨停生态</h2><p id="limit_date"></p></div>
+    <div class="sh"><span class="no">03</span><h2>涨停生态</h2><p id="limit_date"></p></div>
     <p class="lede">A 股短线资金的温度计在涨停板上：连板高度决定空间，首板晋级率和昨日涨停溢价决定接力意愿，炸板率决定分歧。主线看的是同一方向能不能连续几天出涨停，而不是某一天涨得多。</p>
     <div class="stat num" id="limit_stat"></div>
     <div class="grid g23" style="margin-top:18px">
@@ -248,23 +330,80 @@ section{scroll-margin-top:46px}
       <div class="card"><h3>昨日涨停今日溢价</h3><p class="sub">%，近一年 · 负值说明打板次日普遍亏钱</p><div class="chart short" id="c_prem"></div></div>
       <div class="card"><h3>首板晋级率与连板高度</h3><p class="sub">左：首板→二板（%）；右：当日最高连板</p><div class="grid g2" style="gap:8px"><div class="chart short" id="c_promo"></div><div class="chart short" id="c_streak"></div></div></div>
     </div>
+    <div class="card" style="margin-top:18px"><h3>连板晋级率</h3><p class="sub">昨天 N 板的股票今天还能封住的比例（不含 ST 和次新）。一天的样本很少，和近 20 日、近一年一起看</p><div class="scroll"><table id="funnel" class="yt"></table></div></div>
   </section>
-
-  <section id="s3">
-    <div class="sh"><span class="no">03</span><h2>宽度与风格</h2><p>指数涨跌不等于多数股票的涨跌</p></div>
-    <div class="grid g3">
+  <section id="s_feel">
+    <div class="sh"><span class="no">04</span><h2>持仓体感</h2><p>指数不代表你的账户：大多数人现在是赚是亏</p></div>
+    <p class="verdict" id="v_feel"></p>
+    <div class="kcards" id="feel_cards"></div>
+    <div class="grid g32" style="margin-top:18px">
+      <div class="card"><h3>近期买入者的中位浮盈</h3><p class="sub">%，每只股票：现价 ÷ 近 N 日平均成本（成交额 ÷ 成交量，已复权）− 1，取全市场中位数</p><div class="chart" id="c_cost"></div></div>
+      <div class="card"><h3>这个位置之后市场怎么走</h3><p class="sub" id="feel_sub"></p><div class="scroll"><table id="feel_rate" class="yt"></table></div><p class="legend-note">分档只用当时已知的历史，样本按日重叠，独立行情远少于 N。</p></div>
+    </div>
+    <div class="grid g3" style="margin-top:18px">
+      <div class="card"><h3>今年赚钱的股票有多少</h3><p class="sub" id="ytd_sub"></p><div class="chart short" id="c_ytd"></div></div>
+      <div class="card"><h3>离一年高点还有多远</h3><p class="sub" id="dd_sub"></p><div class="chart short" id="c_dd"></div></div>
+      <div class="card"><h3>站上均线的股票占比</h3><p class="sub">%，比指数更早反映多数股票的趋势</p><div class="chart short" id="c_ma"></div></div>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card"><h3>开盘买入胜率</h3><p class="sub">%，收盘高于开盘的股票占比。上涨家数看昨收，这个看今天开盘追进去的人赚不赚</p><div class="chart short" id="c_open"></div></div>
+      <div class="card"><h3>冲高回落幅度</h3><p class="sub">%，收盘相对当日最高价，全市场平均。越低说明追高的人被套得越深</p><div class="chart short" id="c_fade"></div></div>
+    </div>
+    <div class="grid g3" style="margin-top:18px">
       <div class="card"><h3>上涨家数占比</h3><p class="sub">%，近一年 · 细线为当日，粗线为 10 日均</p><div class="chart" id="c_up"></div></div>
       <div class="card"><h3>20 日新高 / 新低家数</h3><p class="sub">近两年 · 新低向下画</p><div class="chart" id="c_hl"></div></div>
       <div class="card"><h3>成交额</h3><p class="sub">亿元，沪深两市 · 近一年</p><div class="chart" id="c_amt"></div></div>
     </div>
-    <div class="grid g32" style="margin-top:18px">
-      <div class="card"><h3>微盘 400 vs 中证1000 vs 沪深300</h3><p class="sub">近两年，起点 = 100 · 微盘 400 = 每日按市值最小的 400 只非 ST 股等权</p><div class="chart tall" id="c_style"></div></div>
-      <div class="card"><h3>指数表现</h3><p class="sub">位置 = 收盘价在近 250 日高低区间中的百分位，0% 即一年最低</p><div class="scroll"><table id="idx"></table></div></div>
-    </div>
   </section>
-
+  <section id="s_style">
+    <div class="sh"><span class="no">05</span><h2>风格</h2><p>钱是流向大票还是小票，贵的还是便宜的</p></div>
+    <p class="verdict" id="v_style"></p>
+    <div class="grid g2">
+      <div class="card"><div class="tabs" id="grid_tabs"><button class="on" data-k="d1">今天</button><button data-k="d5">近 5 日</button><button data-k="d20">近 20 日</button></div>
+        <p class="sub">市值 × 估值，每格是这类股票的等权涨跌（%）。分组用前一天的市值和 PE，组合每日再平衡</p><div class="scroll"><table id="grid" class="hm"></table></div></div>
+      <div class="card"><h3>风格多空差</h3><p class="sub">每天按前一日排序，前 20% 减后 20% 的等权收益，单位是百分点。分位是 20 日累计值在 2016 年以来的位置</p><div class="scroll"><table id="ftab" class="yt"></table></div></div>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card"><h3>风格累计走势</h3><p class="sub">多空差累加（百分点），从图上最左边那天归零，向上表示这种风格在占优</p><div class="chart tall" id="c_factor"></div></div>
+      <div class="card"><h3>微盘 400 vs 中证1000 vs 沪深300</h3><p class="sub">近两年，起点 = 100 · 微盘 400 = 每日按市值最小的 400 只非 ST 股等权</p><div class="chart tall" id="c_style"></div></div>
+    </div>
+    <div class="card" style="margin-top:18px"><h3>指数表现</h3><p class="sub">位置 = 收盘价在近 250 日高低区间中的百分位，0% 即一年最低</p><div class="scroll"><table id="idx"></table></div></div>
+  </section>
+  <section id="s6">
+    <div class="sh"><span class="no">06</span><h2>行业与题材</h2><p id="ind_date"></p></div>
+    <p class="verdict" id="v_sector"></p>
+    <div class="grid g2">
+      <div class="card"><h3>估值 × 强弱四象限</h3><p class="sub">横轴：市净率在自身近十年的分位，越靠左越便宜；纵轴：近 20 日相对全市场的超额（百分点）；气泡：成交占比</p><div class="chart tall" id="c_quad"></div></div>
+      <div class="card"><h3>四象限历史表现</h3><p class="sub">之后 20 日相对全市场，分类只用当时已知的数据，5 日抽样、行业汇总</p><div class="scroll"><table id="quad" class="yt"></table></div>
+        <p class="legend-note" id="hot_note"></p>
+        <h3 style="margin-top:16px">业绩 × 股价</h3><p class="sub" id="earn_sub"></p><div class="scroll"><table id="earn" class="yt"></table></div><p class="legend-note" id="holder_note"></p></div>
+    </div>
+    <div class="card" style="margin-top:18px"><h3>行业轮动热力</h3><p class="sub" id="rot_sub"></p><div class="scroll"><table id="rot" class="hm rot"></table></div></div>
+    <div class="card" style="margin-top:18px"><h3>行业全表</h3><p class="sub">点表头排序 · 分位越高越贵或越拥挤 · 成交占比分位看近三年，PB、PE 分位看近十年</p><div class="scroll"><table id="sectab" class="yt sortable"></table></div></div>
+    <div class="card" style="margin-top:18px"><div class="tabs" id="cpt_tabs"><button class="on" data-k="top">持续上榜的题材</button><button data-k="bottom">近 5 日最弱</button></div>
+      <p class="sub">不看一天的涨幅榜，看题材能不能连续几天留在前 20</p><div class="scroll"><table id="cpt" class="hm"></table></div></div>
+  </section>
+  <section id="s5">
+    <div class="sh"><span class="no">07</span><h2>资金与风险</h2><p>杠杆、解禁、新股、宽基 ETF</p></div>
+    <div class="grid g3">
+      <div class="card"><h3>融资余额</h3><p class="sub">亿元，近三年</p><div class="chart" id="c_mbal"></div></div>
+      <div class="card"><h3>融资买入占成交额</h3><p class="sub">%，近三年 · 杠杆资金的活跃度</p><div class="chart" id="c_mratio"></div></div>
+      <div class="card"><h3>上交所宽基 ETF 累计净申购</h3><p class="sub">亿元，份额变化×最新价估算 · 相对首日</p><div class="chart" id="c_etf"></div></div>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card"><h3>解禁压力</h3><p class="sub" id="unl_sub"></p><div class="chart short" id="c_unlock"></div><div class="chips" id="unl_top" style="margin-top:8px"></div></div>
+      <div class="card"><h3>新股与股息</h3><p class="sub">打新还赚不赚钱、IPO 节奏、股息相对国债的吸引力</p><div class="stat num" id="ipo_stat" style="grid-template-columns:repeat(3,1fr)"></div><div class="scroll" style="margin-top:10px"><table id="ipo" class="yt"></table></div></div>
+    </div>
+    <details class="more"><summary>龙虎榜明细与行业资金</summary>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card"><h3>龙虎榜 · 净买入前列</h3><p class="sub" id="lhb_sub"></p><div class="scroll"><table id="lhb"></table></div></div>
+      <div class="card"><h3>龙虎榜 · 席位</h3><p class="sub" id="seat_sub"></p><div class="scroll"><table id="seats"></table></div>
+        <h3 style="margin-top:14px">行业资金（同花顺口径）</h3><div class="scroll"><table id="ths"></table></div></div>
+    </div>
+    </details>
+  </section>
   <section id="s4">
-    <div class="sh"><span class="no">04</span><h2>估值与利率</h2><p>股票相对债券贵不贵</p></div>
+    <div class="sh"><span class="no">08</span><h2>估值与利率</h2><p>股票相对债券贵不贵</p></div>
     <p class="lede">在低利率环境下，A 股最常用的长期锚是“股债利差”：沪深300 的盈利收益率（1/PE）减去 10 年国债收益率。利差越高，股票相对债券越便宜。</p>
     <div class="grid g32">
       <div class="card"><h3>股债利差</h3><p class="sub" id="ebs_sub"></p><div class="chart tall" id="c_ebs"></div></div>
@@ -276,38 +415,21 @@ section{scroll-margin-top:46px}
       <div class="card"><h3>破净股占比</h3><p class="sub">%，2005 年以来</p><div class="chart short" id="c_bn"></div></div>
     </div>
   </section>
-
-  <section id="s5">
-    <div class="sh"><span class="no">05</span><h2>资金</h2><p>杠杆、宽基 ETF 与龙虎榜</p></div>
-    <div class="grid g3">
-      <div class="card"><h3>融资余额</h3><p class="sub">亿元，近三年</p><div class="chart" id="c_mbal"></div></div>
-      <div class="card"><h3>融资买入占成交额</h3><p class="sub">%，近三年 · 杠杆资金的活跃度</p><div class="chart" id="c_mratio"></div></div>
-      <div class="card"><h3>上交所宽基 ETF 累计净申购</h3><p class="sub">亿元，份额变化×最新价估算 · 相对首日</p><div class="chart" id="c_etf"></div></div>
-    </div>
+  <section id="s_say">
+    <div class="sh"><span class="no">09</span><h2>这些说法灵不灵</h2><p>股民常说的话，拿 2016 年以来的数据逐条检验</p></div>
+    <p class="verdict" id="v_say"></p>
+    <div class="card"><div class="scroll"><table id="say" class="say"></table></div><p class="legend-note" id="say_note"></p></div>
     <div class="grid g2" style="margin-top:18px">
-      <div class="card"><h3>龙虎榜 · 净买入前列</h3><p class="sub" id="lhb_sub"></p><div class="scroll"><table id="lhb"></table></div></div>
-      <div class="card"><h3>龙虎榜 · 席位</h3><p class="sub" id="seat_sub"></p><div class="scroll"><table id="seats"></table></div>
-        <h3 style="margin-top:14px">行业资金（同花顺口径）</h3><div class="scroll"><table id="ths"></table></div></div>
+      <div class="card"><h3>历史上这个月</h3><p class="sub" id="sea_sub"></p><div class="chart short" id="c_season"></div></div>
+      <div class="card"><h3>环境分档的历史表现</h3><p class="sub">三项信号：站上 60 日线的股票占比、情绪温度、近 60 日买入者浮盈，各自高于中位算一分</p><div class="scroll"><table id="tier" class="yt"></table></div></div>
     </div>
-  </section>
-
-  <section id="s6">
-    <div class="sh"><span class="no">06</span><h2>行业与题材</h2><p id="ind_date"></p></div>
-    <div class="grid g32">
-      <div class="card"><h3>申万一级行业</h3><p class="sub">当日，总市值加权 · 悬停看行业内中位数、上涨占比与涨跌停</p><div class="chart" id="c_ind" style="height:640px"></div></div>
-      <div class="card"><div class="tabs" id="cpt_tabs"><button class="on" data-k="top">概念领涨</button><button data-k="bottom">概念领跌</button></div><div class="scroll"><table id="cpt"></table></div>
-        <div class="tabs" id="mv_tabs" style="margin-top:18px"><button class="on" data-k="big_gain">百亿以上涨幅</button><button data-k="big_lose">百亿以上跌幅</button><button data-k="amount">成交额</button><button data-k="gain">涨幅</button><button data-k="lose">跌幅</button></div><div class="scroll"><table id="movers"></table></div></div>
-    </div>
-  </section>
-
-  <section id="s7">
-    <div class="sh"><span class="no">07</span><h2>最像今天的交易日</h2><p>按情绪六项分位找最近邻</p></div>
+    <div class="subhead" id="s7"><h3>最像今天的交易日</h3><p>按情绪六项分位找最近邻</p></div>
     <p class="lede" id="sim_lede"></p>
     <div class="card scroll"><table id="sim"></table></div>
   </section>
 
   <section id="model_sec" hidden>
-    <div class="sh"><span class="no">08</span><h2>选股模型 · 回测验证</h2><p>先回测、再样本外检验，结果原样公开</p></div>
+    <div class="sh"><span class="no">10</span><h2>选股模型 · 回测验证</h2><p>先回测、再样本外检验，结果原样公开</p></div>
     <p class="lede" id="m_lede"></p>
     <div class="grid g4" id="m_cards"></div>
     <div class="grid g32" style="margin-top:18px">
@@ -339,6 +461,8 @@ section{scroll-margin-top:46px}
     <div>基准率：只统计已知分档之后的真实走势，样本按日重叠，独立样本数远小于表中 N；它描述过去，不保证未来。微盘 400 在个别缺截面的交易日用中证1000 当日涨跌代替，见数据健康。</div>
     <h3>数据来源</h3>
     <div>新浪财经（全市场截面、指数、板块）、东方财富（涨停/炸板/跌停池、龙虎榜、两融）、乐咕乐股（估值分位、股债利差、新高新低、破净）、上交所（ETF 份额）、同花顺（行业资金）。通过开源库 AKShare 获取，每个交易日北京时间 18:20 由 GitHub Actions 自动运行。</div>
+    <h3>更新节奏</h3>
+    <div>交易日 09:40–15:05 每 10 分钟一份盘中快照；15:40 收盘数据（行情、涨停、打法、行业、风格）；18:40 补齐龙虎榜、估值、利率；次日 08:40 补两融和 ETF 份额（这两项第二天早上才发布）。名单、持仓在实操页，15:50 左右更新。</div>
     <h3>数据健康</h3><div class="health" id="health"></div>
     <h3>声明</h3>
     <div>页面内容由程序按固定规则生成，用于复盘和学习，不构成投资建议。</div>
@@ -382,8 +506,9 @@ function texts() {
   const d = new Date(D.asof + 'T00:00:00+08:00');
   $('asof').textContent = D.asof + ' 周' + WD[d.getDay()];
   $('built').textContent = '生成于 ' + D.built + ' 北京时间';
-  const lag = (Date.now() - d.getTime()) / 864e5;
-  if (lag > 4) { $('stale').style.display = 'block'; $('stale').textContent = '数据停在 ' + D.asof + '，已超过 ' + Math.floor(lag) + ' 天没有更新，可能是自动采集失败。'; }
+  // 下一个交易日 16:30 以后还没有新数据，就明确提示，不让旧数据冒充今天
+  const bj = new Date(Date.now() + 8 * 36e5).toISOString(), nx = D.collect?.next;
+  if (nx && (bj.slice(0, 10) > nx || (bj.slice(0, 10) === nx && bj.slice(11, 16) >= '16:30'))) { $('stale').style.display = 'block'; $('stale').textContent = '数据停在 ' + D.asof + '，' + nx + ' 的收盘数据还没有进来，页面内容不是最新的。'; }
   $('tape').append(...[...D.indices, ...D.indices].map(r => h('span', null, h('b', null, r.name), fx(r.close, 2) + ' ', span(r.r1))));
 
   const t = T.temp;
@@ -458,7 +583,7 @@ function texts() {
   if (V.buffett) vr.push(['总市值 / GDP', V.buffett.value + '%', V.buffett.p10 + '%', V.buffett.date]);
   if (V.congestion) vr.push(['成交拥挤度', V.congestion.value + '%', (V.congestion.p_all ?? '—') + '%*', V.congestion.date]);
   if (D.bond) vr.push(['10 年国债', D.bond.cn10.toFixed(3) + '%', '一年 ' + (D.bond.cn10_1y > 0 ? '+' : '') + D.bond.cn10_1y + 'bp', D.bond.date]);
-  if (D.bond) vr.push(['30 年国债 / 美债10年', D.bond.cn30.toFixed(3) + '% / ' + D.bond.us10 + '%', '', D.bond.date]);
+  if (D.bond) vr.push(['30 年国债 / 美债10年', D.bond.cn30.toFixed(3) + '% / ' + (D.bond.us10 == null ? '—' : D.bond.us10 + '%'), '', D.bond.date]);
   $('valtab').append(h('thead', null, h('tr', null, h('th', null, '指标'), h('th', {class: 'r'}, '当前'), h('th', {class: 'r'}, '近十年分位'), h('th', {class: 'r'}, '日期'))),
     h('tbody', null, vr.map(r => h('tr', null, h('td', null, r[0]), h('td', {class: 'r num'}, r[1]), h('td', {class: 'r num'}, r[2]), h('td', {class: 'r num', style: 'color:var(--ink3)'}, r[3] && r[3].slice(0, 4) === D.asof.slice(0, 4) ? r[3].slice(5) : r[3])))));
   $('valtab').after(h('p', {class: 'legend-note'}, '* 为全历史分位。分位越高代表数值越大：股债利差、破净占比越高越便宜，PE、PB、总市值/GDP、拥挤度越高越贵。'));
@@ -483,12 +608,11 @@ function texts() {
 
   // 题材与个股
   $('ind_date').textContent = D.asof + ' · 申万一级为 2026-10 的成分映射，新股归入“未归类”不参与';
-  const cpt = (k) => { const t = $('cpt'); t.replaceChildren(h('thead', null, h('tr', null, h('th', null, '概念'), h('th', {class: 'r'}, '涨跌'), h('th', {class: 'r'}, '家数'), h('th', null, '领涨股'))),
-    h('tbody', null, (D.concepts?.[k] || []).map(r => h('tr', null, h('td', null, r.name), h('td', {class: 'r'}, span(r.pct)), h('td', {class: 'r num'}, r.n), h('td', null, r.leader + ' ', span(r.leader_pct)))))); };
-  const mv = (k) => { const t = $('movers'); t.replaceChildren(h('thead', null, h('tr', null, h('th', null, '股票'), h('th', null, '行业'), h('th', {class: 'r'}, '涨跌'), h('th', {class: 'r'}, '成交(亿)'))),
-    h('tbody', null, (D.movers?.[k] || []).map(r => h('tr', null, h('td', null, r.name), h('td', {style: 'color:var(--ink2)'}, r.sw1), h('td', {class: 'r'}, span(r.ret)), h('td', {class: 'r num'}, fx(r.amount, 1)))))); };
   const tabs = (id, fn) => { $(id).onclick = (e) => { const b = e.target.closest('button'); if (!b) return; [...$(id).children].forEach(x => x.classList.toggle('on', x === b)); fn(b.dataset.k); }; fn($(id).querySelector('.on').dataset.k); };
-  tabs('cpt_tabs', cpt); tabs('mv_tabs', mv);
+  window.tabs = tabs;
+  const cpt = (k) => { const C = D.concepts; if (!C) return; $('cpt').replaceChildren(h('thead', null, h('tr', null, h('th', null, '题材'), ...C.days.map(d => h('th', null, d.slice(5))), h('th', null, '5日累计'), h('th', null, '上榜天数'), h('th', null, '今日领涨'))),
+    h('tbody', null, (C[k] || []).map(r => h('tr', null, h('td', null, r.name), ...r.daily.map(v => h('td', {class: 'c', style: heatBg(v, 6)}, v == null ? '·' : v.toFixed(1))), h('td', {class: 'c ' + cls(r.cum)}, pct(r.cum, 1)), h('td', {class: 'c'}, r.days), h('td', {style: 'white-space:nowrap;text-align:left'}, r.leader + ' ', span(r.leader_pct)))))); };
+  tabs('cpt_tabs', cpt);
 
   // 相似交易日
   const S = D.sim_stats;
@@ -568,6 +692,160 @@ function texts() {
   if (D.style.filled_days?.length) $('health').append(h('div', null, '微盘 400 用中证1000 代替的日期：' + D.style.filled_days.join('、')));
 }
 
+// ---------------- 新增判断（每块独立容错，一块坏了不影响其他）
+const guard = (name, fn) => { try { fn(); } catch (e) { console.error('[render]', name, e); } };
+const X = D.x || {};
+function heatBg(v, scale) {
+  if (v == null) return 'color:var(--ink3)';
+  const a = Math.round(Math.min(Math.abs(v) / scale, 1) * 60);
+  return `background:color-mix(in srgb, var(--${v >= 0 ? 'up' : 'down'}) ${a}%, transparent)` + (a > 42 ? ';color:#fff' : '');
+}
+const num2 = (v, n = 2) => v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(n);
+const ps = (v) => v == null ? '—' : Math.round(v) + '%';
+function renderX() {
+  const V = X.v || {};
+  for (const [id, k] of [['v_play', 'play'], ['v_feel', 'feel'], ['v_style', 'style'], ['v_sector', 'sector'], ['v_say', 'say']]) if ($(id) && V[k]) $(id).textContent = V[k];
+  guard('四问', () => { if (X.four) $('four').append(...X.four.map(r => h('a', {href: '#' + r.to, style: '--tone:var(--' + (r.tone === 'amber' ? 'amber' : r.tone) + ')'}, h('small', null, r.q), h('b', null, r.a), h('p', null, r.text)))); });
+  guard('打法', () => {
+    const P = X.plays; if (!P) return;
+    $('plays').append(h('thead', null, h('tr', null, ...['打法', '今天开盘买·浮盈', '近5日·日均', '近20日·日均', '20日胜率', '十年日均', '十年胜率', '20日表现分位', '近 20 天逐日'].map(x => h('th', null, x)))),
+      h('tbody', null, P.rows.map(r => h('tr', r.key === 'all' ? {style: 'background:var(--panel2)'} : null, h('td', null, r.name, h('small', null, r.def)),
+        h('td', null, span(r.q, num2(r.q))), h('td', null, span(r.d5, num2(r.d5))), h('td', null, h('b', {class: 'num ' + cls(r.d20)}, num2(r.d20))), h('td', {class: 'num'}, ps(r.win20)),
+        h('td', null, span(r.avg, num2(r.avg))), h('td', {class: 'num'}, ps(r.win)), h('td', {class: 'num'}, ps(r.p20)),
+        h('td', null, h('span', {class: 'strip'}, (P.heat[r.key] || []).map((v, i) => h('i', {title: P.days[i] + ' ' + num2(v) + '%', style: v == null ? '' : `background:color-mix(in srgb, var(--${v >= 0 ? 'up' : 'down'}) ${Math.round(18 + Math.min(Math.abs(v) / 3, 1) * 82)}%, transparent)`}))))))));
+    const keep = P.rows.filter(r => (r.keep ?? 0) >= .15 && r.key !== 'all').map(r => r.name + ' ' + r.keep.toFixed(2));
+    $('play_note').textContent = '算法：信号日收盘选股 → 第二天开盘买入（开盘就涨停买不进）→ 第三天开盘卖出（A 股 T+1，当天买的不能当天卖）→ 扣 0.2% 成本。逐日格子里红为赚、绿为亏。“今天开盘买·浮盈”还没扣成本，也还不能卖。'
+      + (keep.length ? ' 用十年数据检验，20 日好坏能延续到下一个 20 日的只有：' + keep.join('、') + '（秩相关，其余基本不延续）。这张表说明最近发生了什么，不是下一步的预测。' : '');
+  });
+  guard('晋级率', () => {
+    if (!X.funnel) return;
+    $('funnel').append(h('thead', null, h('tr', null, ...['', '今天', '今天样本', '近 20 日', '近一年', '2016 年以来'].map(x => h('th', null, x)))),
+      h('tbody', null, X.funnel.map(r => h('tr', null, h('td', null, r.label), h('td', {class: 'c'}, h('b', null, r.today == null ? '—' : r.today + '%')), h('td', {class: 'c', style: 'color:var(--ink3)'}, r.n == null ? '—' : r.n + ' 只'), ...[r.m20, r.y1, r.all].map(v => h('td', {class: 'c'}, v == null ? '—' : v + '%'))))));
+  });
+  guard('持仓卡片', () => {
+    const F = X.feel; if (!F) return;
+    const c = F.cards, one = (k, lab, fmt) => h('div', null, h('span', null, lab), h('b', {class: 'num'}, fmt(c[k].v)), h('em', null, '历史 ' + ps(c[k].p) + ' 分位'));
+    const sg = (v) => v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(1) + '%', pl = (v) => v == null ? '—' : v.toFixed(0) + '%';
+    $('feel_cards').append(one('pl60', '近 60 日买入者中位浮盈', sg), one('plw60', '现价高于 60 日成本的股票', pl), one('ma250', '站上年线的股票', pl), one('dd250', '距一年高点中位回撤', sg), one('ytd_win', '今年赚钱的股票', pl), one('open_win', '今天开盘买入胜率', pl));
+    $('feel_sub').textContent = '按近 60 日买入者浮盈的历史分位分档，现在处于 ' + ps(c.pl60.p) + ' 分位。看之后中证1000 的中位收益和上涨概率';
+    const cell = (x) => x ? [span(x.med, pct(x.med, 1)), h('div', {class: 'num', style: 'color:var(--ink3);font-size:11px'}, '涨 ' + x.win + '% · N=' + x.n)] : '—';
+    $('feel_rate').append(h('thead', null, h('tr', null, h('th', null, '分位档'), h('th', null, '之后 5 日'), h('th', null, '之后 20 日'))),
+      h('tbody', null, F.buckets.map(r => h('tr', r.now ? {style: 'background:var(--amberbg)'} : null, h('td', null, r.label + (r.now ? ' ◀ 现在' : '')), h('td', null, cell(r.k5)), h('td', null, cell(r.k20))))),
+      h('tfoot', null, h('tr', null, h('td', null, '全部交易日'), h('td', null, cell(F.all.k5)), h('td', null, cell(F.all.k20)))));
+    const E = F.extra || {};
+    if (E.ytd) {
+      const q = E.ytd.q, beat = (v) => { let i = q.findIndex(x => x >= v); return i < 0 ? 0 : 100 - i; };
+      const ix = (n) => D.indices.find(r => r.name === n)?.ytd;
+      $('ytd_sub').textContent = '个股年内涨跌分布，中位数 ' + pct(q[50], 1) + (ix('上证指数') != null ? ' · 跑赢上证（' + pct(ix('上证指数'), 1) + '）的占 ' + beat(ix('上证指数')) + '%' : '') + (ix('沪深300') != null ? ' · 跑赢沪深300 的占 ' + beat(ix('沪深300')) + '%' : '');
+    }
+    if (E.dd) $('dd_sub').textContent = '个股较近一年最高价的回撤分布，共 ' + E.dd.n + ' 只。回撤 50% 意味着要涨 100% 才回本';
+  });
+  guard('风格矩阵', () => {
+    const G = X.grid; if (!G) return;
+    const draw = (k) => { const scale = k === 'd1' ? 4 : k === 'd5' ? 8 : 16;
+      $('grid').replaceChildren(h('thead', null, h('tr', null, h('th', null, '市值 \\ 估值'), ...G.values.map(v => h('th', null, v)))),
+        h('tbody', null, G.sizes.map((s, i) => h('tr', null, h('td', null, s), ...G[k][i].map(v => h('td', {class: 'c', style: heatBg(v, scale)}, v == null ? '·' : num2(v, 1))))))); };
+    tabs('grid_tabs', draw);
+  });
+  guard('风格因子', () => {
+    const F = X.factors; if (!F) return;
+    $('ftab').append(h('thead', null, h('tr', null, ...['风格', '今天', '5日', '20日', '60日', '今年', '20日分位', '长期年化'].map(x => h('th', null, x)))),
+      h('tbody', null, F.rows.map(r => h('tr', null, h('td', null, r.name), ...[[r.d1, 2], [r.d5, 1], [r.d20, 1], [r.d60, 1], [r.ytd, 1]].map(([v, n]) => h('td', {class: 'c ' + cls(v)}, num2(v, n))), h('td', {class: 'c'}, ps(r.p20)), h('td', {class: 'c'}, num2(r.ann, 0))))));
+  });
+  guard('行业', () => {
+    const S = X.sectors; if (!S) return;
+    $('ind_date').textContent = S.date + ' · 申万一级，2026-10 的成分映射';
+    $('quad').append(h('thead', null, h('tr', null, h('th', null, '象限'), h('th', null, '相对全市场中位'), h('th', null, '跑赢概率'), h('th', null, 'N'))),
+      h('tbody', null, Object.entries(S.quad).map(([k, r]) => h('tr', null, h('td', null, k), h('td', {class: 'c ' + cls(r.med)}, pct(r.med)), h('td', {class: 'c'}, ps(r.win)), h('td', {class: 'c', style: 'color:var(--ink3)'}, r.n)))));
+    $('hot_note').textContent = '成交占比冲到自身近三年前 10% 的行业，之后 20 日相对全市场中位 ' + pct(S.hot.med) + '、跑赢概率 ' + S.hot.win + '%；其余情况是 ' + pct(S.hot.rest_med) + ' / ' + S.hot.rest_win + '%。汇总时行业收益是市值加权，全市场也是，中位数偏负属正常。';
+    $('rot_sub').textContent = '市值加权涨跌（%），按近 20 日超额排序。本周行业排名和上周的相关 ' + (S.speed.now == null ? '—' : S.speed.now.toFixed(2)) + '，越低轮动越快（近一年 ' + ps(S.speed.p) + ' 分位）';
+    $('rot').append(h('thead', null, h('tr', null, h('th', null, '行业'), ...S.days.map(d => h('th', null, d.slice(5))), h('th', null, '20日超额'))),
+      h('tbody', null, S.rows.map(r => h('tr', null, h('td', null, r.name), ...(S.heat[r.name] || []).map(v => h('td', {class: 'c', style: heatBg(v, 5)}, v == null ? '·' : v.toFixed(1))), h('td', {class: 'c ' + cls(r.rs20)}, num2(r.rs20, 1))))));
+    const cols = [['name', '行业'], ['r1', '今日'], ['r5', '5日'], ['r20', '20日'], ['r60', '60日'], ['rs20', '20日超额'], ['amt', '成交占比'], ['amt_p', '占比分位'], ['pb', 'PB'], ['pb_p', 'PB分位'], ['pe', 'PE'], ['pe_p', 'PE分位'], ['up', '上涨%'], ['zt', '涨停']];
+    let sk = 'rs20', sd = -1;
+    const tb = () => { const rows = [...S.rows].sort((a, b) => sk === 'name' ? a.name.localeCompare(b.name, 'zh') * sd : ((a[sk] ?? -1e9) - (b[sk] ?? -1e9)) * sd);
+      $('sectab').replaceChildren(h('thead', null, h('tr', null, cols.map(([k, t]) => { const th = h('th', null, t + (k === sk ? (sd < 0 ? ' ↓' : ' ↑') : '')); th.onclick = () => { if (sk === k) sd = -sd; else { sk = k; sd = -1; } tb(); }; return th; }))),
+        h('tbody', null, rows.map(r => h('tr', null, h('td', null, r.name), ...['r1', 'r5', 'r20', 'r60', 'rs20'].map(k => h('td', {class: 'c ' + cls(r[k])}, num2(r[k], k === 'r1' ? 2 : 1))),
+          h('td', {class: 'c'}, r.amt == null ? '—' : r.amt + '%'), h('td', {class: 'c', style: (r.amt_p ?? 0) >= 90 ? 'color:var(--amber);font-weight:600' : ''}, ps(r.amt_p)), h('td', {class: 'c'}, r.pb ?? '—'), h('td', {class: 'c'}, ps(r.pb_p)),
+          h('td', {class: 'c'}, r.pe ?? '—'), h('td', {class: 'c'}, ps(r.pe_p)), h('td', {class: 'c'}, r.up ?? '—'), h('td', {class: 'c'}, r.zt ?? '—'))))); };
+    tb();
+  });
+  guard('财报', () => {
+    const E = X.earnings; if (!E) { $('earn_sub').textContent = '财报数据暂未取到'; return; }
+    const per = E.period.slice(0, 4) + ' 年' + ({'0331': '一季报', '0630': '半年报', '0930': '三季报', '1231': '年报'}[E.period.slice(4)] || '');
+    $('earn_sub').textContent = per + ' · 已披露 ' + E.n + ' 家 · 净利同比中位 ' + pct(E.yoy, 1) + ' · 增长的占 ' + E.pos + '% · 下滑超 50% 的占 ' + E.crash + '% · 亏损 ' + E.loss + '%';
+    const top = E.rows.filter(r => r.r60 != null), good = [...top].sort((a, b) => (a.rs60 ?? 0) - (b.rs60 ?? 0)).filter(r => (r.yoy ?? -99) > (E.yoy ?? 0)).slice(0, 4), bad = [...top].sort((a, b) => (b.rs60 ?? 0) - (a.rs60 ?? 0)).filter(r => (r.yoy ?? 99) < (E.yoy ?? 0)).slice(0, 4);
+    const row = (t) => (r) => h('tr', null, h('td', null, r.name), h('td', {class: 'c ' + cls(r.yoy)}, pct(r.yoy, 1)), h('td', {class: 'c'}, ps(r.pos)), h('td', {class: 'c ' + cls(r.rs60)}, num2(r.rs60, 1)), h('td', {style: 'color:var(--ink3);font-size:12px;text-align:left'}, t));
+    $('earn').append(h('thead', null, h('tr', null, ...['行业', '净利同比中位', '增长占比', '60日超额', ''].map(x => h('th', null, x)))), h('tbody', null, good.map(row('业绩好、没涨')), bad.map(row('业绩差、还在涨'))));
+    if (E.holders) $('holder_note').textContent = '股东户数（' + E.holders.period.slice(4, 6) + '-' + E.holders.period.slice(6) + ' 截止，' + E.holders.n + ' 家已披露）：环比中位 ' + pct(E.holders.med, 1) + '，' + E.holders.up + '% 的公司户数在增加。户数减少最多（筹码在集中）：' + E.holders.less.slice(0, 3).map(x => x.name).join('、') + '；增加最多（散户在进）：' + E.holders.more.slice(0, 3).map(x => x.name).join('、') + '。';
+  });
+  guard('解禁', () => {
+    const U = X.unlock; if (!U) { $('unl_sub').textContent = '解禁数据暂未取到'; return; }
+    $('unl_sub').textContent = '未来每周解禁市值（亿元）· 未来 30 天 ' + fx(U.next30) + ' 亿，处在近三年 ' + ps(U.next30_p) + ' 分位，近三年 30 天中位 ' + fx(U.avg30) + ' 亿';
+    if (U.top) $('unl_top').append(...U.top.map(r => h('span', {class: 'chip'}, r.sw1, h('small', null, fx(r.mv_yi) + ' 亿 / ' + r.n + ' 家'))));
+  });
+  guard('新股', () => {
+    const I = X.ipo, D2 = X.dividend;
+    if (I) {
+      const L = I.last20;
+      $('ipo_stat').append(...[['近 ' + L.n + ' 只新股首日涨幅中位', L.gain == null ? '—' : pct(L.gain, 0)], ['其中首日破发', L.broken + ' 只'], ['每中一签中位获利', L.prize == null ? '—' : fx(L.prize) + ' 元']].map(([a, b]) => h('div', null, h('span', null, a), h('b', null, b))));
+      $('ipo').append(h('thead', null, h('tr', null, ...['月份', '上市家数', '募资(亿)', '首日涨幅中位'].map(x => h('th', null, x)))), h('tbody', null, I.months.slice(-6).reverse().map(r => h('tr', null, h('td', null, r.m), h('td', {class: 'c'}, r.n), h('td', {class: 'c'}, fx(r.raise)), h('td', {class: 'c ' + cls(r.gain)}, pct(r.gain, 0))))));
+    }
+    if (D2) $('ipo').after(h('p', {class: 'legend-note'}, '上证 A 股股息率 ' + D2.v + '%（2005 年以来 ' + ps(D2.p) + ' 分位，' + D2.date + '）' + (D2.gap == null ? '' : '，比 10 年国债 ' + (D2.gap >= 0 ? '高 ' : '低 ') + Math.abs(D2.gap).toFixed(2) + ' 个百分点') + '。'));
+  });
+  guard('说法', () => {
+    const Y = X.sayings; if (!Y) return;
+    const VC = {'灵': 'var(--up)', '短期灵': 'var(--up)', '反着来': 'var(--s2)', '短期反着来': 'var(--s2)', '分不清': 'var(--ink3)', '样本太少': 'var(--ink3)'};
+    const c = (x) => x && x.med != null ? [span(x.med, pct(x.med, 1)), h('div', {class: 'num', style: 'color:var(--ink3);font-size:11px'}, '涨 ' + x.win + '%')] : '—';
+    $('say').append(h('thead', null, h('tr', null, ...['说法', '结论', '之后 5 日', '之后 20 日', '样本', '最近一次'].map(x => h('th', null, x)))),
+      h('tbody', null, Y.rows.map(r => h('tr', r.today ? {style: 'background:var(--amberbg)'} : null, h('td', null, r.name, r.today ? h('span', {class: 'vchip flag'}, '今天触发') : r.recent ? h('span', {class: 'vchip flag'}, '近 5 日') : null, h('small', null, r.rule)),
+        h('td', null, h('span', {class: 'vchip', style: 'color:' + VC[r.verdict]}, r.verdict)), h('td', null, c(r.k5)), h('td', null, c(r.k20)), h('td', {class: 'num'}, r.k20.n ?? '—'), h('td', {class: 'num', style: 'color:var(--ink3)'}, r.last ? r.last.slice(2) : '—')))));
+    const b = Y.rows.find(r => r.k20.base != null)?.k20;
+    $('say_note').textContent = '都看中证1000，全部交易日的基准：之后 20 日中位 ' + (b ? pct(b.base, 1) + '，上涨概率 ' + b.base_win + '%' : '—') + '。同一波行情只算第一天（间隔不足 10 个交易日不重复计）。“灵”和“反着来”指相对基准的差异通过了随机抽样检验（p < 0.1），16 条同时测，偶然冒出一两条很正常；样本期只有 2016 年以来的十年多。';
+  });
+  guard('历史同期', () => {
+    const SS = X.season?.['中证1000']; if (!SS) return;
+    const M = +D.asof.slice(5, 7), r = SS.find(x => x.m === M);
+    $('sea_sub').textContent = '中证1000 各月涨跌中位数（%），2014 年以来。' + M + ' 月中位 ' + pct(r.med, 1) + '，上涨 ' + r.win + '%（' + r.n + ' 年）。只有十来年样本，只当背景看';
+  });
+  guard('环境分档', () => {
+    const T = X.tiers; if (!T) return;
+    const cell = (x) => x ? [span(x.med, pct(x.med, 1)), h('div', {class: 'num', style: 'color:var(--ink3);font-size:11px'}, '涨 ' + x.win + '% · N=' + x.n)] : '—';
+    $('tier').append(h('thead', null, h('tr', null, h('th', null, '档位'), h('th', null, '之后 5 日'), h('th', null, '之后 20 日'))),
+      h('tbody', null, T.rows.map(r => h('tr', r.score === T.now ? {style: 'background:var(--amberbg)'} : null, h('td', null, r.label + (r.score === T.now ? ' ◀ 现在' : '')), h('td', null, cell(r.k5)), h('td', null, cell(r.k20))))),
+      h('tfoot', null, h('tr', null, h('td', null, '全部交易日'), h('td', null, cell(T.all.k5)), h('td', null, cell(T.all.k20)))));
+  });
+  if (X.errors?.length) $('health').append(...X.errors.map(e => h('div', null, h('span', {class: 'bad'}, '✕ '), '判断块 ' + e.block + ' — ' + e.err)));
+}
+
+// ---------------- 盘中：每 10 分钟一份 live.json，收盘数据进来后自动隐藏
+let liveDrawn = null;
+async function loadLive() {
+  try {
+    const r = await fetch('live.json?t=' + Math.floor(Date.now() / 12e4), {cache: 'no-store'});
+    if (!r.ok) return;
+    const L = await r.json();
+    const today = new Date(Date.now() + 8 * 36e5).toISOString().slice(0, 10);
+    if (L.date !== today || D.asof >= L.date) return;
+    const P = L.series[L.series.length - 1];
+    $('live').hidden = false;
+    $('live_at').textContent = '数据时间 ' + L.at + ' · 每 10 分钟更新 · 尚未收盘，下面的统计都会变';
+    const cmp = L.amount_vs == null ? '' : '较昨日同刻 ' + (L.amount_vs > 0 ? '+' : '') + L.amount_vs + '%';
+    $('live_stat').replaceChildren(...[['上涨 / 下跌', P.up + ' / ' + P.down, '个股中位 ' + pct(P.med)], ['涨停 / 跌停', P.zt + ' / ' + P.dt, '炸板 ' + P.zb], ['开盘买入胜率', P.open_win + '%', '收盘价高于开盘价的股票'], ['成交额', fx(P.amount / 1e4, 2) + ' 万亿', cmp]].map(([a, b, c]) => h('div', null, h('span', null, a), h('b', null, b), h('em', null, c))));
+    $('live_plays').replaceChildren(...L.plays.map(r => h('div', {class: 'pbar', style: 'grid-template-columns:96px 1fr 64px'}, h('span', null, r.name), h('div', {class: 'tr'}, h('i', {style: `left:${r.v >= 0 ? 50 : 50 + Math.max(r.v * 8, -50)}%;width:${Math.min(Math.abs(r.v) * 8, 50)}%;background:var(--${r.v >= 0 ? 'up' : 'down'})`})), h('small', null, pct(r.v)))));
+    $('live_sec').replaceChildren(...L.sectors.map(r => h('span', {class: 'chip'}, r.name + ' ', span(r.ret), h('small', null, '上涨 ' + r.up + '%'))));
+    if (L.indices?.length) $('tape').replaceChildren(...[...L.indices, ...L.indices].map(r => h('span', null, h('b', null, r.name), fx(r.close, 2) + ' ', span(r.ret))));
+    liveDrawn = L; drawLive();
+    setTimeout(loadLive, 12e4);
+  } catch (e) { console.warn('live', e); }
+}
+function drawLive() {
+  const L = liveDrawn; if (!L) return;
+  const t = L.series.map(x => x.t), up = css('--up'), down = css('--down'), ink3 = css('--ink3');
+  mk('c_live_up', {zoom: false, xAxis: {data: t, axisLabel: {formatter: (v) => v}}, yAxis: {min: 0, max: 100, scale: false}, series: [line('上涨占比', L.series.map(x => x.up_ratio), css('--s3'), 2, {markLine: {silent: true, symbol: 'none', label: {show: false}, lineStyle: {color: ink3, type: 'dashed'}, data: [{yAxis: 50}]}})]});
+  mk('c_live_lim', {zoom: false, xAxis: {data: t, axisLabel: {formatter: (v) => v}}, legend: {top: 0, right: 0, itemWidth: 14, itemHeight: 3, textStyle: {color: ink3, fontSize: 11}, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z'}, grid: {top: 26}, yAxis: {min: 0}, series: [line('涨停', L.series.map(x => x.zt), up, 2), line('炸板', L.series.map(x => x.zb), css('--s3'), 1.6), line('跌停', L.series.map(x => x.dt), down, 2)]});
+}
+
 // ---------------- 图表
 const charts = [];
 function base() {
@@ -575,49 +853,118 @@ function base() {
   return {
     animationDuration: 500, textStyle: {fontFamily: css('--cjk'), color: ink2},
     grid: {left: 44, right: 14, top: 18, bottom: 26, containLabel: false},
-    tooltip: {trigger: 'axis', backgroundColor: css('--panel'), borderColor: css('--line2'), textStyle: {color: css('--ink'), fontSize: 12}, axisPointer: {type: 'line', lineStyle: {color: ink3}}},
-    xAxis: {type: 'category', boundaryGap: false, axisLine: {lineStyle: {color: line}}, axisTick: {show: false}, axisLabel: {color: ink3, fontSize: 11, hideOverlap: true, formatter: (v) => String(v).slice(0, 7)}},
+    tooltip: {trigger: 'axis', confine: true, backgroundColor: css('--panel'), borderColor: css('--line2'), textStyle: {color: css('--ink'), fontSize: 12}, axisPointer: {type: 'line', lineStyle: {color: ink3}}},
+    xAxis: {type: 'category', boundaryGap: false, axisLine: {lineStyle: {color: line}}, axisTick: {show: false}, axisLabel: {color: ink3, fontSize: 11, hideOverlap: true}},
     yAxis: {type: 'value', scale: true, splitLine: {lineStyle: {color: line}}, axisLabel: {color: ink3, fontSize: 11}},
   };
 }
+const COARSE = matchMedia('(pointer: coarse)').matches;
+const OPTS = {};
+const dd = (x) => Date.parse(x);
+// 日期轴：看全历史标年、看一两年标月、看几个月标日
+function dateAxis(d, narrow) {
+  const st = {i0: 0, i1: d.length - 1};
+  const mode = () => { const days = (dd(d[st.i1]) - dd(d[st.i0])) / 864e5; return days > 1100 ? 'Y' : days > (narrow ? 200 : 400) ? 'Q' : days > (narrow ? 80 : 160) ? 'M' : 'D'; };
+  return {st, mode, label: {hideOverlap: true, formatter: (v) => { const m = mode(); return m === 'Y' ? v.slice(0, 4) : m === 'D' ? v.slice(5) : v.slice(0, 7); },
+    interval: (i, v) => { const m = mode(); if (i === 0) return m === 'D'; const p = d[i - 1];
+      if (m === 'Y') return p.slice(0, 4) !== v.slice(0, 4);
+      if (m === 'Q') return p.slice(0, 7) !== v.slice(0, 7) && ['01', '04', '07', '10'].includes(v.slice(5, 7));
+      if (m === 'M') return p.slice(0, 7) !== v.slice(0, 7);
+      return (i - st.i0) % Math.max(1, Math.ceil((st.i1 - st.i0) / (narrow ? 4 : 6))) === 0; }}};
+}
+function compose(opt, full) {
+  const b = base(), {view, zoom, rebase, ...rest} = opt;
+  const o = {...b, ...rest, grid: {...b.grid, ...(rest.grid || {})}, xAxis: {...b.xAxis, ...(rest.xAxis || {})}, yAxis: Array.isArray(rest.yAxis) ? rest.yAxis : {...b.yAxis, ...(rest.yAxis || {})}, tooltip: {...b.tooltip, ...(rest.tooltip || {})}};
+  const d = rest.xAxis?.data, isT = Array.isArray(d) && d.length >= 40 && zoom !== false && /^\d{4}-/.test(String(d[0]));
+  if (!isT) return {o};
+  const n = d.length, start = Math.max(0, n - (view || n)), ax = dateAxis(d, !full && innerWidth < 720);
+  ax.st.i0 = start;
+  o.xAxis = {...o.xAxis, axisLabel: {...o.xAxis.axisLabel, ...ax.label}};
+  o.grid = {...o.grid, bottom: (o.grid.bottom ?? 26) + 22};
+  o.dataZoom = [{type: 'slider', xAxisIndex: 0, startValue: start, endValue: n - 1, height: 14, bottom: 3, showDetail: false, brushSelect: false, showDataShadow: false, borderColor: css('--line'), backgroundColor: 'transparent', fillerColor: css('--amberbg'), moveHandleSize: 0, handleSize: '130%', handleStyle: {color: css('--ink3'), borderColor: css('--ink3')}}];
+  if (full || !COARSE) o.dataZoom.push({type: 'inside', xAxisIndex: 0, startValue: start, endValue: n - 1, zoomOnMouseWheel: full ? true : 'ctrl', moveOnMouseWheel: false, moveOnMouseMove: true, preventDefaultMouseMove: !!full});
+  if (rebase) o.series = o.series.map(x => ({...x, data: x.data.map(v => v == null || x.data[start] == null ? null : +(v - x.data[start]).toFixed(2))}));
+  return {o, ax};
+}
+function bindAxis(c, ax, opt) {
+  if (!ax) return;
+  c.on('datazoom', () => { const z = c.getOption().dataZoom?.[0]; if (!z) return; const before = ax.mode(); ax.st.i0 = z.startValue; ax.st.i1 = z.endValue;
+    const up = {};
+    if (ax.mode() !== before || ax.mode() === 'D') up.xAxis = {axisLabel: ax.label};
+    if (opt?.rebase) up.series = opt.series.map(x => ({data: x.data.map(v => v == null || x.data[z.startValue] == null ? null : +(v - x.data[z.startValue]).toFixed(2))}));
+    if (Object.keys(up).length) c.setOption(up); });
+}
+function tools(id, c, opt) {
+  const el = $(id);
+  let wrap = el.parentNode;
+  if (!wrap.classList.contains('cw')) { const w = h('div', {class: 'cw'}); wrap.insertBefore(w, el); w.append(el); wrap = w; }
+  wrap.querySelector('.ctools')?.remove();
+  const bar = h('div', {class: 'ctools'}), d = opt.xAxis?.data;
+  const btn = (t, fn) => { const b = h('button', {type: 'button'}, t); b.onclick = fn; return b; };
+  if (Array.isArray(d) && d.length >= 40 && opt.zoom !== false && /^\d{4}-/.test(String(d[0]))) {
+    for (const [t, n] of [['3月', 62], ['1年', 245], ['3年', 735], ['全部', 0]]) {
+      if (n && d.length <= n) continue;
+      bar.append(btn(t, () => c.dispatchAction({type: 'dataZoom', startValue: n ? d.length - n : 0, endValue: d.length - 1})));
+    }
+  }
+  bar.append(btn('⤢ 放大', () => openFull(id)));
+  wrap.prepend(bar);
+}
+function openFull(id) {
+  const title = $(id).closest('.card')?.querySelector('h3')?.textContent || '';
+  const body = h('div', {class: 'fsc'}), close = h('button', {class: 'tbtn', type: 'button'}, '关闭');
+  const ov = h('div', {class: 'fsv'}, h('header', null, h('div', null, title, h('small', null, COARSE ? '双指缩放，单指左右拖动；横屏看更清楚' : '滚轮缩放，按住拖动')), close), body);
+  document.body.append(ov);
+  const y = scrollY; document.documentElement.style.overflow = 'hidden';
+  const c = echarts.init(body, null, {renderer: 'canvas'}), {o, ax} = compose(OPTS[id], true);
+  c.setOption(o); bindAxis(c, ax, OPTS[id]);
+  const rs = () => c.resize(); addEventListener('resize', rs);
+  const shut = () => { removeEventListener('resize', rs); removeEventListener('keydown', esc); c.dispose(); ov.remove(); document.documentElement.style.overflow = ''; scrollTo(0, y); };
+  const esc = (e) => { if (e.key === 'Escape') shut(); };
+  close.onclick = shut; addEventListener('keydown', esc);
+}
 function mk(id, opt) {
   const el = $(id); if (!el) return;
-  let c = echarts.getInstanceByDom(el); if (c) c.dispose();
-  c = echarts.init(el, null, {renderer: 'canvas'});
-  const b = base();
-  c.setOption({...b, ...opt, grid: {...b.grid, ...(opt.grid || {})}, xAxis: {...b.xAxis, ...(opt.xAxis || {})}, yAxis: Array.isArray(opt.yAxis) ? opt.yAxis : {...b.yAxis, ...(opt.yAxis || {})},
-    tooltip: {...b.tooltip, ...(opt.tooltip || {})}});
-  charts.push(c);
+  try {
+    OPTS[id] = opt;
+    let c = echarts.getInstanceByDom(el); if (c) c.dispose();
+    c = echarts.init(el, null, {renderer: 'canvas'});
+    const {o, ax} = compose(opt, false);
+    c.setOption(o); bindAxis(c, ax, opt);
+    charts.push(c);
+    tools(id, c, opt);
+  } catch (e) { console.error('[chart]', id, e); }
 }
 const line = (name, data, color, w = 2, extra = {}) => ({type: 'line', name, data, showSymbol: false, smooth: false, lineStyle: {width: w, color}, itemStyle: {color}, connectNulls: true, ...extra});
 const ma = (a, n) => a.map((_, i) => { const s = a.slice(Math.max(0, i - n + 1), i + 1).filter(v => v != null); return s.length ? +(s.reduce((x, y) => x + y, 0) / s.length).toFixed(2) : null; });
 const lastN = (o, n) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, v.slice(-n)]));
 // 多年日期轴：只在每年第一个点标年份，避免同一年份重复出现
-const yearAxis = (d) => ({data: d, axisLabel: {formatter: (v) => v.slice(0, 4), interval: (i, v) => i > 0 && d[i - 1].slice(0, 4) !== v.slice(0, 4)}});
+const yearAxis = (d) => ({data: d});
 let mKind = 'ex';
 
 function drawCharts() {
   charts.splice(0).forEach(c => c.dispose());
   // 图表配色单独校验过（深浅两套都过色觉检查），不直接用界面强调色
   const up = css('--up'), down = css('--down'), amber = css('--s3'), cyan = css('--s2'), ink = css('--ink'), ink3 = css('--ink3'), s4 = css('--s4');
-  const S = D.sent_series, S1 = lastN(S, 250);
-  mk('c_temp', {xAxis: {data: S.d}, yAxis: {min: 0, max: 100, scale: false},
+  const S = D.sent_series, S1 = S;
+  const Y1 = 245, Y2 = 490;
+  mk('c_temp', {view: Y2, xAxis: {data: S.d}, yAxis: {min: 0, max: 100, scale: false},
     visualMap: {show: false, seriesIndex: 1, pieces: [{lte: 30, color: cyan}, {gt: 30, lt: 70, color: amber}, {gte: 70, color: up}]},
     series: [line('当日', S.temp, css('--line2'), 1),
       {type: 'line', name: '5日均', data: ma(S.temp, 5), showSymbol: false, lineStyle: {width: 2}, connectNulls: true,
        markLine: {silent: true, symbol: 'none', lineStyle: {color: ink3, type: 'dashed'}, label: {show: false}, data: [{yAxis: 20}, {yAxis: 80}]}}]});
-  const cap = (() => { const v = [...S.zt, ...S.dt].filter(x => x != null).sort((a, b) => a - b); return Math.ceil(v[Math.floor(v.length * .98)] * 1.3 / 50) * 50; })();
-  const over = S.dt.map((v, i) => [S.d[i], v]).filter(([, v]) => v > cap);
+  const cap = (() => { const v = [...S.zt.slice(-Y2), ...S.dt.slice(-Y2)].filter(x => x != null).sort((a, b) => a - b); return Math.ceil(v[Math.floor(v.length * .98)] * 1.3 / 50) * 50; })();
+  const over = S.dt.map((v, i) => [S.d[i], v]).slice(-Y2).filter(([, v]) => v > cap);
   $('limit_cap').textContent = over.length ? '右图纵轴截在 ' + cap + ' 家；超出的日子：' + over.map(([d, v]) => d + ' 跌停 ' + v + ' 家').join('、') : '';
-  mk('c_limit', {yAxis: {max: cap, min: 0, scale: false}, xAxis: {data: S.d}, legend: {top: 0, right: 0, itemWidth: 14, itemHeight: 3, textStyle: {color: ink3, fontSize: 11}, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z'}, grid: {top: 26},
+  mk('c_limit', {view: Y2, yAxis: {max: cap, min: 0, scale: false}, xAxis: {data: S.d}, legend: {top: 0, right: 0, itemWidth: 14, itemHeight: 3, textStyle: {color: ink3, fontSize: 11}, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z'}, grid: {top: 26},
     series: [line('涨停', S.zt, up, 1.2), line('跌停', S.dt, down, 1.2)]});
-  mk('c_prem', {xAxis: {data: S1.d}, series: [{type: 'bar', name: '溢价', data: S1.prem.map(v => ({value: v, itemStyle: {color: v >= 0 ? up : down}})), barWidth: '70%'}],
+  mk('c_prem', {view: Y1, xAxis: {data: S1.d}, series: [{type: 'bar', name: '溢价', data: S1.prem.map(v => ({value: v, itemStyle: {color: v >= 0 ? up : down}})), barWidth: '70%'}],
     yAxis: {axisLabel: {formatter: '{value}%'}}});
-  mk('c_promo', {xAxis: {data: S1.d}, series: [line('晋级率', S1.promo, ink3, 1, {}), line('10日均', ma(S1.promo, 10), amber, 2)], yAxis: {min: 0}});
-  mk('c_streak', {xAxis: {data: S1.d}, series: [{type: 'bar', name: '最高连板', data: S1.streak, itemStyle: {color: up}, barWidth: '60%'}], yAxis: {min: 0, minInterval: 1}});
-  mk('c_up', {xAxis: {data: S1.d}, yAxis: {min: 0, max: 100, scale: false},
+  mk('c_promo', {view: Y1, xAxis: {data: S1.d}, series: [line('晋级率', S1.promo, ink3, 1, {}), line('10日均', ma(S1.promo, 10), amber, 2)], yAxis: {min: 0}});
+  mk('c_streak', {view: Y1, xAxis: {data: S1.d}, series: [{type: 'bar', name: '最高连板', data: S1.streak, itemStyle: {color: up}, barWidth: '60%'}], yAxis: {min: 0, minInterval: 1}});
+  mk('c_up', {view: Y1, xAxis: {data: S1.d}, yAxis: {min: 0, max: 100, scale: false},
     series: [line('当日', S1.up, ink3, 1), line('10日均', ma(S1.up, 10), amber, 2, {markLine: {silent: true, symbol: 'none', lineStyle: {color: ink3, type: 'dashed'}, label: {show: false}, data: [{yAxis: 50}]}})]});
-  mk('c_amt', {xAxis: {data: S1.d}, series: [{type: 'bar', name: '成交额', data: S1.amount, itemStyle: {color: cyan}, barWidth: '70%'}, line('20日均', ma(S1.amount, 20), amber, 2)]});
+  mk('c_amt', {view: Y1, xAxis: {data: S1.d}, series: [{type: 'bar', name: '成交额', data: S1.amount, itemStyle: {color: cyan}, barWidth: '70%'}, line('20日均', ma(S1.amount, 20), amber, 2)]});
   if (D.breadth) {
     const B = D.breadth.series;
     mk('c_hl', {xAxis: {data: B.d}, legend: {top: 0, right: 0, itemWidth: 10, itemHeight: 10, textStyle: {color: ink3, fontSize: 11}}, grid: {top: 26},
@@ -642,8 +989,8 @@ function drawCharts() {
     series: [line('破净占比', V.below_net.series.v, s4, 1.6, {areaStyle: {color: s4, opacity: .12}})]});
   const M = D.leverage;
   if (M) {
-    mk('c_mbal', {xAxis: {data: M.series.d}, series: [line('融资余额', M.series.bal, amber, 1.8)]});
-    mk('c_mratio', {xAxis: {data: M.series.d}, yAxis: {axisLabel: {formatter: '{value}%'}}, series: [line('当日', M.series.ratio, ink3, 1), line('20日均', ma(M.series.ratio, 20), amber, 2)]});
+    mk('c_mbal', {view: 490, xAxis: {data: M.series.d}, series: [line('融资余额', M.series.bal, amber, 1.8)]});
+    mk('c_mratio', {view: 490, xAxis: {data: M.series.d}, yAxis: {axisLabel: {formatter: '{value}%'}}, series: [line('当日', M.series.ratio, ink3, 1), line('20日均', ma(M.series.ratio, 20), amber, 2)]});
   }
   const ET = D.etf;
   if (ET) {
@@ -659,15 +1006,49 @@ function drawCharts() {
         line('股票池等权', MC.ew, cyan, 1.6), line('中证1000', MC.csi1000, css('--line2'), 1.2)]});
   }
   drawModels();
-  if (D.industries) {
-    const I = [...D.industries].reverse();
-    const ext = Math.max(...I.map(r => Math.abs(r.ret ?? 0))) * 1.3;
-    mk('c_ind', {grid: {left: 76, right: 58, top: 6, bottom: 20}, xAxis: {type: 'value', min: -ext, max: ext, boundaryGap: [0, 0], axisLabel: {formatter: '{value}%', color: ink3}, splitLine: {lineStyle: {color: css('--line')}}},
-      yAxis: {type: 'category', data: I.map(r => r.name), axisLabel: {color: css('--ink2'), fontSize: 12}, axisTick: {show: false}, axisLine: {show: false}},
-      tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}, formatter: (ps) => { const r = I[ps[0].dataIndex]; return `${r.name}<br>加权 ${pct(r.ret)} · 中位数 ${pct(r.med)}<br>上涨 ${r.up}% · 涨停 ${r.zt} · 跌停 ${r.dt}<br>成交占比 ${r.amt_share}% · PE中位数 ${r.pe_med ?? '—'}`; }},
-      series: [{type: 'bar', data: I.map(r => ({value: r.ret, itemStyle: {color: r.ret >= 0 ? up : down}, label: {position: r.ret >= 0 ? 'right' : 'left'}})), barWidth: '62%',
-        label: {show: true, formatter: (p) => pct(p.value), color: css('--ink2'), fontSize: 11, fontFamily: css('--mono')}}]});
-  }
+  guard('新图', () => {
+    const F = X.feel;
+    if (F) {
+      const A = F.series, lg = {top: 0, left: 0, itemWidth: 16, itemHeight: 3, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z', textStyle: {color: css('--ink2'), fontSize: 12}};
+      const zero = {markLine: {silent: true, symbol: 'none', label: {show: false}, lineStyle: {color: ink3, type: 'dashed'}, data: [{yAxis: 0}]}};
+      mk('c_cost', {view: 490, xAxis: {data: A.d}, legend: lg, grid: {top: 28}, yAxis: {axisLabel: {formatter: '{value}%'}}, tooltip: {valueFormatter: (v) => v == null ? '—' : v + '%'},
+        series: [line('近20日买入', A.pl20, ink3, 1), line('近60日买入', A.pl60, amber, 2.2, zero), line('近250日买入', A.pl250, cyan, 1.8)]});
+      mk('c_ma', {view: 490, xAxis: {data: A.d}, legend: lg, grid: {top: 28}, yAxis: {min: 0, max: 100, scale: false},
+        series: [line('20日线', A.ma20, ink3, 1), line('60日线', A.ma60, amber, 2), line('年线', A.ma250, cyan, 1.8)]});
+      mk('c_open', {view: 245, xAxis: {data: A.d}, yAxis: {min: 0, max: 100, scale: false}, series: [line('当日', A.open_win, ink3, 1), line('10日均', ma(A.open_win, 10), amber, 2)]});
+      mk('c_fade', {view: 245, xAxis: {data: A.d}, yAxis: {axisLabel: {formatter: '{value}%'}}, series: [line('当日', A.fade, ink3, 1), line('10日均', ma(A.fade, 10), cyan, 2)]});
+      const E = F.extra || {}, cat = (L, cnt, color, unit) => ({zoom: false, grid: {left: 34, bottom: 44}, xAxis: {type: 'category', boundaryGap: true, data: L, axisLabel: {interval: 0, rotate: 40, fontSize: 10, color: ink3}}, yAxis: {splitNumber: 3},
+        tooltip: {axisPointer: {type: 'shadow'}, valueFormatter: (v) => v + ' 只'}, series: [{type: 'bar', data: cnt.map((v, i) => ({value: v, itemStyle: {color: color(i)}})), barWidth: '72%', itemStyle: {borderRadius: [2, 2, 0, 0]}}]});
+      if (E.ytd) mk('c_ytd', cat(E.ytd.labels, E.ytd.counts, (i) => i < 4 ? down : up));
+      if (E.dd) mk('c_dd', cat(E.dd.labels, E.dd.counts, () => down));
+    }
+    const G = X.factors;
+    if (G) {
+      const lg = {top: 0, left: 0, itemWidth: 16, itemHeight: 3, icon: 'path://M0,0 L16,0 L16,3 L0,3 Z', textStyle: {color: css('--ink2'), fontSize: 12}};
+      mk('c_factor', {view: 245, rebase: true, xAxis: {data: G.d}, legend: lg, grid: {top: 28}, tooltip: {valueFormatter: (v) => v == null ? '—' : v + ' 点'},
+        series: [['size', '小市值', ink], ['value', '低估值', cyan], ['lowvol', '低波动', amber], ['mom', '强势股', s4]].map(([k, n, c]) => line(n, G.curves[k], c, 1.8))});
+    }
+    const Q = X.sectors;
+    if (Q) {
+      const R = Q.rows.filter(r => r.pb_p != null && r.rs20 != null);
+      const mxA = Math.max(...R.map(r => r.amt || 0), 1);
+      const corner = (t, pos) => ({type: 'text', ...pos, silent: true, style: {text: t, fill: ink3, fontSize: 11}});
+      mk('c_quad', {zoom: false, grid: {left: 44, right: 14, top: 14, bottom: 34},
+        xAxis: {type: 'value', min: 0, max: 100, boundaryGap: [0, 0], name: 'PB 分位', nameLocation: 'middle', nameGap: 20, nameTextStyle: {color: ink3, fontSize: 11}, axisLabel: {color: ink3, formatter: '{value}%'}, splitLine: {show: false}},
+        yAxis: {axisLabel: {formatter: '{value}'}},
+        tooltip: {trigger: 'item', axisPointer: {type: 'none'}, formatter: (p) => { const r = R[p.dataIndex]; return `${r.name}<br>PB ${r.pb}，近十年 ${r.pb_p}% 分位<br>20 日超额 ${num2(r.rs20, 1)}，今日 ${pct(r.r1)}<br>成交占比 ${r.amt}%（近三年 ${r.amt_p}% 分位）`; }},
+        graphic: [corner('便宜 · 走强', {left: 52, top: 18}), corner('贵 · 走强', {right: 22, top: 18}), corner('便宜 · 走弱', {left: 52, bottom: 42}), corner('贵 · 走弱', {right: 22, bottom: 42})],
+        series: [{type: 'scatter', data: R.map(r => ({value: [r.pb_p, r.rs20], itemStyle: {color: r.rs20 >= 0 ? up : down, opacity: .75}})), symbolSize: (v, p) => 7 + 26 * Math.sqrt((R[p.dataIndex].amt || 0) / mxA),
+          label: {show: true, position: 'right', fontSize: 10.5, color: css('--ink2'), formatter: (p) => R[p.dataIndex].name}, labelLayout: {hideOverlap: true},
+          markLine: {silent: true, symbol: 'none', label: {show: false}, lineStyle: {color: ink3, type: 'dashed'}, data: [{xAxis: 50}, {yAxis: 0}]}}]});
+    }
+    const U = X.unlock;
+    if (U) mk('c_unlock', {zoom: false, grid: {left: 44, bottom: 24}, xAxis: {type: 'category', boundaryGap: true, data: U.weeks.map(w => w.w)}, tooltip: {axisPointer: {type: 'shadow'}, valueFormatter: (v) => fx(v) + ' 亿'}, series: [{type: 'bar', data: U.weeks.map(w => w.mv), itemStyle: {color: amber, borderRadius: [2, 2, 0, 0]}, barWidth: '64%'}]});
+    const SS = X.season?.['中证1000'];
+    if (SS) { const M = +D.asof.slice(5, 7); mk('c_season', {zoom: false, grid: {left: 40, bottom: 24}, xAxis: {type: 'category', boundaryGap: true, data: SS.map(x => x.m + '月')}, yAxis: {axisLabel: {formatter: '{value}%'}}, tooltip: {axisPointer: {type: 'shadow'}, formatter: (p) => { const r = SS[p[0].dataIndex]; return `${r.m} 月 · 中位 ${pct(r.med, 1)} · 上涨 ${r.win}%（${r.n} 年）`; }},
+      series: [{type: 'bar', data: SS.map(x => ({value: x.med, itemStyle: {color: x.med >= 0 ? up : down, opacity: x.m === M ? 1 : .4, borderRadius: 2}})), barWidth: '64%'}]}); }
+  });
+  drawLive();
 }
 
 // 三套模型的曲线：累计超额（÷ 股票池等权）或净值，两个视图共用一张图
@@ -691,13 +1072,15 @@ if ($('m_tabs')) $('m_tabs').onclick = (e) => { const b = e.target.closest('butt
 (() => {
   const links = [...document.querySelectorAll('#toc a[href^="#"]')], map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
   if (!('IntersectionObserver' in window)) return;
-  const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { links.forEach(a => a.classList.remove('on')); map.get(e.target.id)?.classList.add('on'); } }),
+  const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { links.forEach(a => a.classList.remove('on')); const on = map.get(e.target.id); if (on) { on.classList.add('on'); const nav = on.parentNode; nav.scrollTo({left: on.offsetLeft - nav.clientWidth / 2 + on.clientWidth / 2, behavior: 'smooth'}); } } }),
     {rootMargin: '-45% 0px -50% 0px'});
   map.forEach((_, id) => { const el = $(id); if (el) io.observe(el); });
 })();
 
-texts();
-drawCharts();
+guard('正文', texts);
+renderX();
+guard('图表', drawCharts);
+loadLive();
 let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => charts.forEach(c => c.resize()), 150); });
 </script>
 </body>

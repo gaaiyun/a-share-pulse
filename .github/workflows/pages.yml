@@ -1,5 +1,5 @@
 name: pages
-# 私有仓库更新实操页密文后（repository_dispatch: vault）只重新部署站点，不重新采集
+# 实操页密文更新（repository_dispatch: vault）或盘中快照更新（workflow_dispatch）后只重新部署站点，不重新采集
 on:
   repository_dispatch:
     types: [vault]
@@ -17,6 +17,7 @@ jobs:
       - name: vault
         run: |
           if git fetch -q --depth 1 origin vault; then git show FETCH_HEAD:vault.json > site/vault.json; else echo "还没有 vault 分支"; fi
+          if git fetch -q --depth 1 origin live; then git show FETCH_HEAD:live.json > site/live.json; else echo "还没有 live 分支"; fi
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

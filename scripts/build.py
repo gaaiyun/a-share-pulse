@@ -12,6 +12,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+import insights
+
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / 'data'
 RAW = DATA / 'raw'
@@ -392,10 +394,17 @@ def main():
     ths = None
     if boards is not None:
         bl = boards[boards['date'] == boards['date'].max()]
-        c = bl[(bl['kind'] == 'concept') & (bl['n'] >= 8) & ~bl['name'].str.contains(NOT_THEME)].sort_values('pct', ascending=False)
-        concepts = {'date': bl['date'].iloc[0],
-                    'top': c.head(10)[['name', 'pct', 'n', 'leader', 'leader_pct']].to_dict('records'),
-                    'bottom': c.tail(10).iloc[::-1][['name', 'pct', 'n', 'leader', 'leader_pct']].to_dict('records')}
+        cc = boards[(boards['kind'] == 'concept') & (boards['n'] >= 8) & ~boards['name'].str.contains(NOT_THEME)]
+        last5 = sorted(cc['date'].unique())[-5:]
+        wide = cc[cc['date'].isin(last5)].pivot_table(index='name', columns='date', values='pct').reindex(columns=last5)
+        top20 = wide.rank(ascending=False) <= 20
+        c = bl[(bl['kind'] == 'concept') & bl['name'].isin(wide.index)].set_index('name')
+        rows = [{'name': n, 'pct': rd(c.at[n, 'pct']), 'n': rd(c.at[n, 'n'], 0), 'leader': c.at[n, 'leader'], 'leader_pct': rd(c.at[n, 'leader_pct']),
+                 'cum': rd((np.prod(1 + wide.loc[n].dropna() / 100) - 1) * 100, 1), 'days': int(top20.loc[n].sum()),
+                 'daily': [rd(x, 1) for x in wide.loc[n]]} for n in c.index]
+        concepts = {'date': bl['date'].iloc[0], 'days': list(last5),
+                    'top': sorted(rows, key=lambda r: (-r['days'], -(r['cum'] or 0)))[:12],
+                    'bottom': sorted(rows, key=lambda r: (r['cum'] if r['cum'] is not None else 0))[:12]}
         t = bl[bl['kind'] == 'ths_ind'].dropna(subset=['net_in_yi']).sort_values('net_in_yi', ascending=False)
         if len(t):
             ths = {'in': t.head(6)[['name', 'pct', 'net_in_yi']].to_dict('records'),
@@ -442,7 +451,7 @@ def main():
                                    'net': rd(r['net_yi']), 'stocks': str(r['stocks'])[:40]} for _, r in hot.head(6).iterrows()]})
 
     # ---------------- 情绪时间序列（给图）
-    tail = m.iloc[-500:]
+    tail = m.iloc[insights.thin(len(m))]
     sent_series = {'d': list(tail['date']), 'temp': [rd(x, 0) for x in tail['temp']], 'zt': [rd(x, 0) for x in tail['zt']],
                    'dt': [rd(x, 0) for x in tail['dt']], 'zb': [rd(x, 0) for x in tail['zb']],
                    'streak': [rd(x, 0) for x in tail['max_streak']], 'prem': [rd(x) for x in tail['zt_prem']],
@@ -468,6 +477,7 @@ def main():
         # 选股模型的回测与留出期检验（研究在私有仓库做，这里只放统计和曲线）
         'model': json.loads((DATA / 'model_backtest.json').read_text(encoding='utf-8')) if (DATA / 'model_backtest.json').exists() else None,
     }
+    D['x'] = insights.build(D, mm, piv)
     D['takeaways'] = takeaways(D)
     D['headline'] = headline(D)
     SITE.mkdir(exist_ok=True)
@@ -570,10 +580,10 @@ def takeaways(D):
     if st.get('rel20') is not None:
         side = '微盘股跑赢' if st['rel20'] > 0 else '微盘股跑输'
         s = f"{side}沪深300 {abs(st['rel20']):.1f} 个百分点（20 日），处于 2016 年以来 {st['rel20_p']:.0f}% 分位；今年以来微盘 400 累计 {fmt_pct(st['micro_ytd'], 1)}。"
-        if st['rel20_p'] is not None and st['rel20_p'] >= 90:
-            s += ' 小票相对强势已到极端，历史上这种位置容易出现风格回撤。'
-        elif st['rel20_p'] is not None and st['rel20_p'] <= 10:
-            s += ' 小票相对弱势到极端，常见于流动性收缩或监管冲击。'
+        rel = (D.get('x') or {}).get('rel20') or {}
+        x = rel.get('hi') if (st['rel20_p'] or 50) >= 90 else rel.get('lo') if (st['rel20_p'] or 50) <= 10 else None
+        if x and rel.get('all'):
+            s += f" 历史上超额处在这种极端位置之后，下一个 20 日微盘相对沪深300 中位 {x['med']:+.1f}%（全部交易日 {rel['all']['med']:+.1f}%）。"
         out.append({'tag': '风格', 'text': s})
 
     v = D['valuation']

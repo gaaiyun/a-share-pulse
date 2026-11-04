@@ -1,0 +1,32 @@
+name: intraday
+# 盘中快照：由私有仓库 tick 在 09:40 发 repository_dispatch 启动，跑到 15:03 自己结束。公开仓库的 Actions 分钟数不计费。
+on:
+  repository_dispatch:
+    types: [intraday]
+  workflow_dispatch:
+    inputs:
+      once:
+        description: '只跑一轮测试，不推送'
+        type: boolean
+        default: false
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: intraday
+  cancel-in-progress: true
+jobs:
+  snap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: pip install -r requirements.txt
+      - run: python scripts/intraday.py ${{ inputs.once && '--once' || '' }}

@@ -1,7 +1,8 @@
 name: daily
 on:
   schedule:
-    # 北京时间周一至周五 18:20 / 21:40（龙虎榜 17 点后才全；第二次是补跑兜底，数据没变就不提交）
+    # 兜底：北京时间周一至周五 18:20 / 21:40（龙虎榜 17 点后才全）。正点靠下面的 repository_dispatch，
+    # 一天三轮：15:40 收盘数据、18:40 补龙虎榜和估值、次日 08:40 补两融和 ETF 份额
     - cron: '20 10 * * 1-5'
     - cron: '40 13 * * 1-5'
   # GitHub 定时任务常晚好几个小时（11-02、11-03 都晚了 6~10 小时），正点触发靠私有仓库的 tick 工作流发这个事件
@@ -37,6 +38,11 @@ jobs:
       - name: build
         if: steps.collect.outputs.skipped != 'true'
         run: python scripts/build.py
+      - name: check
+        if: steps.collect.outputs.skipped != 'true'
+        run: |
+          python tests/test_market.py
+          python scripts/check_site.py
       - name: commit data
         if: steps.collect.outputs.skipped != 'true'
         run: |
@@ -57,6 +63,7 @@ jobs:
         if: vars.PAGES_ON == '1'
         run: |
           if git fetch -q --depth 1 origin vault; then git show FETCH_HEAD:vault.json > site/vault.json; else echo "还没有 vault 分支"; fi
+          if git fetch -q --depth 1 origin live; then git show FETCH_HEAD:live.json > site/live.json; else echo "还没有 live 分支"; fi
       - uses: actions/upload-pages-artifact@v3
         if: vars.PAGES_ON == '1'
         with:

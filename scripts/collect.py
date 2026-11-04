@@ -133,6 +133,7 @@ def spot_metrics(spot, mv_rank_n=400):
     s['st'] = s['name'].str.upper().str.contains('ST') | s['name'].str.contains('退')
     s['mv_prev'] = s['mv_wan'] / (1 + s['ret'])
     micro = s[~s['st'] & s['mv_prev'].notna()].nsmallest(mv_rank_n, 'mv_prev')
+    s['cant'] = (s['open'] - s['hl']).abs() < 0.0051
     m = {
         'n': len(s), 'up': int((s['ret'] > 0).sum()), 'down': int((s['ret'] < 0).sum()),
         'amount_yi': round(s['amount'].sum() / 1e8, 1), 'med_ret': round(float(s['ret'].median()) * 100, 3),
@@ -141,6 +142,16 @@ def spot_metrics(spot, mv_rank_n=400):
         'micro_ret': round(float(micro['ret'].mean()) * 100, 3),
     }
     return m, s
+
+
+def save_spot(d, s):
+    """当天截面存成 data/spot/日期.csv.gz（约 150KB），market.py 只读这些文件，不再请求网络。"""
+    x = pd.DataFrame({'code': s['code'], 'st': s['st'].astype(int), 'open': s['open'], 'high': s['high'], 'low': s['low'],
+                      'close': s['close'], 'pre_close': s['pre_close'], 'volume': s['volume'], 'amount': s['amount'],
+                      'fmv': (s['fmv_wan'] / 1e4).round(2), 'mv': (s['mv_wan'] / 1e4).round(2), 'pe': s['pe'], 'pb': s['pb'],
+                      'zt': s['zt'].astype(int), 'dt': s['dt'].astype(int), 'zb': s['zb'].astype(int), 'cant': s['cant'].astype(int)})
+    (DATA / 'spot').mkdir(exist_ok=True)
+    x.to_csv(DATA / 'spot' / f'{d.isoformat()}.csv.gz', index=False, encoding='utf-8', compression={'method': 'gzip', 'mtime': 0})
 
 
 # ---------------------------------------------------------------- 涨停/炸板/跌停池（东财 push2ex）
@@ -315,7 +326,9 @@ def etf_shares(days):
         try:
             df = retry(lambda: ak.fund_etf_scale_sse(date=d.strftime('%Y%m%d')), n=2)
         except Exception as e:  # noqa: BLE001
-            print('  ETF 份额跳过', d, e)
+            # 上交所 T+1 才发布，当晚取到空表是常态，只有网络错误才值得打印
+            if not isinstance(e, KeyError):
+                print('  ETF 份额跳过', d, str(e)[:120])
             continue
         df = df[df['基金代码'].astype(str).isin(ETF_WATCH)]
         for _, r in df.iterrows():
@@ -337,9 +350,102 @@ def activity(d):
     kv = dict(zip(df['item'], df['value']))
     stamp = str(kv.get('统计日期', ''))[:10]
     if stamp != d.isoformat():
-        raise RuntimeError(f'乐咕统计日期 {stamp} 与采集日 {d} 不符')
+        print(f'  乐咕统计日期 {stamp}，不是 {d}，这次不记')
+        return
     row = {'date': stamp, **{k: kv[k] for k in kv if k != '统计日期'}}
     append_rows(DATA / 'activity_daily.csv', pd.DataFrame([row]), ['date'])
+
+
+def report_period(day):
+    """最近一个已结束的报告期。"""
+    y, m = day.year, day.month
+    return f'{y - 1}1231' if m <= 3 else f'{y}0331' if m <= 6 else f'{y}0630' if m <= 9 else f'{y}0930'
+
+
+def in_season(day):
+    # 4、8、10 月是财报集中披露期，每天取；其他时候一周一次就够
+    return day.month in (1, 4, 8, 10) or (day.month == 11 and day.day <= 5)
+
+
+@step('财报与股东户数')
+def earnings(d):
+    """按申万一级汇总，只存聚合数。"""
+    imap = pd.read_csv(DATA / 'industry_sw1.csv', dtype={'code': str})
+    period = report_period(d)
+    sp = RAW / 'earnings_stamp.json'
+    stamp = json.loads(sp.read_text(encoding='utf-8')) if sp.exists() else {}
+    last = datetime.strptime(stamp['at'], '%Y-%m-%d').date() if stamp.get('at') else date(2000, 1, 1)
+    if stamp.get('period') == period and (d - last).days < (1 if in_season(d) else 7):
+        return
+    t = retry(lambda: ak.stock_yjbb_em(date=period))
+    t = pd.DataFrame({'code': t['股票代码'].astype(str).str.zfill(6), 'yoy': pd.to_numeric(t['净利润-同比增长'], errors='coerce'),
+                      'rev': pd.to_numeric(t['营业总收入-同比增长'], errors='coerce'), 'np': pd.to_numeric(t['净利润-净利润'], errors='coerce'),
+                      'ann': t['最新公告日期'].astype(str).str[:10]}).merge(imap, on='code', how='left')
+    t['sw1'] = t['sw1'].fillna('未归类')
+    rows = []
+    for name, g in list(t.groupby('sw1')) + [('全部A股', t)]:
+        y = g['yoy'].dropna()
+        rows.append({'period': period, 'sw1': name, 'n': len(g), 'med_yoy': round(y.median(), 2) if len(y) else None,
+                     'pos': round((y > 0).mean() * 100, 1) if len(y) else None, 'dbl': round((y >= 50).mean() * 100, 1) if len(y) else None,
+                     'crash': round((y <= -50).mean() * 100, 1) if len(y) else None, 'loss': round((g['np'] < 0).mean() * 100, 1),
+                     'med_rev': round(g['rev'].median(), 2), 'last_ann': g['ann'].max()})
+    append_rows(DATA / 'earnings_sector.csv', pd.DataFrame(rows), ['period', 'sw1'])
+    try:
+        h = retry(lambda: ak.stock_zh_a_gdhs(symbol=period), n=2)
+        h = pd.DataFrame({'code': h['代码'].astype(str).str.zfill(6), 'chg': pd.to_numeric(h['股东户数-增减比例'], errors='coerce'),
+                          'ret': pd.to_numeric(h['区间涨跌幅'], errors='coerce'), 'to': h['股东户数统计截止日-本次'].astype(str).str[:10]})
+        h = h[h['to'] >= f'{period[:4]}-{period[4:6]}-01'].merge(imap, on='code', how='left')
+        h['sw1'] = h['sw1'].fillna('未归类')
+        rows = [{'period': period, 'sw1': n, 'n': len(g), 'med_chg': round(g['chg'].median(), 2), 'up': round((g['chg'] > 0).mean() * 100, 1),
+                 'med_ret': round(g['ret'].median(), 2)} for n, g in list(h.groupby('sw1')) + [('全部A股', h)] if len(g)]
+        append_rows(DATA / 'holders_sector.csv', pd.DataFrame(rows), ['period', 'sw1'])
+    except Exception as e:  # noqa: BLE001
+        print('  股东户数失败', str(e)[:160])
+    sp.write_text(json.dumps({'period': period, 'at': d.isoformat()}), encoding='utf-8')
+
+
+def _unlock_frame(a):
+    return pd.DataFrame({'date': a['解禁时间'].astype(str).str[:10], 'n': pd.to_numeric(a['当日解禁股票家数'], errors='coerce'),
+                         'mv_yi': (pd.to_numeric(a['实际解禁市值'], errors='coerce') / 1e8).round(2)})
+
+
+@step('解禁')
+def unlock(d):
+    start, end = d + timedelta(days=1), d + timedelta(days=92)
+    a = retry(lambda: ak.stock_restricted_release_summary_em(symbol='全部股票', start_date=start.strftime('%Y%m%d'), end_date=end.strftime('%Y%m%d')))
+    _unlock_frame(a).to_csv(RAW / 'unlock_future.csv', index=False, encoding='utf-8')
+    # 过去 3 年每天的解禁市值，用来判断接下来算不算高峰；已有的不重复取
+    hp = DATA / 'unlock_hist.csv'
+    h0 = pd.read_csv(hp) if hp.exists() else pd.DataFrame(columns=['date', 'n', 'mv_yi'])
+    since = (pd.to_datetime(h0['date'].max()).date() - timedelta(days=5)) if len(h0) else d - timedelta(days=1100)
+    h = retry(lambda: ak.stock_restricted_release_summary_em(symbol='全部股票', start_date=since.strftime('%Y%m%d'), end_date=d.strftime('%Y%m%d')))
+    append_rows(hp, _unlock_frame(h), ['date'])
+    b = retry(lambda: ak.stock_restricted_release_detail_em(start_date=start.strftime('%Y%m%d'), end_date=(d + timedelta(days=62)).strftime('%Y%m%d')))
+    imap = pd.read_csv(DATA / 'industry_sw1.csv', dtype={'code': str})
+    b = pd.DataFrame({'code': b['股票代码'].astype(str).str.zfill(6), 'mv_yi': pd.to_numeric(b['实际解禁市值'], errors='coerce') / 1e8,
+                      'ratio': pd.to_numeric(b['占解禁前流通市值比例'], errors='coerce')}).merge(imap, on='code', how='left')
+    b['sw1'] = b['sw1'].fillna('未归类')
+    g = b.groupby('sw1').agg(mv_yi=('mv_yi', 'sum'), n=('code', 'nunique'), big=('ratio', lambda x: int((x >= .05).sum()))).reset_index().sort_values('mv_yi', ascending=False)
+    g['mv_yi'] = g['mv_yi'].round(1)
+    g.to_csv(RAW / 'unlock_sector.csv', index=False, encoding='utf-8')
+
+
+@step('新股与股息率')
+def ipo_div():
+    x = retry(lambda: ak.stock_xgsglb_em(symbol='全部股票'))
+    y = pd.DataFrame({'list': x['上市日期'].astype(str).str[:10], 'sub': x['申购日期'].astype(str).str[:10],
+                      'raise_yi': (pd.to_numeric(x['发行总数'], errors='coerce') * pd.to_numeric(x['发行价格'], errors='coerce') / 1e4).round(2),
+                      'price': pd.to_numeric(x['发行价格'], errors='coerce'), 'first': pd.to_numeric(x['首日收盘价'], errors='coerce'),
+                      'board': x['板块'], 'prize': pd.to_numeric(x['每中一签获利'], errors='coerce'), 'rate': pd.to_numeric(x['中签率'], errors='coerce')})
+    y = y[y['sub'] >= '2023-01-01'].sort_values('sub')
+    y.to_csv(RAW / 'ipo.csv', index=False, encoding='utf-8')
+    retry(lambda: ak.stock_a_gxl_lg(symbol='上证A股')).to_csv(RAW / 'dividend.csv', index=False, encoding='utf-8')
+
+
+@step('全市场聚合')
+def market_step():
+    import market
+    market.update()
 
 
 # ---------------------------------------------------------------- 主流程
@@ -375,6 +481,31 @@ def already_done(d):
     return c.get('date') == d.isoformat() and c.get('ok') == c.get('total')
 
 
+def write_status(d, cal, wave, merge=False):
+    next_day = next((x for x in cal if x > d), None)
+    steps = LOG
+    p = DATA / 'last_collect.json'
+    if merge and p.exists():  # 早间轮次只更新自己跑过的来源，其余保留昨晚的状态
+        names = {x['step'] for x in LOG}
+        steps = [x for x in json.loads(p.read_text(encoding='utf-8')).get('steps', []) if x['step'] not in names] + LOG
+    now = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=8)
+    p.write_text(json.dumps({'date': d.isoformat(), 'at': now.strftime('%Y-%m-%d %H:%M'), 'wave': wave,
+                             'next': next_day.isoformat() if next_day else None,
+                             'ok': sum(x['ok'] for x in steps), 'total': len(steps), 'steps': steps}, ensure_ascii=False, indent=1), encoding='utf-8')
+
+
+def morning(d, cal):
+    """开盘前：两融和 ETF 份额都是第二天早上才发布，只补这些，截面和涨停池不动。"""
+    days = [x for x in cal if x <= d]
+    margin()
+    legu()
+    bonds()
+    etf_shares(days[-60:])
+    write_status(d, cal, 'morning', merge=True)
+    print('早间更新完成')
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--date', help='YYYYMMDD，默认按当前时刻判断数据对应的交易日（北京时间）')
@@ -391,7 +522,7 @@ def main():
     else:
         d = live
         if d != now.date() and already_done(d):
-            return skip(f'{d} 已经采过，跳过')
+            return morning(d, cal)
     days = [x for x in cal if x <= d]
     if not (days and days[-1] == d) and not a.force:
         return skip(f'{d} 不是交易日，跳过')
@@ -427,6 +558,7 @@ def main():
     if spot is not None and len(spot) > 4000:
         sm, s = spot_metrics(spot)
         row.update(sm)
+        save_spot(d, s)
         keep = s[['code', 'name', 'close', 'ret', 'amount', 'mv_wan', 'pe', 'pb', 'turnover', 'zt', 'dt', 'st']].copy()
         keep['ret'] = (keep['ret'] * 100).round(3)
         keep.to_csv(RAW / 'spot_latest.csv', index=False, encoding='utf-8')
@@ -447,12 +579,13 @@ def main():
     lhb(d)
     etf_shares(days[-60:])
     activity(d)
+    earnings(d)
+    unlock(d)
+    ipo_div()
+    market_step()
 
-    ok = sum(x['ok'] for x in LOG)
-    (DATA / 'last_collect.json').write_text(json.dumps(
-        {'date': d.isoformat(), 'at': (datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=8)).strftime('%Y-%m-%d %H:%M'),
-         'ok': ok, 'total': len(LOG), 'steps': LOG}, ensure_ascii=False, indent=1), encoding='utf-8')
-    print(f'完成 {ok}/{len(LOG)}')
+    write_status(d, cal, 'close')
+    print(f"完成 {sum(x['ok'] for x in LOG)}/{len(LOG)}")
     # 截面和涨停池都挂了才算失败，其余来源失败只降级
     core = [x for x in LOG if x['step'] in ('新浪全市场截面', '当日涨停池')]
     return 0 if any(x['ok'] for x in core) else 1
