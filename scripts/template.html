@@ -135,7 +135,7 @@ tr:hover td{background:var(--panel2)}
 .foot{padding:30px 0 60px;color:var(--ink3);font-size:12.5px;line-height:1.8}
 .foot h3{color:var(--ink2);font-size:13px;margin:16px 0 4px}
 .foot code{font-family:var(--mono);font-size:12px;color:var(--ink2)}
-.health{font:12px var(--mono)}
+.health{font:12px var(--mono);overflow-wrap:anywhere}
 .health .ok{color:var(--down)}.health .bad{color:var(--up)}
 .reveal{opacity:0;transform:translateY(8px);animation:rv .6s ease forwards}
 @keyframes rv{to{opacity:1;transform:none}}
@@ -705,7 +705,7 @@ function texts() {
   // 数据健康
   const C = D.collect;
   if (C && C.steps) $('health').append(h('div', null, '最近一次采集 ' + (C.at || C.date) + '：' + C.ok + '/' + C.total + ' 个来源成功'),
-    ...C.steps.map(s => h('div', null, h('span', {class: s.ok ? 'ok' : 'bad'}, s.ok ? '● ' : '✕ '), s.step, s.ok ? '' : ' — ' + s.err)));
+    ...C.steps.map(s => h('div', null, h('span', {class: s.ok ? 'ok' : 'bad'}, s.ok ? '● ' : '✕ '), s.step, s.ok ? '' : ' — ' + String(s.err).slice(0, 90))));
   if (D.style.filled_days?.length) $('health').append(h('div', null, '微盘 400 用中证1000 代替的日期：' + D.style.filled_days.join('、')));
 }
 
