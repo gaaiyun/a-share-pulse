@@ -216,11 +216,13 @@ def backfill_pools(days):
 
 # ---------------------------------------------------------------- 全历史类（每次整表覆盖）
 @step('指数日线')
-def indices():
+def indices(d):
     frames = []
     for sym, name in INDICES.items():
         df = retry(lambda: ak.stock_zh_index_daily(symbol=sym))
-        df = df[pd.to_datetime(df['date']) >= '2014-01-01'][['date', 'close', 'volume']]
+        # 盘中接口会带当天未收盘的一行，只留到数据日
+        dt = pd.to_datetime(df['date'])
+        df = df[(dt >= '2014-01-01') & (dt <= pd.Timestamp(d))][['date', 'close', 'volume']]
         df['sym'], df['name'] = sym, name
         frames.append(df)
         time.sleep(0.3)
@@ -341,28 +343,65 @@ def activity(d):
 
 
 # ---------------------------------------------------------------- 主流程
+def live_date(now, cal):
+    """此刻的新浪截面对应哪个交易日：开盘前还是上一交易日收盘，盘中返回 None，收盘后是当天。
+    GitHub 定时任务可能晚好几个小时，不能拿“今天”当数据日。"""
+    today = now.date()
+    past = [x for x in cal if x <= today]
+    if past[-1] == today:
+        hm = now.hour * 100 + now.minute
+        if hm < 915:
+            return past[-2]
+        if hm < 1530:
+            return None
+    return past[-1]
+
+
+def skip(msg):
+    print(msg)
+    # 不动 last_collect.json，页面底部的数据健康状况保持上次的；告诉工作流跳过构建和提交
+    if os.environ.get('GITHUB_OUTPUT'):
+        with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
+            f.write('skipped=true\n')
+    return 0
+
+
+def already_done(d):
+    """这个交易日已经完整采过（用于开盘前、非交易日的补跑：有缺项才重跑）。"""
+    p = DATA / 'last_collect.json'
+    if not p.exists():
+        return False
+    c = json.loads(p.read_text(encoding='utf-8'))
+    return c.get('date') == d.isoformat() and c.get('ok') == c.get('total')
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--date', help='YYYYMMDD，默认今天（北京时间）')
+    ap.add_argument('--date', help='YYYYMMDD，默认按当前时刻判断数据对应的交易日（北京时间）')
     ap.add_argument('--force', action='store_true', help='非交易日也跑全历史类来源')
     a = ap.parse_args()
     RAW.mkdir(parents=True, exist_ok=True)
-    bj_today = (datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=8)).date()
-    d = datetime.strptime(a.date, '%Y%m%d').date() if a.date else bj_today
-    days = [x for x in trade_days() if x <= d]
-    is_trade = days and days[-1] == d
-    if not is_trade and not a.force:
-        print(f'{d} 不是交易日，跳过')
-        # 不动 last_collect.json，页面底部的数据健康状况保持上个交易日的；告诉工作流跳过构建和提交
-        if os.environ.get('GITHUB_OUTPUT'):
-            with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
-                f.write('skipped=true\n')
-        return 0
+    now = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=8)
+    cal = trade_days()
+    live = live_date(now, cal)
+    if a.date:
+        d = datetime.strptime(a.date, '%Y%m%d').date()
+    elif live is None:
+        return skip(f'{now:%H:%M} 盘中，截面不是收盘数据，跳过')
+    else:
+        d = live
+        if d != now.date() and already_done(d):
+            return skip(f'{d} 已经采过，跳过')
+    days = [x for x in cal if x <= d]
+    if not (days and days[-1] == d) and not a.force:
+        return skip(f'{d} 不是交易日，跳过')
     d = days[-1]
     recent = days[-25:]
+    # 只有截面确实是 d 这天的收盘才能用；指定历史日期补数时只补按日期查询的来源（涨停池、龙虎榜等）
+    spot_ok = d == live
 
     # 1) 全历史类
-    indices()
+    indices(d)
     legu()
     margin()
     bonds()
@@ -380,7 +419,11 @@ def main():
         metrics = pd.concat([metrics, pd.DataFrame([m])], ignore_index=True)
 
     row = {'date': d.isoformat(), 'src': 'live'}
-    spot = step('新浪全市场截面')(sina_spot)()
+    if not spot_ok:  # 补历史日期：保留这一行已有的截面字段，只更新涨停池相关字段
+        old = metrics[metrics['date'] == row['date']]
+        if len(old):
+            row = {**old.iloc[0].dropna().to_dict(), **row}
+    spot = step('新浪全市场截面')(sina_spot)() if spot_ok else None
     if spot is not None and len(spot) > 4000:
         sm, s = spot_metrics(spot)
         row.update(sm)
@@ -399,7 +442,8 @@ def main():
     metrics.to_csv(mpath, index=False, encoding='utf-8')
 
     # 3) 其他当日类
-    boards(d)
+    if spot_ok:  # 板块榜也是实时截面
+        boards(d)
     lhb(d)
     etf_shares(days[-60:])
     activity(d)

@@ -4,10 +4,13 @@ on:
     # 北京时间周一至周五 18:20 / 21:40（龙虎榜 17 点后才全；第二次是补跑兜底，数据没变就不提交）
     - cron: '20 10 * * 1-5'
     - cron: '40 13 * * 1-5'
+  # GitHub 定时任务常晚好几个小时（11-02、11-03 都晚了 6~10 小时），正点触发靠私有仓库的 tick 工作流发这个事件
+  repository_dispatch:
+    types: [collect]
   workflow_dispatch:
     inputs:
       date:
-        description: 'YYYYMMDD，留空=今天'
+        description: 'YYYYMMDD，留空=按当前时刻判断数据对应的交易日'
         required: false
 permissions:
   contents: write
