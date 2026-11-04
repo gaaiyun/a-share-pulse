@@ -44,7 +44,14 @@ jobs:
           git config user.email "a-share-pulse-bot@users.noreply.github.com"
           git add data site
           D=$(python -c "import json;print(json.load(open('data/last_collect.json'))['date'])")
-          if git diff --cached --quiet; then echo "no change"; else git commit -m "chore(数据): $D 收盘数据" && git push; fi
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "chore(数据): $D 收盘数据"
+          # GitHub 偶发 5xx（11-04 就因此丢了当晚数据）：重试几次；仍失败也继续部署，页面不能因为提交失败而过期，下一次运行会重新采集并提交
+          for i in 1 2 3 4 5 6; do
+            git pull -q --rebase origin main && git push && exit 0
+            echo "提交失败，第 $i 次，等 $((i*20)) 秒重试"; sleep $((i*20))
+          done
+          echo "::warning::数据提交失败，本次只部署页面"
       # 实操页密文由私有仓库推到 vault 分支（单个提交、强推），部署时放进站点，不进 main 的历史
       - name: vault
         if: vars.PAGES_ON == '1'
