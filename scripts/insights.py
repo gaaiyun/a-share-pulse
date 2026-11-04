@@ -186,10 +186,44 @@ def sectors(sd, md):
     # 轮动速度：本周行业排名和上周的相关，越低轮动越快
     r5s = r5.iloc[-260:]
     speed = [r5s.iloc[k].rank().corr(r5s.iloc[k - 5].rank()) for k in range(5, len(r5s))]  # 秩相关，不依赖 scipy
-    return {'date': d, 'rows': rows, 'days': list(recent.index), 'heat': {n: lst(recent[n], 1) for n in order}, 'quad': quad,
+    return {'date': d, 'rrg': rrg(ret, mkt), 'rows': rows, 'days': list(recent.index), 'heat': {n: lst(recent[n], 1) for n in order}, 'quad': quad,
             'hot': {'n': int(len(x_hot)), 'med': rd(x_hot.median()), 'win': rd((x_hot > 0).mean() * 100, 0),
                     'rest_med': rd(x_rest.median()), 'rest_win': rd((x_rest > 0).mean() * 100, 0)},
             'speed': {'now': rd(speed[-1]), 'p': pct_of(speed, speed[-1])}}
+
+
+def rrg(ret, mkt, weeks=34, tail=6):
+    """相对轮动：相对强度 = 行业/全市场 相对自身 50 日均线的偏离；相对动量 = 这个偏离 10 日的变化；都按自身近两年波动标准化。
+    思路来自 de Kempenaer 的 RRG，正式公式未公开，这里是自己的写法。"""
+    idx = ret.index
+    rs = (1 + ret.fillna(0) / 100).cumprod().div((1 + mkt.fillna(0) / 100).cumprod(), axis=0)
+    ratio = rs / rs.rolling(50, min_periods=40).mean() - 1
+    mom = ratio - ratio.shift(10)
+    # 再做一次指数平滑（只用过去的数据），轨迹才是连续的弧，不是逐周的折线
+    x = (ratio / ratio.rolling(500, min_periods=250).std()).ewm(span=8, min_periods=4).mean()
+    y = (mom / mom.rolling(500, min_periods=250).std()).ewm(span=8, min_periods=4).mean()
+    pos = list(range(len(idx) - 1, -1, -5))[:weeks][::-1]
+    out = {'dates': [idx[i] for i in pos], 'tail': tail, 'x': {}, 'y': {}}
+    for n in ret.columns:
+        out['x'][n] = lst(x[n].iloc[pos].clip(-4.4, 4.4), 2)
+        out['y'][n] = lst(y[n].iloc[pos].clip(-4.4, 4.4), 2)
+    # 四个区之后 20 日相对全市场的表现（5 日抽样，当时已知）
+    r20 = np.exp(np.log1p(ret.fillna(0) / 100).rolling(20).sum()) - 1
+    m20 = np.exp(np.log1p(mkt.fillna(0) / 100).rolling(20).sum()) - 1
+    f20 = r20.shift(-20).sub(m20.shift(-20), axis=0) * 100
+    samp = idx[::5]
+    stats = {}
+    for k, m in (('lead', (x >= 0) & (y >= 0)), ('weak', (x >= 0) & (y < 0)), ('lag', (x < 0) & (y < 0)), ('impr', (x < 0) & (y >= 0))):
+        v = f20.where(m).loc[samp].stack()
+        stats[k] = {'n': int(len(v)), 'med': rd(v.median()), 'win': rd((v > 0).mean() * 100, 0)}
+    out['stats'] = stats
+    # 顺时针比例：相邻两周在圆上的转向
+    th = np.arctan2(y.loc[samp], x.loc[samp])
+    d = th.diff()
+    d = (d + np.pi) % (2 * np.pi) - np.pi
+    vals = d.values[~np.isnan(d.values)]
+    out['cw'] = rd((vals < 0).mean() * 100, 0) if len(vals) else None
+    return out
 
 
 # ================================================================ 这些说法灵不灵
@@ -407,7 +441,7 @@ def four(D, X):
         s = f"{c['ma60']['v']:.0f}% 的股票站上 60 日线，近 60 日买入者中位浮盈 {c['pl60']['v']:+.1f}%，情绪温度 {T['temp']:.0f}。"
         if row['k20']:
             s += f" 历史上这一档之后 20 日，中证1000 中位 {row['k20']['med']:+.1f}%，上涨概率 {row['k20']['win']:.0f}%（全部交易日 {T['all']['k20']['med']:+.1f}% / {T['all']['k20']['win']:.0f}%）。"
-        out.append({'q': '现在是顺风还是逆风', 'a': T['label'], 'tone': 'up' if T['now'] >= 2 else 'down', 'text': s, 'to': 's_feel'})
+        out.append({'q': '环境', 'a': T['label'], 'tone': 'up' if T['now'] >= 2 else 'down', 'text': s, 'to': 's_feel'})
     P = X.get('plays')
     if P:
         rows = [r for r in P['rows'] if r['key'] != 'all' and r['d20'] is not None]
@@ -418,7 +452,7 @@ def four(D, X):
         ban = next(r for r in rows if r['key'] == 'ban1')
         if ban['p20'] is not None:
             s += f" 首板接力的 20 日表现在历史 {ban['p20']:.0f}% 分位" + ('，这类接力打法的好坏过去会延续一阵。' if (ban['keep'] or 0) >= .15 else '。')
-        out.append({'q': '什么打法在赚钱', 'a': best['name'] if best['d20'] > 0 else '都在亏，' + best['name'] + '亏得最少', 'tone': 'up' if best['d20'] > 0 else 'down', 'text': s, 'to': 's_play'})
+        out.append({'q': '打法', 'a': best['name'] if best['d20'] > 0 else '都在亏，' + best['name'] + '亏得最少', 'tone': 'up' if best['d20'] > 0 else 'down', 'text': s, 'to': 's_play'})
     S = X.get('sectors')
     if S:
         top = S['rows'][:3]
@@ -429,7 +463,7 @@ def four(D, X):
         cheap = [r for r in S['rows'] if (r['pb_p'] or 100) < 30 and (r['rs20'] or -1) > 0]
         if cheap:
             s += ' 估值低位又在走强的有 ' + '、'.join(r['name'] for r in cheap[:4]) + '。'
-        out.append({'q': '钱在往哪走', 'a': top[0]['name'], 'tone': 'up', 'text': s, 'to': 's6'})
+        out.append({'q': '资金', 'a': top[0]['name'], 'tone': 'up', 'text': s, 'to': 's6'})
     risks = []
     lv = D.get('leverage')
     if lv and lv.get('chg20_pct') is not None and lv['chg20_pct'] <= -3:
@@ -450,7 +484,7 @@ def four(D, X):
         risks.append(f"{E['period'][:4]} 三季报净利下滑超 50% 的公司占 {E['crash']:.0f}%")
     if not risks:
         risks.append('杠杆、解禁、拥挤度都没有到历史高风险区')
-    out.append({'q': '要提防什么', 'a': f'{len(risks)} 项' if len(risks) > 1 else '1 项', 'tone': 'amber', 'text': '；'.join(risks[:4]) + '。', 'to': 's5'})
+    out.append({'q': '风险', 'a': f'{len(risks)} 项' if len(risks) > 1 else '1 项', 'tone': 'amber', 'text': '；'.join(risks[:4]) + '。', 'to': 's5'})
     return out
 
 
