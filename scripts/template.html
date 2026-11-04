@@ -152,7 +152,7 @@ tr:hover td{background:var(--panel2)}
 section{scroll-margin-top:46px}
 
 /* 选股模型 */
-.g4{grid-template-columns:repeat(4,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}#m_cards{grid-template-columns:repeat(auto-fit,minmax(232px,1fr))}
 .mcard{border-top:3px solid var(--tone);display:flex;flex-direction:column;gap:10px}
 .mcard .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .mcard .hd h3{margin:0}
@@ -177,6 +177,7 @@ section{scroll-margin-top:46px}
 .checks li i{font:600 13px/22px var(--mono);font-style:normal;text-align:center}
 .yt td,.yt th{text-align:right}.yt td:first-child,.yt th:first-child{text-align:left}
 .yt td.c{font-family:var(--mono);font-size:12.5px}
+.t5s td:first-child{white-space:normal;min-width:220px;text-align:left}.t5s td small{display:block;color:var(--ink3);font-size:12px;line-height:1.5}
 .yt tfoot td{border-top:1px solid var(--line2);color:var(--ink2);font-family:var(--mono);font-size:12.5px}
 .subhead{display:flex;align-items:baseline;gap:12px;margin:30px 0 10px;padding-top:18px;border-top:1px dashed var(--line2)}
 .subhead h3{margin:0;font:600 16px var(--cjk)}.subhead p{margin:0;color:var(--ink3);font-size:12.5px}
@@ -444,6 +445,11 @@ details.more>summary{cursor:pointer;color:var(--ink2);font-size:13px;padding:10p
     </div>
     <a class="vault-link" href="vault.html"><div><b>实操页：每日名单、持仓、调仓与复盘</b><span>按上面的模型每天收盘后自动生成。内容在浏览器里用密码解密，不公开</span></div><em>需要密码 →</em></a>
 
+    <div class="subhead" id="t5_head" hidden><h3>T5 稳进是怎么改出来的</h3><p>从一套常见的右侧打法出发，每一步只改一件事</p></div>
+    <p class="lede" id="t5_lede" hidden></p>
+    <div class="card" id="t5_card" hidden><div class="scroll"><table id="t5_story" class="yt t5s"></table></div>
+      <h3 style="margin-top:16px">这些数字能信几分</h3><ul class="checks" id="t5_checks"></ul></div>
+
     <div class="subhead"><h3>v1 的来历：开发期与留出期</h3><p>最早的版本，按“开发期定参数、留出期只看一次”检验</p></div>
     <p class="lede" id="model_lede"></p>
     <div class="grid g32">
@@ -486,7 +492,7 @@ const pct = (v, n = 2) => v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(n) 
 const fx = (v, n = 0) => v == null ? '—' : Number(v).toLocaleString('zh-CN', {minimumFractionDigits: n, maximumFractionDigits: n});
 const span = (v, txt) => h('span', {class: 'num ' + cls(v)}, txt ?? pct(v));
 const WD = '日一二三四五六';
-const TONE = {flat: 'var(--ink3)', cyan: 'var(--s2)', amber: 'var(--s3)', violet: 'var(--s4)'};
+const TONE = {flat: 'var(--ink3)', cyan: 'var(--s2)', amber: 'var(--s3)', violet: 'var(--s4)', up: 'var(--up)'};
 
 // ---------------- 主题
 const root = document.documentElement;
@@ -659,6 +665,7 @@ function texts() {
         h('div', {class: 'hd'}, h('h3', null, m.name), h('span', {class: 'tag'}, m.status)),
         h('div', null, h('div', {class: 'big num ' + cls(s.ex)}, p1(s.ex)), h('div', {class: 'cap'}, '年化超额 · ' + MM.start.slice(0, 4) + ' 年起样本外')),
         h('div', {class: 'row'}, cell('信息比率', s.ir.toFixed(2)), cell('超额最大回撤', p1(s.ex_mdd)), cell('跑赢年数', s.win_years)),
+        h('div', {class: 'row'}, cell('绝对年化', p1(s.cagr)), cell('最大回撤', p1(s.mdd)), cell('平均持有', s.hold_days ? Math.round(s.hold_days) + ' 天' : '—')),
         h('div', {class: 'row'}, cell('2019-2023', p1(s.ex_1923)), cell('2024 起', p1(s.ex_2426)), cell('实盘预期', m.expect)),
         h('p', null, m.idea), h('p', {class: 'risk'}, '风险：' + m.risk));
     }));
@@ -684,6 +691,16 @@ function texts() {
       h('small', null, Math.round(b.w * 100) + '%'))));
     $('m_checks').append(...MM.checks.map(c => h('li', null, h('i', {style: 'color:' + (c.ok ? 'var(--s2)' : 'var(--amber)')}, c.ok ? '✓' : c.ok === false ? '!' : '≈'), h('b', null, c.k), h('span', null, c.t))));
   }
+
+  // T5 的来历
+  guard('T5', () => {
+    const T = D.model?.models?.t5; if (!T) return;
+    ['t5_head', 't5_lede', 't5_card'].forEach(id => { $(id).hidden = false; });
+    $('t5_lede').textContent = '框架来自一位实盘朋友的思路：选绩优股、只做右侧、看沪深300 决定仓位、最多 5 只。把它写成规则回测后发现，放量追涨加 5 日线止损在 A 股亏得很厉害，真正起作用的是“绩优 + 趋势 + 控仓位”这几条骨架。保留骨架，把入场和离场换掉，定稿后 ' + T.start.slice(0, 7) + ' 起年化 ' + pct(T.final.cagr, 1) + '、最大回撤 ' + T.final.mdd + '%，同期沪深300 ' + pct(T.hs300.cagr, 1) + '、回撤 ' + T.hs300.mdd + '%。下表第一到第四行没有挑法，按候选随机挑多次取中位数，这才是规则本身的成绩。';
+    $('t5_story').append(h('thead', null, h('tr', null, ...['每一步改了什么', '年化', '夏普', '最大回撤'].map(x => h('th', null, x)))),
+      h('tbody', null, T.story.map((r, i) => h('tr', i === T.story.length - 1 ? {style: 'background:var(--panel2)'} : null, h('td', null, r.step, h('small', null, r.note)), h('td', {class: 'c ' + cls(r.cagr)}, h('b', null, pct(r.cagr, 1))), h('td', {class: 'c'}, r.sharpe.toFixed(2)), h('td', {class: 'c'}, r.mdd + '%')))));
+    $('t5_checks').append(...T.checks.map(c => h('li', null, h('i', {style: 'color:' + (c.ok ? 'var(--s2)' : 'var(--amber)')}, c.ok ? '✓' : c.ok === false ? '!' : '≈'), h('b', null, c.k), h('span', null, c.t))));
+  });
 
   // 数据健康
   const C = D.collect;
@@ -1054,8 +1071,8 @@ function drawCharts() {
 // 三套模型的曲线：累计超额（÷ 股票池等权）或净值，两个视图共用一张图
 function drawModels() {
   const MM = D.model?.models; if (!MM) return;
-  const C = MM.curve, col = {v1: css('--ink3'), p14: css('--s2'), lgb: css('--s3'), mix: css('--s4')};
-  const name = {v1: 'v1', p14: 'P14', lgb: 'LGB', mix: 'P14+LGB 各半'};
+  const C = MM.curve, col = {v1: css('--ink3'), p14: css('--s2'), lgb: css('--s3'), mix: css('--s4'), t5: css('--up')};
+  const name = {v1: 'v1', p14: 'P14', lgb: 'LGB', mix: 'P14+LGB 各半', t5: 'T5 稳进'};
   const ser = MM.order.map(k => line(name[k], mKind === 'ex' ? C[k].map((v, i) => +(v / C.ew[i]).toFixed(4)) : C[k], col[k], k === 'mix' ? 2.6 : 1.7));
   if (mKind === 'ex') ser[0].markLine = {silent: true, symbol: 'none', label: {show: false}, lineStyle: {color: css('--ink3'), type: 'dashed'}, data: [{yAxis: 1}]};
   else ser.push(line('股票池等权', C.ew, css('--ink2'), 1.2, {lineStyle: {width: 1.2, color: css('--ink2'), type: 'dashed'}}), line('中证1000', C.csi1000, css('--line2'), 1.2));

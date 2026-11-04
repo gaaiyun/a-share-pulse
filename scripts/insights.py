@@ -75,7 +75,7 @@ def plays(md):
                      'd5': rd(s.tail(5).mean()), 'd20': rd(s.tail(20).mean()), 'sum20': rd(s.tail(20).sum(), 1),
                      'win20': rd((s.tail(20).dropna() > 0).mean() * 100, 0), 'avg': rd(s.mean()), 'win': rd((s.dropna() > 0).mean() * 100, 0),
                      'p20': pct_of(roll, roll.iloc[-1]), 'n': rd(md['n_' + k].iloc[-1], 0),
-                     'keep': rd(x.corr(method='spearman').iloc[0, 1])})
+                     'keep': rd(x.rank().corr().iloc[0, 1])})
     rows.sort(key=lambda r: -(r['d20'] if r['d20'] is not None else -99))
     tail = md.tail(20)
     return {'rows': rows, 'days': list(tail.index), 'heat': {k: lst(tail['p_' + k]) for k in PLAYS}, 'date': md.index[-1], 'start': md.index[0]}
@@ -185,7 +185,7 @@ def sectors(sd, md):
     x_rest = f20.where(known_amt < 90).loc[idx].stack()
     # 轮动速度：本周行业排名和上周的相关，越低轮动越快
     r5s = r5.iloc[-260:]
-    speed = [r5s.iloc[k].corr(r5s.iloc[k - 5], method='spearman') for k in range(5, len(r5s))]
+    speed = [r5s.iloc[k].rank().corr(r5s.iloc[k - 5].rank()) for k in range(5, len(r5s))]  # 秩相关，不依赖 scipy
     return {'date': d, 'rows': rows, 'days': list(recent.index), 'heat': {n: lst(recent[n], 1) for n in order}, 'quad': quad,
             'hot': {'n': int(len(x_hot)), 'med': rd(x_hot.median()), 'win': rd((x_hot > 0).mean() * 100, 0),
                     'rest_med': rd(x_rest.median()), 'rest_win': rd((x_rest > 0).mean() * 100, 0)},
