@@ -12,6 +12,7 @@ import json
 import os
 import re
 import sys
+import threading
 import time
 import traceback
 from datetime import date, datetime, timedelta, timezone
@@ -41,12 +42,30 @@ METRIC_COLS = ['date', 'n', 'up', 'down', 'amount_yi', 'med_ret', 'up5', 'down5'
                'max_streak', 'n_streak2', 'zt_prem', 'promo_1to2', 'micro_ret', 'src']
 
 
-def step(name):
+def step(name, budget=300):
+    """单个来源最多跑 budget 秒。东财接口偶尔挂住不返回（11-05 收盘那轮），不能让一个来源拖住整页更新。"""
     def deco(fn):
+        def timed(*a, **k):
+            box = {}
+
+            def work():
+                try:
+                    box['r'] = fn(*a, **k)
+                except Exception as e:  # noqa: BLE001
+                    box['e'] = e
+            th = threading.Thread(target=work, daemon=True)  # 超时后留在后台，进程结束时一起退出
+            th.start()
+            th.join(budget)
+            if th.is_alive():
+                raise TimeoutError(f'超过 {budget} 秒没有返回')
+            if 'e' in box:
+                raise box['e']
+            return box.get('r')
+
         def run(*a, **k):
             t = time.time()
             try:
-                r = fn(*a, **k)
+                r = timed(*a, **k)
                 LOG.append({'step': name, 'ok': True, 'sec': round(time.time() - t, 1)})
                 print(f'[OK] {name} {time.time() - t:.1f}s', flush=True)
                 return r
@@ -442,7 +461,7 @@ def ipo_div():
     retry(lambda: ak.stock_a_gxl_lg(symbol='上证A股')).to_csv(RAW / 'dividend.csv', index=False, encoding='utf-8')
 
 
-@step('全市场聚合')
+@step('全市场聚合', budget=180)
 def market_step():
     import market
     market.update()
@@ -579,9 +598,11 @@ def main():
     lhb(d)
     etf_shares(days[-60:])
     activity(d)
-    earnings(d)
+    # 收盘后第一轮要快：财报、新股这些慢来源放到晚上那一轮（当天数据不急）
+    if not (d == now.date() and now.hour < 17):
+        earnings(d)
+        ipo_div()
     unlock(d)
-    ipo_div()
     market_step()
 
     write_status(d, cal, 'close')
