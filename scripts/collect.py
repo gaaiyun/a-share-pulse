@@ -42,8 +42,8 @@ METRIC_COLS = ['date', 'n', 'up', 'down', 'amount_yi', 'med_ret', 'up5', 'down5'
                'max_streak', 'n_streak2', 'zt_prem', 'promo_1to2', 'micro_ret', 'src']
 
 
-def step(name, budget=300):
-    """单个来源最多跑 budget 秒。东财接口偶尔挂住不返回（11-05 收盘那轮），不能让一个来源拖住整页更新。"""
+def step(name, budget=360):
+    """单个来源最多跑 budget 秒。收盘后国内接口常变慢（11-05 板块 194 秒），不能让一个挂住的来源拖住整页更新。"""
     def deco(fn):
         def timed(*a, **k):
             box = {}
@@ -595,14 +595,13 @@ def main():
     # 3) 其他当日类
     if spot_ok:  # 板块榜也是实时截面
         boards(d)
-    lhb(d)
+    if not (d == now.date() and now.hour < 17):  # 龙虎榜 17 点后才发布，收盘后第一轮不抓
+        lhb(d)
     etf_shares(days[-60:])
     activity(d)
-    # 收盘后第一轮要快：财报、新股这些慢来源放到晚上那一轮（当天数据不急）
-    if not (d == now.date() and now.hour < 17):
-        earnings(d)
-        ipo_div()
+    earnings(d)
     unlock(d)
+    ipo_div()
     market_step()
 
     write_status(d, cal, 'close')
