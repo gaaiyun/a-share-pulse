@@ -544,7 +544,7 @@ function tempColor(t) {
   const a = Math.round(45 + Math.min((Math.abs(t - 50) - 2) / 23, 1) * 55);
   return `color-mix(in srgb, var(--${t > 50 ? 'up' : 'down'}) ${a}%, var(--ink))`;
 }
-const TONE = {flat: 'var(--ink3)', cyan: 'var(--s2)', amber: 'var(--s3)', violet: 'var(--s4)', up: 'var(--up)'};
+const TONE = {ink: 'var(--ink)', flat: 'var(--ink3)', cyan: 'var(--s2)', amber: 'var(--s3)', violet: 'var(--s4)', up: 'var(--up)'};
 
 // ---------------- 主题
 const root = document.documentElement;
@@ -713,11 +713,11 @@ function texts() {
       ['费用', '佣金万 2.5、滑点千 1、印花税按当年税率'],
       ['模拟跟踪', MM.live_since + ' 起'],
     ].map(([a, b]) => h('div', null, h('dt', null, a), h('dd', null, b))));
-    $('m_tb_sub').textContent = '相对基准，费后；预期超额为打折后的估计，不是回测值';
-    $('m_table').append(h('thead', null, h('tr', null, ...['模型', '年化超额', '信息比率', '超额回撤', '2019-23', '2024 起', '跑赢年数', '绝对年化', '最大回撤', '预期', '状态'].map(x => h('th', null, x)))),
+    $('m_tb_sub').textContent = '相对基准，费后；夏普按无风险利率 2%；预期为打折后的估计，不是回测值；v1 为旧数据，夏普按周频估算';
+    $('m_table').append(h('thead', null, h('tr', null, ...['模型', '年化超额', '信息比率', '超额回撤', '2019-23', '2024 起', '跑赢年数', '绝对年化', '夏普', '最大回撤', '预期', '状态'].map(x => h('th', null, x)))),
       h('tbody', null, MM.order.map(k => { const s = MM.stats[k], m = MM.meta[k];
         return h('tr', null, h('td', null, m.name), h('td', {class: 'c'}, h('b', {class: cls(s.ex)}, p1(s.ex))), h('td', {class: 'c'}, s.ir.toFixed(2)), h('td', {class: 'c'}, p1(s.ex_mdd)),
-          h('td', {class: 'c ' + cls(s.ex_1923)}, p1(s.ex_1923)), h('td', {class: 'c ' + cls(s.ex_2426)}, p1(s.ex_2426)), h('td', {class: 'c'}, s.win_years), h('td', {class: 'c'}, p1(s.cagr)), h('td', {class: 'c'}, p1(s.mdd)), h('td', {class: 'c'}, m.expect), h('td', {style: 'font-family:var(--cjk);color:var(--ink2)'}, m.status)); })));
+          h('td', {class: 'c ' + cls(s.ex_1923)}, p1(s.ex_1923)), h('td', {class: 'c ' + cls(s.ex_2426)}, p1(s.ex_2426)), h('td', {class: 'c'}, s.win_years), h('td', {class: 'c'}, p1(s.cagr)), h('td', {class: 'c'}, s.sharpe == null ? '—' : s.sharpe.toFixed(2)), h('td', {class: 'c'}, p1(s.mdd)), h('td', {class: 'c'}, m.expect), h('td', {style: 'font-family:var(--cjk);color:var(--ink2)'}, m.status)); })));
     $('m_desc').append(h('thead', null, h('tr', null, ...['模型', '构造', '持仓', '主要风险'].map(x => h('th', null, x)))),
       h('tbody', null, MM.order.map(k => { const m = MM.meta[k]; return h('tr', null, h('td', null, m.name), h('td', null, m.idea), h('td', null, m.hold), h('td', null, m.risk)); })));
     const NM = Object.fromEntries(MM.order.map(k => [k, MM.meta[k].name.split(' ')[0]]));
@@ -1211,9 +1211,9 @@ function drawCharts() {
 // 三套模型的曲线：累计超额（÷ 股票池等权）或净值，两个视图共用一张图
 function drawModels() {
   const MM = D.model?.models; if (!MM) return;
-  const C = MM.curve, col = {v1: css('--ink3'), p14: css('--s2'), lgb: css('--s3'), mix: css('--s4'), t5: css('--up')};
-  const name = {v1: 'v1', p14: 'P14', lgb: 'LGB', mix: 'P14+LGB 各半', t5: 'T5 稳进'};
-  const ser = MM.order.map(k => line(name[k], mKind === 'ex' ? C[k].map((v, i) => +(v / C.ew[i]).toFixed(4)) : C[k], col[k], k === 'mix' ? 2.6 : 1.7));
+  const C = MM.curve, col = {f2: css('--ink'), v1: css('--ink3'), p14: css('--s2'), lgb: css('--s3'), mix: css('--s4'), t5: css('--up')};
+  const name = {f2: 'F2', v1: 'v1', p14: 'P14', lgb: 'LGB', mix: 'P14+LGB 各半', t5: 'T5 稳进'};
+  const ser = MM.order.map(k => line(name[k], mKind === 'ex' ? C[k].map((v, i) => +(v / C.ew[i]).toFixed(4)) : C[k], col[k], k === 'f2' ? 2.6 : 1.5));
   if (mKind === 'ex') ser[0].markLine = {silent: true, symbol: 'none', label: {show: false}, lineStyle: {color: css('--ink3'), type: 'dashed'}, data: [{yAxis: 1}]};
   else ser.push(line('股票池等权', C.ew, css('--ink2'), 1.2, {lineStyle: {width: 1.2, color: css('--ink2'), type: 'dashed'}}), line('中证1000', C.csi1000, css('--line2'), 1.2));
   const last = (n) => { const s = ser.find(x => x.name === n); return s ? s.data[s.data.length - 1] : null; };
