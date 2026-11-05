@@ -175,7 +175,7 @@ details.docx>.doc{padding:0 18px 14px}
     </section>
     <section>
       <div class="sh"><span class="no">04</span><h2>今日排名</h2><p>每个模型打分最高的股票；理由取该股得分贡献最大的两项</p></div>
-      <div class="tabs" id="cand_tabs"><button class="on" data-k="p14">P14 前 30</button><button data-k="lgb">LGB 前 30</button><button data-k="t5">T5 候选</button><button data-k="v1_main">v1 主板前 30</button><button data-k="v1_gem">v1 创业板/科创板前 20</button></div>
+      <div class="tabs" id="cand_tabs"><button class="on" data-k="nn3">NN3 前 30</button><button data-k="p14">P14 前 30</button><button data-k="lgb">LGB 前 30</button><button data-k="t5">T5 候选</button><button data-k="v1_main">v1 主板前 30</button><button data-k="v1_gem">v1 创业板/科创板前 20</button></div>
       <p class="lede" id="cand_note"></p>
       <div class="card scroll"><table id="cand"></table></div>
     </section>
@@ -265,8 +265,8 @@ const saved = store.get(KEY);
 if (saved) unlock(saved, (() => { try { return !!localStorage.getItem(KEY); } catch (e) { return false; } })(), true); else $('pw').focus();
 
 // ---------------- 渲染
-let V = null, cur = null, cand = 'p14';
-const TONE = {mix: '--s4', p14: '--s2', lgb: '--s3', t5: '--up', v1: '--ink3'};
+let V = null, cur = null, cand = 'nn3';
+const TONE = {nn3: '--ink', mix: '--s4', p14: '--s2', lgb: '--s3', t5: '--up', v1: '--ink3'};
 function render(data) {
   V = data;
   $('asof').textContent = V.date;
@@ -372,8 +372,9 @@ function showAcct(k) {
 }
 
 function showCand() {
+  if (cand === 'nn3' && !(V.candidates.nn3 || []).length) cand = 'p14';  // NN3 第一份信号进来之前先看 P14
   [...$('cand_tabs').children].forEach(b => b.classList.toggle('on', b.dataset.k === cand));
-  const rows = V.candidates[cand] || [], acct = {p14: 'p14', lgb: 'lgb', t5: 't5', v1_main: 'v1', v1_gem: null}[cand];
+  const rows = V.candidates[cand] || [], acct = {nn3: 'nn3', p14: 'p14', lgb: 'lgb', t5: 't5', v1_main: 'v1', v1_gem: null}[cand];
   const held = new Set((V.accounts[acct]?.holdings || []).map(r => r.code));
   $('cand_note').textContent = {t5: 'T5：3 年都盈利、中期趋势向上、近 5 日回调的票，低换手排前面。明天有空位就按顺序买。', p14: 'P14：低波动、没被炒热、估值便宜的票排前面。', lgb: 'LGB：机器学习打分，近期偏好小市值、流动性折价、超跌的票，波动会比 P14 大。',
     v1_main: 'v1：留出期没通过，只做观察对照。', v1_gem: '创业板/科创板：同一个 v1 模型，没有单独验证过，只作参考，不进模拟账户。'}[cand];
