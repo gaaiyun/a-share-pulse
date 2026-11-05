@@ -11,12 +11,12 @@
 @font-face{font-family:Plex;src:url(assets/plexmono-600.woff2) format('woff2');font-weight:600;font-display:swap}
 @font-face{font-family:Bodoni;src:url(assets/bodoni-num.woff2) format('woff2');font-weight:500;font-display:swap}
 @font-face{font-family:NSC;src:url(assets/serif-sc.woff2) format('woff2');font-weight:600;font-display:swap}
-/* 纸面版：暖白纸、墨黑字、一种朱砂。图表配色都过了 dataviz 校验器 */
+/* 冷调中性底、墨黑字、一种朱砂。图表配色都过了 dataviz 校验器 */
 :root{
-  --bg:#F6F3EC;--panel:#F6F3EC;--panel2:#EDE9DF;--line:#DDD7CA;--line2:#B9B2A3;
-  --ink:#141311;--ink2:#4B4740;--ink3:#7F7A70;
-  --up:#B3301E;--down:#157F5C;--amber:#A8700F;--cyan:#1F6AA5;--violet:#5B4BB8;
-  --upbg:rgba(179,48,30,.08);--downbg:rgba(21,127,92,.08);--amberbg:rgba(168,112,15,.09);
+  --bg:#F4F6F9;--panel:#F4F6F9;--panel2:#E9EDF3;--line:#DCE1E9;--line2:#B3BBC8;
+  --ink:#10151C;--ink2:#444D5B;--ink3:#76808F;
+  --up:#B3301E;--down:#0F8058;--amber:#A8700F;--cyan:#1F6AA5;--violet:#5B4BB8;
+  --upbg:rgba(179,48,30,.08);--downbg:rgba(15,128,88,.08);--amberbg:rgba(31,106,165,.08);
   --s2:#1F6AA5;--s3:#A8700F;--s4:#5B4BB8;
   --cjk:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
   --serif:NSC,"Source Han Serif SC","Noto Serif CJK SC","Songti SC","STSong",serif;
@@ -26,18 +26,18 @@
   --gut:clamp(16px,3.2vw,44px);
 }
 :root[data-theme="dark"]{
-  --bg:#101010;--panel:#101010;--panel2:#1A1A18;--line:#2B2A27;--line2:#4A4843;
-  --ink:#EDE8DD;--ink2:#B5B0A5;--ink3:#7E7A71;
+  --bg:#0F1318;--panel:#0F1318;--panel2:#191E26;--line:#272C35;--line2:#444B57;
+  --ink:#E8EBF0;--ink2:#AEB5C0;--ink3:#78808D;
   --up:#E0503F;--down:#2BA582;--amber:#C4861A;--cyan:#3F96C4;--violet:#8A78F0;
-  --upbg:rgba(224,80,63,.13);--downbg:rgba(43,165,130,.13);--amberbg:rgba(196,134,26,.12);
+  --upbg:rgba(224,80,63,.13);--downbg:rgba(43,165,130,.13);--amberbg:rgba(63,150,196,.12);
   --s2:#3F96C4;--s3:#C4861A;--s4:#8A78F0;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#101010;--panel:#101010;--panel2:#1A1A18;--line:#2B2A27;--line2:#4A4843;
-    --ink:#EDE8DD;--ink2:#B5B0A5;--ink3:#7E7A71;
+    --bg:#0F1318;--panel:#0F1318;--panel2:#191E26;--line:#272C35;--line2:#444B57;
+    --ink:#E8EBF0;--ink2:#AEB5C0;--ink3:#78808D;
     --up:#E0503F;--down:#2BA582;--amber:#C4861A;--cyan:#3F96C4;--violet:#8A78F0;
-    --upbg:rgba(224,80,63,.13);--downbg:rgba(43,165,130,.13);--amberbg:rgba(196,134,26,.12);
+    --upbg:rgba(224,80,63,.13);--downbg:rgba(43,165,130,.13);--amberbg:rgba(63,150,196,.12);
     --s2:#3F96C4;--s3:#C4861A;--s4:#8A78F0;
   }
 }
@@ -233,27 +233,27 @@ tbody tr:hover td{background:var(--panel2)}
 .vault-link em{font-size:13px;font-style:normal;color:var(--ink3);white-space:nowrap}
 
 /* 轮动圈：整幅黑底 */
-.plate{position:relative;z-index:1;grid-column:1/-1;margin:0 calc(50% - 50vw) 44px;background:#0E0E0D;color:#EDE8DD;padding:clamp(26px,4vw,56px) 0 clamp(22px,3vw,40px)}
+.plate{position:relative;z-index:1;grid-column:1/-1;margin:0 calc(50% - 50vw) 44px;background:#0B0E13;color:#E8EBF0;padding:clamp(26px,4vw,56px) 0 clamp(22px,3vw,40px)}
 .plate-in{max-width:1360px;margin:0 auto;padding:0 var(--gut);display:grid;grid-template-columns:minmax(250px,340px) minmax(0,1fr);gap:clamp(20px,4vw,64px);align-items:start}
 .plate h3{margin:0;font:600 clamp(30px,3.6vw,48px)/1.2 var(--serif);letter-spacing:.02em}
 .plate .when{margin:14px 0 2px;font:500 42px/1 var(--disp);letter-spacing:.01em;font-variant-numeric:lining-nums}
-.plate .how{margin:10px 0 0;font-size:13px;line-height:1.72;color:#9B968B}
-.rq{margin:22px 0 0;border-top:1px solid #33322E}
-.rq div{padding:10px 0 11px;border-bottom:1px solid #2A2925}
+.plate .how{margin:10px 0 0;font-size:13px;line-height:1.72;color:#98A0AD}
+.rq{margin:22px 0 0;border-top:1px solid #2C323C}
+.rq div{padding:10px 0 11px;border-bottom:1px solid #242932}
 .rq h4{margin:0 0 3px;font:600 15px/1.4 var(--serif);display:flex;justify-content:space-between;align-items:baseline}
-.rq h4 small{font:12px var(--cjk);color:#8B867B}
-.rq p{margin:0;font-size:13.5px;line-height:1.75;color:#C9C4B8}
-.rq p span{cursor:default;white-space:nowrap}.rq p span:hover,.rq p span.on{color:#fff;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#6d6a62}
-.rq p.none{color:#6d6a62}
+.rq h4 small{font:12px var(--cjk);color:#87909D}
+.rq p{margin:0;font-size:13.5px;line-height:1.75;color:#C4CAD4}
+.rq p span{cursor:default;white-space:nowrap}.rq p span:hover,.rq p span.on{color:#fff;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#656D7A}
+.rq p.none{color:#656D7A}
 .ring{position:relative;max-width:800px;width:100%;margin-left:auto}
 .ring canvas{display:block;width:100%;aspect-ratio:1/1;touch-action:pan-y;cursor:crosshair}
-.rtip{position:absolute;pointer-events:none;background:#EDE8DD;color:#141311;padding:7px 10px;font-size:12.5px;line-height:1.6;white-space:nowrap;transform:translate(-50%,-115%);z-index:2}
+.rtip{position:absolute;pointer-events:none;background:#E8EBF0;color:#10151C;padding:7px 10px;font-size:12.5px;line-height:1.6;white-space:nowrap;transform:translate(-50%,-115%);z-index:2}
 .rtip b{display:block;font:600 14px var(--serif)}
 .rctl{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;margin-top:10px}
-.rctl button{background:none;border:1px solid #4A4843;color:#EDE8DD;font:13px var(--cjk);padding:3px 13px;cursor:pointer}
-.rctl button:hover{border-color:#EDE8DD}
-.rctl input{width:100%;accent-color:#EDE8DD;height:18px;background:transparent}
-.rctl span{font:12px var(--mono);color:#9B968B;white-space:nowrap}
+.rctl button{background:none;border:1px solid #444B57;color:#E8EBF0;font:13px var(--cjk);padding:3px 13px;cursor:pointer}
+.rctl button:hover{border-color:#E8EBF0}
+.rctl input{width:100%;accent-color:#E8EBF0;height:18px;background:transparent}
+.rctl span{font:12px var(--mono);color:#98A0AD;white-space:nowrap}
 
 /* 盘中 */
 .live{padding-bottom:30px}
@@ -886,7 +886,7 @@ function rotation() {
   const R = X.sectors?.rrg; if (!R) return;
   $('rrg_plate').hidden = false;
   const cv = $('rrg'), ctx = cv.getContext('2d'), names = Object.keys(R.x), N = R.dates.length, last = N - 1, first = R.tail;
-  const RED = '#E0503F', GRN = '#2BA582', INK = '#EDE8DD', BG = '#0E0E0D';
+  const RED = '#E0503F', GRN = '#2BA582', INK = '#E8EBF0', BG = '#0B0E13';
   const info = Object.fromEntries((X.sectors.rows || []).map(r => [r.name, r]));
   const QN = {lead: '领先', weak: '转弱', lag: '落后', impr: '改善'};
   const quad = (p) => p[0] >= 0 ? (p[1] >= 0 ? 'lead' : 'weak') : (p[1] >= 0 ? 'impr' : 'lag');
@@ -902,18 +902,18 @@ function rotation() {
   function draw() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, S, S);
     const c = S / 2, RR = RAD();
-    const g = ctx.createRadialGradient(c, c, 0, c, c, RR); g.addColorStop(0, 'rgba(237,232,221,.075)'); g.addColorStop(.7, 'rgba(237,232,221,.02)'); g.addColorStop(1, 'rgba(237,232,221,0)');
+    const g = ctx.createRadialGradient(c, c, 0, c, c, RR); g.addColorStop(0, 'rgba(232,235,240,.075)'); g.addColorStop(.7, 'rgba(232,235,240,.02)'); g.addColorStop(1, 'rgba(232,235,240,0)');
     ctx.fillStyle = g; ctx.beginPath(); ctx.arc(c, c, RR, 0, 7); ctx.fill();
     ctx.lineWidth = 1;
-    for (const z of [1, 2, 3.2]) { ctx.strokeStyle = 'rgba(237,232,221,.11)'; ctx.beginPath(); ctx.arc(c, c, rad(z), 0, 7); ctx.stroke(); }
-    ctx.strokeStyle = 'rgba(237,232,221,.32)'; ctx.beginPath(); ctx.arc(c, c, RR, 0, 7); ctx.stroke();
-    ctx.strokeStyle = 'rgba(237,232,221,.16)'; ctx.beginPath(); ctx.moveTo(c - RR, c); ctx.lineTo(c + RR, c); ctx.moveTo(c, c - RR); ctx.lineTo(c, c + RR); ctx.stroke();
+    for (const z of [1, 2, 3.2]) { ctx.strokeStyle = 'rgba(232,235,240,.11)'; ctx.beginPath(); ctx.arc(c, c, rad(z), 0, 7); ctx.stroke(); }
+    ctx.strokeStyle = 'rgba(232,235,240,.32)'; ctx.beginPath(); ctx.arc(c, c, RR, 0, 7); ctx.stroke();
+    ctx.strokeStyle = 'rgba(232,235,240,.16)'; ctx.beginPath(); ctx.moveTo(c - RR, c); ctx.lineTo(c + RR, c); ctx.moveTo(c, c - RR); ctx.lineTo(c, c + RR); ctx.stroke();
     // 外圈四段顺时针的短弧
-    const Rr = RR + 12; ctx.strokeStyle = 'rgba(237,232,221,.42)';
+    const Rr = RR + 12; ctx.strokeStyle = 'rgba(232,235,240,.42)';
     for (let k = 0; k < 4; k++) { const a0 = -Math.PI / 4 - .32 + k * Math.PI / 2, a1 = a0 + .64; ctx.beginPath(); ctx.arc(c, c, Rr, a0, a1); ctx.stroke();
       const ax = c + Rr * Math.cos(a1), ay = c + Rr * Math.sin(a1), t = a1 + Math.PI / 2; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax - 6 * Math.cos(t - .5), ay - 6 * Math.sin(t - .5)); ctx.moveTo(ax, ay); ctx.lineTo(ax - 6 * Math.cos(t + .5), ay - 6 * Math.sin(t + .5)); ctx.stroke(); }
     const small = S < 480;
-    ctx.fillStyle = 'rgba(237,232,221,.5)'; ctx.font = `600 ${small ? 14 : 19}px NSC,"Songti SC",serif`; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(232,235,240,.5)'; ctx.font = `600 ${small ? 14 : 19}px NSC,"Songti SC",serif`; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
     const q0 = RR * .71 * .93;
     ctx.fillText('领先', c + q0, c - q0); ctx.fillText('转弱', c + q0, c + q0); ctx.fillText('落后', c - q0, c + q0); ctx.fillText('改善', c - q0, c - q0);
     ctx.lineCap = 'round';
@@ -936,7 +936,7 @@ function rotation() {
       if (x + w > S - 2) x = h.q[0] - h.rad - 4 - w;
       const hit = boxes.some(b => x < b[0] + b[2] && x + w > b[0] && y < b[1] + b[3] && y + lh > b[1]);
       if (hit && h.n !== hover) continue; boxes.push([x, y, w, lh]);
-      ctx.globalAlpha = hover && hover !== h.n ? .3 : 1; ctx.lineWidth = 3; ctx.lineJoin = 'round'; ctx.strokeStyle = BG; ctx.strokeText(h.n, x, y + lh / 2); ctx.fillStyle = hover === h.n ? '#fff' : 'rgba(237,232,221,.88)'; ctx.fillText(h.n, x, y + lh / 2); }
+      ctx.globalAlpha = hover && hover !== h.n ? .3 : 1; ctx.lineWidth = 3; ctx.lineJoin = 'round'; ctx.strokeStyle = BG; ctx.strokeText(h.n, x, y + lh / 2); ctx.fillStyle = hover === h.n ? '#fff' : 'rgba(232,235,240,.88)'; ctx.fillText(h.n, x, y + lh / 2); }
     ctx.globalAlpha = 1;
     const di = Math.round(f); $('rrg_when').textContent = R.dates[di].slice(5).replace('-', '.'); $('rrg_lab').textContent = R.dates[di]; $('rrg_t').value = f;
     lists(heads);

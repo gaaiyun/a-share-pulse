@@ -12,10 +12,10 @@
 @font-face{font-family:Bodoni;src:url(assets/bodoni-num.woff2) format('woff2');font-weight:500;font-display:swap}
 @font-face{font-family:NSC;src:url(assets/serif-sc.woff2) format('woff2');font-weight:600;font-display:swap}
 :root{
-  --bg:#F6F3EC;--panel:#F6F3EC;--panel2:#EDE9DF;--line:#DDD7CA;--line2:#B9B2A3;
-  --ink:#141311;--ink2:#4B4740;--ink3:#7F7A70;
-  --up:#B3301E;--down:#157F5C;--amber:#A8700F;--cyan:#1F6AA5;--violet:#5B4BB8;
-  --upbg:rgba(179,48,30,.08);--downbg:rgba(21,127,92,.08);--amberbg:rgba(168,112,15,.09);
+  --bg:#F4F6F9;--panel:#F4F6F9;--panel2:#E9EDF3;--line:#DCE1E9;--line2:#B3BBC8;
+  --ink:#10151C;--ink2:#444D5B;--ink3:#76808F;
+  --up:#B3301E;--down:#0F8058;--amber:#A8700F;--cyan:#1F6AA5;--violet:#5B4BB8;
+  --upbg:rgba(179,48,30,.08);--downbg:rgba(15,128,88,.08);--amberbg:rgba(31,106,165,.08);
   --s2:#1F6AA5;--s3:#A8700F;--s4:#5B4BB8;
   --cjk:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
   --serif:NSC,"Source Han Serif SC","Noto Serif CJK SC","Songti SC","STSong",serif;
@@ -25,18 +25,18 @@
   --gut:clamp(16px,3.2vw,44px);
 }
 :root[data-theme="dark"]{
-  --bg:#101010;--panel:#101010;--panel2:#1A1A18;--line:#2B2A27;--line2:#4A4843;
-  --ink:#EDE8DD;--ink2:#B5B0A5;--ink3:#7E7A71;
+  --bg:#0F1318;--panel:#0F1318;--panel2:#191E26;--line:#272C35;--line2:#444B57;
+  --ink:#E8EBF0;--ink2:#AEB5C0;--ink3:#78808D;
   --up:#E0503F;--down:#2BA582;--amber:#C4861A;--cyan:#3F96C4;--violet:#8A78F0;
-  --upbg:rgba(224,80,63,.13);--downbg:rgba(43,165,130,.13);--amberbg:rgba(196,134,26,.12);
+  --upbg:rgba(224,80,63,.13);--downbg:rgba(43,165,130,.13);--amberbg:rgba(63,150,196,.12);
   --s2:#3F96C4;--s3:#C4861A;--s4:#8A78F0;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#101010;--panel:#101010;--panel2:#1A1A18;--line:#2B2A27;--line2:#4A4843;
-    --ink:#EDE8DD;--ink2:#B5B0A5;--ink3:#7E7A71;
+    --bg:#0F1318;--panel:#0F1318;--panel2:#191E26;--line:#272C35;--line2:#444B57;
+    --ink:#E8EBF0;--ink2:#AEB5C0;--ink3:#78808D;
     --up:#E0503F;--down:#2BA582;--amber:#C4861A;--cyan:#3F96C4;--violet:#8A78F0;
-    --upbg:rgba(224,80,63,.13);--downbg:rgba(43,165,130,.13);--amberbg:rgba(196,134,26,.12);
+    --upbg:rgba(224,80,63,.13);--downbg:rgba(43,165,130,.13);--amberbg:rgba(63,150,196,.12);
     --s2:#3F96C4;--s3:#C4861A;--s4:#8A78F0;
   }
 }
