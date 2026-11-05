@@ -1,15 +1,30 @@
 {
  "date": "2026-11-04",
- "at": "2026-11-05 04:34",
- "wave": "morning",
+ "at": "2026-11-05 08:43",
+ "wave": "close",
  "next": "2026-11-05",
- "ok": 14,
+ "ok": 15,
  "total": 15,
  "steps": [
   {
    "step": "指数日线",
    "ok": true,
-   "sec": 3.6
+   "sec": 3.7
+  },
+  {
+   "step": "乐咕估值与宽度",
+   "ok": true,
+   "sec": 19.2
+  },
+  {
+   "step": "两融账户",
+   "ok": true,
+   "sec": 10.4
+  },
+  {
+   "step": "国债收益率",
+   "ok": true,
+   "sec": 3.2
   },
   {
    "step": "涨停池回填",
@@ -19,22 +34,27 @@
   {
    "step": "新浪全市场截面",
    "ok": true,
-   "sec": 56.3
+   "sec": 59.1
   },
   {
    "step": "当日涨停池",
    "ok": true,
-   "sec": 4.7
+   "sec": 4.6
   },
   {
    "step": "行业与概念板块",
    "ok": true,
-   "sec": 7.3
+   "sec": 6.8
   },
   {
    "step": "龙虎榜",
    "ok": true,
-   "sec": 4.8
+   "sec": 4.4
+  },
+  {
+   "step": "上交所宽基ETF份额",
+   "ok": true,
+   "sec": 2.1
   },
   {
    "step": "赚钱效应(乐咕)",
@@ -49,37 +69,17 @@
   {
    "step": "解禁",
    "ok": true,
-   "sec": 4.3
+   "sec": 3.3
   },
   {
    "step": "新股与股息率",
    "ok": true,
-   "sec": 7.8
+   "sec": 7.7
   },
   {
    "step": "全市场聚合",
    "ok": true,
    "sec": 3.0
-  },
-  {
-   "step": "两融账户",
-   "ok": true,
-   "sec": 13.4
-  },
-  {
-   "step": "乐咕估值与宽度",
-   "ok": true,
-   "sec": 14.5
-  },
-  {
-   "step": "国债收益率",
-   "ok": false,
-   "err": "ConnectTimeout: HTTPSConnectionPool(host='datacenter.eastmoney.com', port=443): Max retries exceeded with url: /api/data/get?type=RPTA_WEB_TREASURYYIELD&sty=ALL&st=SOLAR_DATE&sr=-1&token=894050c76af8597a853f5b408b759f5d&p=1&ps=500&pageNo=1&pageNum=1 (Caused by ConnectTimeoutError(<HTTPSConnection(ho"
-  },
-  {
-   "step": "上交所宽基ETF份额",
-   "ok": true,
-   "sec": 3.5
   }
  ]
 }
