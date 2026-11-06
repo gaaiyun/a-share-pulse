@@ -476,6 +476,7 @@ tbody tr:hover td{background:var(--panel2)}
     <div class="sh"><span class="no">10</span><h2>选股模型</h2></div>
     <dl class="spec" id="m_spec"></dl>
     <div class="card" style="margin-top:18px"><h3>模型一览</h3><p class="sub" id="m_tb_sub"></p><div class="scroll"><table class="yt mt" id="m_table"></table></div></div>
+    <div class="card" style="margin-top:18px"><h3>全部候选模型</h3><p class="sub" id="m_board_sub"></p><div class="scroll"><table class="yt mt" id="m_board"></table></div></div>
     <div class="card" style="margin-top:18px"><h3>构造与主要风险</h3><div class="scroll"><table class="tx" id="m_desc"></table></div></div>
     <div class="grid g32" style="margin-top:18px">
       <div class="card"><div class="tabs" id="m_tabs"><button class="on" data-k="ex">累计超额</button><button data-k="nav">净值</button></div>
@@ -718,6 +719,13 @@ function texts() {
       h('tbody', null, MM.order.map(k => { const s = MM.stats[k], m = MM.meta[k];
         return h('tr', null, h('td', null, m.name), h('td', {class: 'c'}, h('b', {class: cls(s.ex)}, p1(s.ex))), h('td', {class: 'c'}, s.ir.toFixed(2)), h('td', {class: 'c'}, p1(s.ex_mdd)),
           h('td', {class: 'c ' + cls(s.ex_1923)}, p1(s.ex_1923)), h('td', {class: 'c ' + cls(s.ex_2426)}, p1(s.ex_2426)), h('td', {class: 'c'}, s.win_years), h('td', {class: 'c'}, p1(s.cagr)), h('td', {class: 'c'}, s.sharpe == null ? '—' : s.sharpe.toFixed(2)), h('td', {class: 'c'}, p1(s.mdd)), h('td', {class: 'c'}, m.expect), h('td', {style: 'font-family:var(--cjk);color:var(--ink2)'}, m.status)); })));
+    if (MM.board) {
+      $('m_board_sub').textContent = '同一套滚动样本外口径，按信息比率排序；包括没成立的和还在跑的。累计登记试验 ' + MM.board.n_trials + ' 次，排在前面的有选择偏差';
+      $('m_board').append(h('thead', null, h('tr', null, ...['模型', '做法', '年化超额', '信息比率', '夏普', '超额回撤', '跑赢年数', '结论'].map(x => h('th', null, x)))),
+        h('tbody', null, MM.board.rows.map(r => h('tr', null, h('td', null, r.name), h('td', {style: 'font-family:var(--cjk);color:var(--ink2);white-space:normal;min-width:180px'}, r.how),
+          h('td', {class: 'c ' + cls(r.ex)}, r.ex == null ? '—' : p1(r.ex)), h('td', {class: 'c'}, r.ir == null ? '—' : r.ir.toFixed(2)), h('td', {class: 'c'}, r.sharpe == null ? '—' : r.sharpe.toFixed(2)),
+          h('td', {class: 'c'}, r.ex_mdd == null ? '—' : p1(r.ex_mdd)), h('td', {class: 'c'}, r.win || '—'), h('td', {style: 'font-family:var(--cjk);color:var(--ink2)'}, r.status)))));
+    }
     $('m_desc').append(h('thead', null, h('tr', null, ...['模型', '构造', '持仓', '主要风险'].map(x => h('th', null, x)))),
       h('tbody', null, MM.order.map(k => { const m = MM.meta[k]; return h('tr', null, h('td', null, m.name), h('td', null, m.idea), h('td', null, m.hold), h('td', null, m.risk)); })));
     const NM = Object.fromEntries(MM.order.map(k => [k, MM.meta[k].name.split(' ')[0]]));
@@ -1211,9 +1219,9 @@ function drawCharts() {
 // 三套模型的曲线：累计超额（÷ 股票池等权）或净值，两个视图共用一张图
 function drawModels() {
   const MM = D.model?.models; if (!MM) return;
-  const C = MM.curve, col = {f2: css('--ink'), v1: css('--ink3'), p14: css('--s2'), lgb: css('--s3'), mix: css('--s4'), t5: css('--up')};
-  const name = {f2: 'F2', v1: 'v1', p14: 'P14', lgb: 'LGB', mix: 'P14+LGB 各半', t5: 'T5 稳进'};
-  const ser = MM.order.map(k => line(name[k], mKind === 'ex' ? C[k].map((v, i) => +(v / C.ew[i]).toFixed(4)) : C[k], col[k], k === 'f2' ? 2.6 : 1.5));
+  const C = MM.curve, col = {nn3: css('--ink'), f2: css('--s2'), v1: css('--ink3'), p14: css('--s2'), lgb: css('--s3'), mix: css('--s4'), t5: css('--up')};
+  const name = {nn3: 'NN3', f2: 'F2', v1: 'v1', p14: 'P14', lgb: 'LGB', mix: 'P14+LGB 各半', t5: 'T5 稳进'};
+  const ser = MM.order.map(k => line(name[k], mKind === 'ex' ? C[k].map((v, i) => +(v / C.ew[i]).toFixed(4)) : C[k], col[k], k === 'nn3' ? 2.6 : 1.5));
   if (mKind === 'ex') ser[0].markLine = {silent: true, symbol: 'none', label: {show: false}, lineStyle: {color: css('--ink3'), type: 'dashed'}, data: [{yAxis: 1}]};
   else ser.push(line('股票池等权', C.ew, css('--ink2'), 1.2, {lineStyle: {width: 1.2, color: css('--ink2'), type: 'dashed'}}), line('中证1000', C.csi1000, css('--line2'), 1.2));
   const last = (n) => { const s = ser.find(x => x.name === n); return s ? s.data[s.data.length - 1] : null; };
