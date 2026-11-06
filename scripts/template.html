@@ -483,6 +483,7 @@ tbody tr:hover td{background:var(--panel2)}
         <p class="sub" id="m_curve_sub"></p><div class="chart" id="c_models" style="height:340px"></div></div>
       <div class="card"><h3>分年超额（相对股票池等权，费后）</h3><p class="sub">2019 年起每一年都是样本外</p><div class="scroll"><table class="yt" id="m_years"></table></div></div>
     </div>
+    <div class="card" style="margin-top:18px" id="nn3_card" hidden><h3>NN3 主要看什么</h3><p class="sub" id="m_nn3_sub"></p><div class="keys" id="m_nn3_keys"></div><div id="m_nn3"></div></div>
     <div class="grid g2" style="margin-top:18px">
       <div class="card"><h3>LGB 主要看什么</h3><p class="sub" id="m_lgb_sub"></p><div class="keys" id="m_lgb_keys"></div><div id="m_lgb"></div></div>
       <div class="card"><h3>P14 的因子块权重</h3><p class="sub" id="m_p14_sub"></p><div id="m_p14"></div>
@@ -739,6 +740,14 @@ function texts() {
         ...MM.order.map(k => { const v = MM.years[k][y]; return h('td', {class: 'c ' + cls(v), style: heat(v)}, p1(v)); })))),
       h('tfoot', null, [['年化超额', k => p1(S[k].ex)], ['信息比率', k => S[k].ir.toFixed(2)], ['平均持有', k => S[k].hold_days ? Math.round(S[k].hold_days) + ' 天' : '—'],
         ['年换手', k => S[k].turnover ? S[k].turnover.toFixed(1) + ' 倍' : '—']].map(([a, f]) => h('tr', null, h('td', null, a), ...MM.order.map(k => h('td', null, f(k)))))));
+    const N = MM.nn3_imp, NC = {'量价': 'var(--s2)', '现代计量': 'var(--s4)', '财报与质量': 'var(--s3)', '股东与事件': 'var(--ink3)'};
+    if (N) {
+      $('nn3_card').hidden = false;
+      $('m_nn3_sub').textContent = '置换重要性：在模型训练截止后的 ' + N.start + ' 至 ' + N.end + '（' + N.n_dates + ' 个截面，样本外 RankIC ' + N.base_ic.toFixed(3) + '）逐个打乱特征，看 IC 降多少；' + N.n_features + ' 个特征中的前 15 个。神经网络里同一特征高低都可能加分，所以只看分量，不标方向';
+      $('m_nn3_keys').append(...Object.entries(N.by_group).map(([g, v]) => h('span', null, h('i', {style: 'background:' + NC[g]}), g + ' ' + Math.round(v * 100) + '%')));
+      const nmx = N.top[0].share;
+      $('m_nn3').append(...N.top.map(r => h('div', {class: 'hbar'}, h('span', null, r.name), h('div', {class: 'tr'}, h('i', {style: `width:${r.share / nmx * 100}%;background:${NC[r.group]}`})), h('small', null, (r.share * 100).toFixed(1) + '%'))));
+    }
     const G = MM.lgb, GC = {'量价': 'var(--s2)', '财报': 'var(--s3)', '股东与事件': 'var(--s4)'};
     $('m_lgb_sub').textContent = (G.train_end || '').slice(0, 4) + ' 年底训练版，' + G.n_features + ' 个特征，分裂增益占比前 15；非线性模型，不标方向';
     $('m_lgb_keys').append(...Object.entries(G.by_group).map(([g, v]) => h('span', null, h('i', {style: 'background:' + GC[g]}), g + ' ' + Math.round(v * 100) + '%')));
