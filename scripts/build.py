@@ -476,6 +476,7 @@ def main():
         'collect': json.loads((DATA / 'last_collect.json').read_text(encoding='utf-8')) if (DATA / 'last_collect.json').exists() else None,
         # 选股模型的回测与留出期检验（研究在私有仓库做，这里只放统计和曲线）
         'model': json.loads((DATA / 'model_backtest.json').read_text(encoding='utf-8')) if (DATA / 'model_backtest.json').exists() else None,
+        'factor_research': json.loads((DATA / 'factor_research.json').read_text(encoding='utf-8')) if (DATA / 'factor_research.json').exists() else None,
     }
     D['x'] = insights.build(D, mm, piv)
     D['takeaways'] = takeaways(D)

@@ -477,6 +477,11 @@ tbody tr:hover td{background:var(--panel2)}
     <dl class="spec" id="m_spec"></dl>
     <div class="card" style="margin-top:18px"><h3>模型一览</h3><p class="sub" id="m_tb_sub"></p><div class="scroll"><table class="yt mt" id="m_table"></table></div></div>
     <div class="card" style="margin-top:18px"><h3>全部候选模型</h3><p class="sub" id="m_board_sub"></p><div class="scroll"><table class="yt mt" id="m_board"></table></div></div>
+    <div class="card" style="margin-top:18px" id="agent_research" hidden>
+      <h3>Agent 因子研究</h3><p class="sub" id="agent_research_sub"></p>
+      <div id="agent_research_batches"></div>
+      <p class="sub" id="agent_research_limits"></p>
+    </div>
     <div class="card" style="margin-top:18px"><h3>构造与主要风险</h3><div class="scroll"><table class="tx" id="m_desc"></table></div></div>
     <div class="grid g32" style="margin-top:18px">
       <div class="card"><div class="tabs" id="m_tabs"><button class="on" data-k="ex">累计超额</button><button data-k="nav">净值</button></div>
@@ -726,6 +731,33 @@ function texts() {
         h('tbody', null, MM.board.rows.map(r => h('tr', null, h('td', null, r.name), h('td', {style: 'font-family:var(--cjk);color:var(--ink2);white-space:normal;min-width:180px'}, r.how),
           h('td', {class: 'c ' + cls(r.ex)}, r.ex == null ? '—' : p1(r.ex)), h('td', {class: 'c'}, r.ir == null ? '—' : r.ir.toFixed(2)), h('td', {class: 'c'}, r.sharpe == null ? '—' : r.sharpe.toFixed(2)),
           h('td', {class: 'c'}, r.ex_mdd == null ? '—' : p1(r.ex_mdd)), h('td', {class: 'c'}, r.win || '—'), h('td', {style: 'font-family:var(--cjk);color:var(--ink2)'}, r.status)))));
+    }
+    const AR = D.factor_research;
+    if (AR) {
+      $('agent_research').hidden = false;
+      $('agent_research_sub').textContent = '截至 ' + AR.updated_at + ' · 记录完整探索过程；研究结果与模拟账户采用状态分别展示。';
+      for (const b of AR.batches) {
+        const box = h('div', {style: 'margin-top:20px'});
+        box.append(h('h4', null, b.name + ' · ' + b.status));
+        const source = h('p', {class: 'sub'}, b.method + ' ');
+        if (b.source_url) source.append(h('a', {href:b.source_url, target:'_blank', rel:'noopener noreferrer'}, '项目原文'));
+        box.append(source, h('p', {class:'sub'}, b.summary));
+        if (b.period) box.append(h('p', {class:'sub'}, b.period + ' · ' + b.protocol));
+        if (b.rows?.length) {
+          const table = h('table', {class:'yt mt'});
+          table.append(h('thead', null, h('tr', null, ...['组合', '净年化超额', '信息比率', '最大回撤', '年换手', '结论'].map(v => h('th', null, v)))),
+            h('tbody', null, b.rows.map(r => h('tr', null,
+              h('td', null, r.name), h('td', {class:'c '+cls(r.ex)}, r.ex == null ? '—' : p1(r.ex)),
+              h('td', {class:'c'}, r.ir == null ? '—' : r.ir.toFixed(2)),
+              h('td', {class:'c'}, r.mdd == null ? '—' : p1(r.mdd)),
+              h('td', {class:'c'}, r.turnover == null ? '—' : r.turnover.toFixed(2)),
+              h('td', {style:'font-family:var(--cjk);white-space:normal;min-width:120px'}, r.verdict)))));
+          box.append(h('div', {class:'scroll'}, table));
+        }
+        if (b.checks) box.append(h('p', {class:'sub'}, b.checks));
+        $('agent_research_batches').append(box);
+      }
+      $('agent_research_limits').textContent = AR.limitations.join('；') + '。';
     }
     $('m_desc').append(h('thead', null, h('tr', null, ...['模型', '构造', '持仓', '主要风险'].map(x => h('th', null, x)))),
       h('tbody', null, MM.order.map(k => { const m = MM.meta[k]; return h('tr', null, h('td', null, m.name), h('td', null, m.idea), h('td', null, m.hold), h('td', null, m.risk)); })));
