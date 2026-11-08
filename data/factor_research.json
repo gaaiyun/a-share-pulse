@@ -335,6 +335,42 @@
       "summary": "网络宽度、损失函数、训练窗口与随机种子的完整对照。"
     },
     {
+      "name": "AlphaGen · 第二批因子",
+      "status": "未采用",
+      "source_url": "https://github.com/RL-MLDM/alphagen",
+      "period": "2019-01-01 至 2026-11-06（探索）",
+      "rows": [
+        {
+          "name": "同机 NN3 参考",
+          "ex": 0.1154,
+          "ir": 1.5475,
+          "mdd": -0.2736,
+          "turnover": 7.1746,
+          "verdict": "参考",
+          "cagr": 0.1954
+        },
+        {
+          "name": "NN3 + 新搜索因子",
+          "ex": 0.1476,
+          "ir": 1.8404,
+          "mdd": -0.2812,
+          "turnover": 7.7231,
+          "verdict": "未采用",
+          "cagr": 0.2299
+        },
+        {
+          "name": "监督目标置乱",
+          "ex": -0.1055,
+          "ir": -1.0965,
+          "mdd": -0.6708,
+          "turnover": 13.6291,
+          "verdict": "检验对照",
+          "cagr": -0.0413
+        }
+      ],
+      "summary": "独立搜索批次；仍需收益、成本及稳定性复核。"
+    },
+    {
       "name": "AlphaCFG",
       "status": "审计未通过，未采用",
       "source_url": "https://github.com/HanYang544/AlphaCFG",
