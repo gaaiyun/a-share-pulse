@@ -476,12 +476,16 @@ tbody tr:hover td{background:var(--panel2)}
     <div class="sh"><span class="no">10</span><h2>选股模型</h2></div>
     <dl class="spec" id="m_spec"></dl>
     <div class="card" style="margin-top:18px"><h3>模型一览</h3><p class="sub" id="m_tb_sub"></p><div class="scroll"><table class="yt mt" id="m_table"></table></div></div>
-    <div class="card" style="margin-top:18px"><h3>全部候选模型</h3><p class="sub" id="m_board_sub"></p><div class="scroll"><table class="yt mt" id="m_board"></table></div></div>
     <div class="card" style="margin-top:18px" id="agent_research" hidden>
-      <h3>Agent 因子研究</h3><p class="sub" id="agent_research_sub"></p>
-      <div id="agent_research_batches"></div>
-      <p class="sub" id="agent_research_limits"></p>
+      <h3>新因子与模型改进</h3><p class="sub" id="agent_research_sub"></p>
+      <p class="verdict" id="agent_research_verdict" style="margin-bottom:12px"></p>
+      <p id="agent_research_conclusion" style="max-width:65ch;color:var(--ink2)"></p>
+      <div class="scroll"><table class="yt mt" id="research_comparison"></table></div>
+      <p class="sub" id="research_protocol"></p>
+      <details class="more"><summary>完整对照与其他研究路线</summary><div id="agent_research_batches"></div></details>
+      <p class="sub" id="agent_research_limits" style="margin-bottom:0"></p>
     </div>
+    <details class="more" style="margin-top:18px"><summary>历史模型与未采用方案</summary><p class="sub" id="m_board_sub"></p><div class="scroll"><table class="yt mt" id="m_board"></table></div></details>
     <div class="card" style="margin-top:18px"><h3>构造与主要风险</h3><div class="scroll"><table class="tx" id="m_desc"></table></div></div>
     <div class="grid g32" style="margin-top:18px">
       <div class="card"><div class="tabs" id="m_tabs"><button class="on" data-k="ex">累计超额</button><button data-k="nav">净值</button></div>
@@ -733,31 +737,52 @@ function texts() {
           h('td', {class: 'c'}, r.ex_mdd == null ? '—' : p1(r.ex_mdd)), h('td', {class: 'c'}, r.win || '—'), h('td', {style: 'font-family:var(--cjk);color:var(--ink2)'}, r.status)))));
     }
     const AR = D.factor_research;
-    if (AR) {
+    if (AR?.overview) {
       $('agent_research').hidden = false;
-      $('agent_research_sub').textContent = '截至 ' + AR.updated_at + ' · 记录完整探索过程；研究结果与模拟账户采用状态分别展示。';
-      for (const b of AR.batches) {
-        const box = h('div', {style: 'margin-top:20px'});
-        box.append(h('h4', null, b.name + ' · ' + b.status));
-        const source = h('p', {class: 'sub'}, b.method + ' ');
-        if (b.source_url) source.append(h('a', {href:b.source_url, target:'_blank', rel:'noopener noreferrer'}, '项目原文'));
-        box.append(source, h('p', {class:'sub'}, b.summary));
-        if (b.period) box.append(h('p', {class:'sub'}, b.period + ' · ' + b.protocol));
-        if (b.rows?.length) {
-          const table = h('table', {class:'yt mt'});
-          table.append(h('thead', null, h('tr', null, ...['组合', '净年化超额', '信息比率', '最大回撤', '年换手', '结论'].map(v => h('th', null, v)))),
-            h('tbody', null, b.rows.map(r => h('tr', null,
-              h('td', null, r.name), h('td', {class:'c '+cls(r.ex)}, r.ex == null ? '—' : p1(r.ex)),
-              h('td', {class:'c'}, r.ir == null ? '—' : r.ir.toFixed(2)),
-              h('td', {class:'c'}, r.mdd == null ? '—' : p1(r.mdd)),
-              h('td', {class:'c'}, r.turnover == null ? '—' : r.turnover.toFixed(2)),
-              h('td', {style:'font-family:var(--cjk);white-space:normal;min-width:120px'}, r.verdict)))));
-          box.append(h('div', {class:'scroll'}, table));
+      $('agent_research_sub').textContent = '研究更新 ' + AR.updated_at + ' · ' + AR.overview.period;
+      $('agent_research_verdict').textContent = AR.overview.decision;
+      $('agent_research_conclusion').textContent = AR.overview.conclusion;
+      $('research_protocol').textContent = AR.overview.note;
+      const researchTable = (table, rows, delta=false) => {
+        const percent=v=>v==null?'—':(v*100).toFixed(2)+'%';
+        const columns=['方案','总年化收益','年化超额','最大回撤','信息比率',...(delta?['超额变化']:[]),'结论'];
+        table.append(h('thead',null,h('tr',null,...columns.map(v=>h('th',null,v)))),
+          h('tbody',null,rows.map(r=>h('tr',null,
+            h('td',null,r.name),h('td',{class:'c'},percent(r.cagr)),
+            h('td',{class:'c '+cls(r.ex)},percent(r.ex)),
+            h('td',{class:'c'},percent(r.mdd)),
+            h('td',{class:'c'},r.ir==null?'—':r.ir.toFixed(2)),
+            ...(delta?[h('td',{class:'c'},r.delta==null?'—':(r.delta>=0?'+':'')+(r.delta*100).toFixed(2)+'个百分点')]:[]),
+            h('td',null,r.verdict)))));
+      };
+      researchTable($('research_comparison'),AR.overview.rows,true);
+      const full=AR.batches.filter(b=>b.period.startsWith('2019'));
+      if(full.length){
+        const box=h('div',{style:'margin-top:14px'}), table=h('table',{class:'yt mt'});
+        box.append(h('h4',null,'同一全期的完整对照'),h('p',{class:'sub'},AR.overview.period+' · 置乱项用于检验，不是候选策略'));
+        const all=full.flatMap(b=>b.rows).filter((r,i,a)=>a.findIndex(v=>v.name===r.name)===i);
+        researchTable(table,all);box.append(h('div',{class:'scroll'},table));$('agent_research_batches').append(box);
+      }
+      const recent=AR.batches.filter(b=>b.period.startsWith('2025'));
+      if(recent.length){
+        const box=h('div',{style:'margin-top:20px'}),table=h('table',{class:'yt mt'});
+        box.append(h('h4',null,'其他因子组合'),h('p',{class:'sub'},'2025-01-02 至 2026-11-06 · 与上表区间不同，请在本表内比较'));
+        const rows=[{...recent[0].rows[0],name:'NN3（同期参考）'}];
+        for(const b of recent){
+          for(const r of b.rows.filter(r=>r.verdict!=='参考'))rows.push({...r,name:b.name+' · '+(r.name.includes('90%')?'混合组合':'因子单独')});
         }
-        if (b.checks) box.append(h('p', {class:'sub'}, b.checks));
+        researchTable(table,rows);box.append(h('div',{class:'scroll'},table));
+        box.append(h('p',{class:'sub'},'以上方案均未通过采用门槛。二十日目标组合的入选项来自预置因子，新生成公式未通过筛选。'));
         $('agent_research_batches').append(box);
       }
-      $('agent_research_limits').textContent = AR.limitations.join('；') + '。';
+      for(const b of AR.batches.filter(b=>!b.rows.length)){
+        $('agent_research_batches').append(h('p',{class:'sub'},b.name+' · '+b.status+'。'+b.summary));
+      }
+      const sources=[...new Map(AR.batches.filter(b=>b.source_url).map(b=>[b.source_url,b])).values()];
+      const links=h('p',{class:'sub'},'项目来源：');
+      sources.forEach((b,i)=>{if(i)links.append(' · ');links.append(h('a',{href:b.source_url,target:'_blank',rel:'noopener noreferrer'},b.name.split(' · ')[0]));});
+      $('agent_research_batches').append(links);
+      $('agent_research_limits').textContent=AR.limitations.join(' ');
     }
     $('m_desc').append(h('thead', null, h('tr', null, ...['模型', '构造', '持仓', '主要风险'].map(x => h('th', null, x)))),
       h('tbody', null, MM.order.map(k => { const m = MM.meta[k]; return h('tr', null, h('td', null, m.name), h('td', null, m.idea), h('td', null, m.hold), h('td', null, m.risk)); })));

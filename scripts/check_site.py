@@ -31,11 +31,12 @@ def main():
         problems.append('数据没有嵌进页面')
     if (ROOT / 'data' / 'factor_research.json').exists():
         research = D.get('factor_research')
-        if not research or not research.get('batches') or 'agent_research_batches' not in html:
+        if not research or not research.get('batches') or not research.get('overview') or 'research_comparison' not in html:
             problems.append('Agent 因子研究没有进入构建产物')
         elif any(re.search(p, json.dumps(research, ensure_ascii=False), re.I) for p in (
             r'(?<![A-Za-z])[A-Za-z]:[\\/]', r'\b\d{6}\.(SH|SZ|BJ|XSHG|XSHE)\b',
-            r'\b(sh|sz|bj)\d{6}\b', r'COSMOS_\d+', r'QA2_\d+', r'sk-[A-Za-z0-9]{8,}')):
+            r'\b(sh|sz|bj)\d{6}\b', r'COSMOS_\d+', r'QA2_\d+', r'sk-[A-Za-z0-9]{8,}',
+            r'5070|GPU|CUDA|tokens|\bHTTP\b|断点|重放|worker|supervisor')):
             problems.append('Agent 研究产物没有脱敏')
     script = re.findall(r'<script>(.*?)</script>', html, re.S)[-1]
     with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8') as f:
