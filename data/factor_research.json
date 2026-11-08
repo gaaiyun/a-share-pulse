@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08 14:21",
+  "updated_at": "2026-11-08 14:46",
   "batches": [
     {
       "name": "FactorMiner DSL 适配",
@@ -206,11 +206,11 @@
       "status": "本轮无有效原生回测，未采用",
       "source_url": "https://github.com/quantaalpha/quantaalpha",
       "method": "继续原生DeepSeek管线，限定日线量价背离、隔夜与日内收益；单方向，规划和进化关闭。",
-      "summary": "4次真实模型HTTP、20870tokens；0个因子/0个去重组合。没有可报告的有效组合收益。",
+      "summary": "10次真实模型HTTP、39123tokens；0个因子/0个去重组合。没有可报告的有效组合收益。",
       "period": "2024年起（原生探索）",
       "protocol": "Qlib内部口径，未通过主harness比较",
       "rows": [],
-      "checks": "最多12次真实HTTP/120000tokens，响应缓存、失败留痕；后续必须独立截断和同池R1/晚一天/费用评估，不自动切换账户。"
+      "checks": "最多12次真实HTTP/120000tokens，响应缓存、失败留痕；触及预算上限。后续必须独立截断和同池R1/晚一天/费用评估，不自动切换账户。"
     }
   ],
   "limitations": [
