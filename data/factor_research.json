@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-08 13:16",
+  "updated_at": "2026-11-08 14:14",
   "batches": [
     {
       "name": "FactorMiner DSL 适配",
@@ -188,7 +188,29 @@
           "verdict": "探索，未采用"
         }
       ],
-      "checks": "8年切分审计，拟合/验证/测试间真实交易日最小间隔30。表达式指定日期截断仅完成容差检查，严格全管线审计仍待复核；置乱只覆盖监督层，不是整个因子搜索的随机标签重跑。"
+      "checks": "8年切分审计，拟合/验证/测试间真实交易日最小间隔30。冻结表达式逐值截断320项、差异0。计算截断不等于整个发现流程和原始数据PIT均通过；严格全管线审计仍待复核，置乱只覆盖监督层。"
+    },
+    {
+      "name": "QuantaAlpha · 最初DeepSeek原生试跑",
+      "status": "原生探索完成，未采用",
+      "source_url": "https://github.com/quantaalpha/quantaalpha",
+      "method": "DeepSeek驱动的假设、因子代码执行、Qlib回测与反馈；首轮单方向，规划与进化关闭。",
+      "summary": "3个因子共享一次组合回测，不能当作独立收益。含成本年化超额4.36%、IR 0.370、超额最大回撤-30.75%。",
+      "period": "2024年起（反复查看的原生探索段）",
+      "protocol": "Qlib内部组合与费用口径，尚未完成主harness同口径评价；不可与上述模型排名",
+      "rows": [],
+      "checks": "仅有六个日线量价字段；保存的代码和内部回测不代表因子已通过PIT、独立截断和正式组合采用门槛。"
+    },
+    {
+      "name": "QuantaAlpha · 量价背离新方向",
+      "status": "本轮无有效原生回测，未采用",
+      "source_url": "https://github.com/quantaalpha/quantaalpha",
+      "method": "继续原生DeepSeek管线，限定日线量价背离、隔夜与日内收益；单方向，规划和进化关闭。",
+      "summary": "0次真实模型HTTP、0tokens；0个因子/0个去重组合。没有可报告的有效组合收益。",
+      "period": "2024年起（原生探索）",
+      "protocol": "Qlib内部口径，未通过主harness比较",
+      "rows": [],
+      "checks": "最多12次真实HTTP/120000tokens，响应缓存、失败留痕；后续必须独立截断和同池R1/晚一天/费用评估，不自动切换账户。"
     }
   ],
   "limitations": [
