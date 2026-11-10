@@ -1,45 +1,60 @@
 {
- "date": "2026-11-09",
- "at": "2026-11-10 08:41",
- "wave": "morning",
- "next": "2026-11-10",
- "ok": 15,
- "total": 15,
+ "date": "2026-11-10",
+ "at": "2026-11-10 15:45",
+ "wave": "close",
+ "next": "2026-11-11",
+ "ok": 13,
+ "total": 14,
  "steps": [
   {
    "step": "指数日线",
    "ok": true,
-   "sec": 4.9
+   "sec": 4.6
+  },
+  {
+   "step": "乐咕估值与宽度",
+   "ok": true,
+   "sec": 17.9
+  },
+  {
+   "step": "两融账户",
+   "ok": true,
+   "sec": 21.9
+  },
+  {
+   "step": "国债收益率",
+   "ok": true,
+   "sec": 4.5
   },
   {
    "step": "涨停池回填",
    "ok": true,
-   "sec": 0.0
+   "sec": 4.6
   },
   {
    "step": "新浪全市场截面",
    "ok": true,
-   "sec": 62.6
+   "sec": 60.5
   },
   {
    "step": "当日涨停池",
-   "ok": true,
-   "sec": 3.7
+   "ok": false,
+   "err": "ReadTimeout: HTTPSConnectionPool(host='push2ex.eastmoney.com', port=443): Read timed out. (read timeout=10)"
   },
   {
    "step": "行业与概念板块",
    "ok": true,
-   "sec": 4.0
+   "sec": 3.1
   },
   {
-   "step": "龙虎榜",
+   "step": "上交所宽基ETF份额",
    "ok": true,
-   "sec": 5.4
+   "sec": 11.8
   },
   {
    "step": "赚钱效应(乐咕)",
    "ok": true,
-   "sec": 0.9
+   "sec": 1.0
   },
   {
    "step": "财报与股东户数",
@@ -49,37 +64,17 @@
   {
    "step": "解禁",
    "ok": true,
-   "sec": 5.4
+   "sec": 3.9
   },
   {
    "step": "新股与股息率",
    "ok": true,
-   "sec": 7.3
+   "sec": 47.7
   },
   {
    "step": "全市场聚合",
    "ok": true,
-   "sec": 2.4
-  },
-  {
-   "step": "两融账户",
-   "ok": true,
-   "sec": 11.9
-  },
-  {
-   "step": "乐咕估值与宽度",
-   "ok": true,
-   "sec": 16.4
-  },
-  {
-   "step": "国债收益率",
-   "ok": true,
-   "sec": 4.7
-  },
-  {
-   "step": "上交所宽基ETF份额",
-   "ok": true,
-   "sec": 2.7
+   "sec": 2.3
   }
  ]
 }
