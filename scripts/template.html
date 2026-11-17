@@ -476,6 +476,14 @@ tbody tr:hover td{background:var(--panel2)}
     <div class="sh"><span class="no">10</span><h2>选股模型</h2></div>
     <dl class="spec" id="m_spec"></dl>
     <div class="card" style="margin-top:18px"><h3>模型一览</h3><p class="sub" id="m_tb_sub"></p><div class="scroll"><table class="yt mt" id="m_table"></table></div></div>
+    <div class="card" style="margin-top:18px" id="m_small" hidden>
+      <h3>小资金十只组合</h3><p class="sub" id="m_small_sub"></p>
+      <div class="scroll"><table class="yt mt" id="m_small_tiers"></table></div>
+      <h3 style="margin-top:18px">搭配债券与全天候 ETF</h3><p class="sub" id="m_small_mix_sub"></p>
+      <div class="scroll"><table class="yt mt" id="m_small_mix"></table></div>
+      <details class="more"><summary>最近试过的改进</summary><div class="scroll"><table class="tx" id="m_small_tried"></table></div></details>
+      <p class="sub" id="m_small_note" style="margin-bottom:0"></p>
+    </div>
     <div class="card" style="margin-top:18px" id="agent_research" hidden>
       <h3>新因子与模型改进</h3><p class="sub" id="agent_research_sub"></p>
       <p class="verdict" id="agent_research_verdict" style="margin-bottom:12px"></p>
@@ -735,6 +743,22 @@ function texts() {
         h('tbody', null, MM.board.rows.map(r => h('tr', null, h('td', null, r.name), h('td', {style: 'font-family:var(--cjk);color:var(--ink2);white-space:normal;min-width:180px'}, r.how),
           h('td', {class: 'c ' + cls(r.ex)}, r.ex == null ? '—' : p1(r.ex)), h('td', {class: 'c'}, r.ir == null ? '—' : r.ir.toFixed(2)), h('td', {class: 'c'}, r.sharpe == null ? '—' : r.sharpe.toFixed(2)),
           h('td', {class: 'c'}, r.ex_mdd == null ? '—' : p1(r.ex_mdd)), h('td', {class: 'c'}, r.win || '—'), h('td', {style: 'font-family:var(--cjk);color:var(--ink2)'}, r.status)))));
+    }
+    const SM = MM.small;
+    if (SM) {
+      $('m_small').hidden = false;
+      const f2 = (v) => v == null ? '—' : v.toFixed(2);
+      const cols = ['年化', '夏普', '卡玛', '最大回撤', '最差自然年'];
+      const cells = (r) => [h('td', {class: 'c'}, h('b', null, p1(r.ann))), h('td', {class: 'c'}, f2(r.sharpe)), h('td', {class: 'c'}, f2(r.calmar)), h('td', {class: 'c'}, p1(r.mdd)), h('td', {class: 'c ' + cls(r.worst)}, p1(r.worst))];
+      $('m_small_sub').textContent = SM.spec;
+      $('m_small_tiers').append(h('thead', null, h('tr', null, ...['资金', '持股只数', ...cols, '佣金占资金（年）'].map(x => h('th', null, x)))),
+        h('tbody', null, SM.tiers.map(r => h('tr', null, h('td', null, r.capital), h('td', {class: 'c'}, r.n), ...cells(r), h('td', {class: 'c'}, p1(r.fee))))));
+      $('m_small_mix_sub').textContent = SM.mix_note;
+      $('m_small_mix').append(h('thead', null, h('tr', null, ...['方案', ...cols].map(x => h('th', null, x)))),
+        h('tbody', null, SM.mix.map(r => h('tr', r.hl ? {style: 'background:var(--panel2)'} : null, h('td', {style: 'font-family:var(--cjk)'}, r.name), ...cells(r)))));
+      $('m_small_tried').append(h('thead', null, h('tr', null, ...['试了什么', '结果', '结论'].map(x => h('th', null, x)))),
+        h('tbody', null, SM.tried.map(r => h('tr', null, h('td', null, r[0]), h('td', {style: 'color:var(--ink2)'}, r[1]), h('td', null, r[2])))));
+      $('m_small_note').textContent = SM.note;
     }
     const AR = D.factor_research;
     if (AR?.overview) {
