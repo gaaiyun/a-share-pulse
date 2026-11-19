@@ -226,6 +226,13 @@ tbody tr:hover td{background:var(--panel2)}
 .vault-link:hover b{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
 .vault-link b{font:600 17px var(--serif)}.vault-link span{display:none}
 .vault-link em{font-size:13px;font-style:normal;color:var(--ink3);white-space:nowrap}
+#m_lab .card + .card{margin-top:36px}
+#m_lab table small{display:block;color:var(--ink3);font:12px/1.5 var(--cjk)}
+#m_lab .yt tbody th{color:var(--ink);font:inherit}
+#m_lab .m-lab-models{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;margin:0 0 10px;font-size:13.5px}
+#m_lab .m-lab-models dd{margin:0;color:var(--ink2)}
+#m_lab ul{margin:4px 0 12px;padding-inline-start:1.3em;color:var(--ink2)}
+#m_lab select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line2)}
 
 /* 轮动圈：整幅黑底 */
 .plate{position:relative;z-index:1;grid-column:1/-1;margin:0 calc(50% - 50vw) 44px;background:#0B0E13;color:#E8EBF0;padding:clamp(26px,4vw,56px) 0 clamp(22px,3vw,40px)}
@@ -524,6 +531,34 @@ tbody tr:hover td{background:var(--panel2)}
       <p class="sub" style="margin-top:6px">行业中性化后的 RankIC（与未来 10 个交易日收益的秩相关，每 10 日一个截面）；绝对值不低于 0.03 且逐年同号视为稳定</p>
       <div class="scroll"><table id="model_factors"></table></div>
     </details>
+    <div id="m_lab" style="margin-top:18px">
+      <div class="card" id="m_lab_strategies">
+        <h3>策略汇总</h3>
+        <div class="scroll" tabindex="0"><table class="yt mt"><!--__LAB_STRATEGIES__--></table></div>
+      </div>
+      <div class="card" id="m_lab_annual">
+        <h3>逐年绝对收益</h3>
+        <p class="sub">回测分位区间以小字标出（P10–P90）。2026 年收益截至各行所列日期。</p>
+        <div class="scroll" tabindex="0"><table class="yt mt" id="m_lab_annual_table"><!--__LAB_ANNUAL__--></table></div>
+        <label class="sub" id="m_lab_chart_filter" hidden>图表对照 <select id="m_lab_groups"><!--__LAB_GROUPS__--></select></label>
+        <div class="chart tall" id="m_lab_chart" role="img" aria-label="逐年绝对收益分组柱状图" hidden></div>
+      </div>
+      <div class="card" id="m_lab_accounts">
+        <h3>模拟账户</h3>
+        <p class="sub">各指数列为该账户起始日至最新日期的累计收益。</p>
+        <div class="scroll" tabindex="0"><table class="yt mt"><!--__LAB_ACCOUNTS__--></table></div>
+      </div>
+      <div class="card" id="m_lab_models">
+        <h3>研究模型一览</h3>
+        <!--__LAB_MODELS__-->
+      </div>
+      <div class="card" id="m_lab_factors">
+        <h3>因子与实验摘要</h3>
+        <strong>因子</strong><ul><!--__LAB_FACTORS__--></ul>
+        <strong>实验</strong><ul><!--__LAB_EXPERIMENTS__--></ul>
+      </div>
+      <a class="vault-link" href="lab.html"><b>完整研究看板 →</b></a>
+    </div>
   </section>
 
   <footer class="foot">
@@ -1262,6 +1297,7 @@ function drawCharts() {
       series: names.map((n, i) => line(n, ET.tracks[n].series, pal[i % pal.length], 1.8))});
   }
   drawModels();
+  drawModelLab();
   guard('新图', () => {
     const F = X.feel;
     if (F) {
@@ -1323,6 +1359,34 @@ function drawModels() {
     yAxis: {axisLabel: {formatter: (v) => mKind === 'ex' ? pct((v - 1) * 100, 0) : v.toFixed(1)}}, series: ser});
 }
 if ($('m_tabs')) $('m_tabs').onclick = (e) => { const b = e.target.closest('button'); if (!b) return; [...$('m_tabs').children].forEach(x => x.classList.toggle('on', x === b)); mKind = b.dataset.k; drawModels(); };
+
+function drawModelLab() {
+  const el = $('m_lab_chart'), picker = $('m_lab_groups');
+  if (!window.echarts || !$('m_lab_annual_table') || $('model_sec').hidden) return;
+  $('m_lab_chart_filter').hidden = el.hidden = false;
+  const chart = echarts.getInstanceByDom(el) || echarts.init(el, null, {renderer: 'canvas'});
+  if (!charts.includes(chart)) charts.push(chart);
+  const rows = [...$('m_lab_annual_table').tBodies[0].rows];
+  const selected = rows.filter(row => [picker.value, '指数参照'].includes(row.dataset.group));
+  const years = [...$('m_lab_annual_table').tHead.rows[0].cells].slice(1).map(cell => cell.firstChild.textContent);
+  const colors = ['--s2', '--s3', '--s4', '--up', '--down', '--ink', '--line2', '--ink3'].map(css);
+  const {o} = compose({
+    color: colors,
+    legend: {type: 'scroll', bottom: 0, textStyle: {color: css('--ink2'), fontSize: 12},
+      pageTextStyle: {color: css('--ink2')}, pageIconColor: css('--ink2'), pageIconInactiveColor: css('--line2')},
+    grid: {left: 46, top: 12, bottom: 56},
+    xAxis: {data: years, boundaryGap: true, axisLabel: {color: css('--ink3'), fontSize: 10, interval: 0},
+      axisLine: {onZero: false, lineStyle: {color: css('--line2')}}},
+    yAxis: {scale: false, axisLabel: {color: css('--ink3'), fontSize: 11, formatter: '{value}%'}},
+    tooltip: {valueFormatter: value => pct(typeof value === 'number' ? value : null, 1)},
+    series: selected.map(row => ({
+      type: 'bar', name: row.cells[0].dataset.name, barMaxWidth: 22,
+      data: [...row.querySelectorAll('[data-return]')].map(cell => cell.dataset.return === '' ? null : Number(cell.dataset.return)),
+    })),
+  }, false);
+  chart.setOption(o, {notMerge: true});
+  picker.onchange = drawModelLab;
+}
 
 // 目录：滚到哪个版块就高亮哪个
 (() => {

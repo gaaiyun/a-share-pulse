@@ -7,6 +7,7 @@
 import json
 import math
 from datetime import datetime, timedelta, timezone
+from html import escape
 from pathlib import Path
 
 import numpy as np
@@ -126,6 +127,86 @@ def base_rate(mask, fwd):
 
 
 # ================================================================ 主流程
+def lab_home_fragments(lab):
+    def number(value, digits=2):
+        return '—' if value is None else f'{value:.{digits}f}'
+
+    def table(headings, rows):
+        head = ''.join(f'<th scope="col">{heading}</th>' for heading in headings)
+        return f'<thead><tr>{head}</tr></thead><tbody>{"".join(rows)}</tbody>'
+
+    def row(label, values):
+        cells = ''.join(f'<td class="num">{escape(value)}</td>' for value in values)
+        return f'<tr><th scope="row">{escape(label)}</th>{cells}</tr>'
+
+    strategies = table(
+        ['策略', '年化', '夏普', '卡玛', '最大回撤', '最差年'],
+        (row(r['name'], [fmt_pct(r['annual_pct'], 2), number(r['sharpe']), number(r['calmar']),
+                         fmt_pct(r['drawdown_pct'], 2), fmt_pct(r['worst_year_pct'], 2)])
+         for r in lab['strategies']),
+    )
+
+    def annual_row(r):
+        cells = []
+        for value in r['values']:
+            ret = value['return_pct'] if value is not None else None
+            raw = '' if ret is None else f'{ret:.1f}'
+            band = value['band_pct'] if value is not None else None
+            interval = ('<small>' + ' 至 '.join(fmt_pct(x) for x in band) + '</small>') if band else ''
+            cells.append(f'<td class="num" data-return="{escape(raw)}">{fmt_pct(ret)}{interval}</td>')
+        name, group, end = map(escape, (r['name'], r['group'], r['end']))
+        return (f'<tr data-group="{group}"><th scope="row" data-name="{name}">'
+                f'{name}<small>{group} · {end}</small></th>{"".join(cells)}</tr>')
+
+    annual = table(
+        ['策略 / 参照', *(str(y) for y in range(2019, 2026)), '2026<small>截至最新</small>'],
+        (annual_row(r) for r in lab['annual']),
+    )
+    groups = dict.fromkeys(r['group'] for r in lab['annual'] if r['group'] != '指数参照')
+    options = ''.join(f'<option>{escape(group)}</option>' for group in groups)
+    accounts = table(
+        ['账户', '起始日', '最新日期', '单位净值', '累计收益', '沪深300', '中证1000', '中证2000'],
+        (row(r['name'], [r['start'], r['end'], number(r['latest_nav'], 4), fmt_pct(r['return_pct'], 2),
+                         *(fmt_pct(b['return_pct'], 2) for b in r['benchmarks'])])
+         for r in lab['accounts']),
+    )
+
+    categories = {}
+    for r in lab['models']:
+        categories.setdefault(r['category'], []).append(r)
+    models = []
+    for category, rows in categories.items():
+        entries = ''.join(f'<dt>{escape(r["name"])}</dt><dd>{escape(r["conclusion"])}</dd>' for r in rows)
+        models.append(f'<details class="more"><summary>{escape(category)}（{len(rows)}）</summary>'
+                      f'<dl class="m-lab-models">{entries}</dl></details>')
+
+    factors = lab['factors']
+    families = factors['families']
+    events = [r for r in factors['events'] if r['delta_pp'] is not None][:2]
+    event_text = '、'.join(f'{r["name"]} {r["delta_pp"]:+.3f} 个百分点（{r["conclusion"]}）' for r in events)
+    factor_lines = [
+        f'{factors["rounds"]} 轮共评估 {sum(r["evaluated"] for r in families):,} 项，有效入库 '
+        f'{sum(r["admitted"] for r in families):,} 项。',
+        *(f'{r["name"]}的 {r["invalid"]:,} 项评估已作废。' for r in families if r['void']),
+        f'事件因子重排差值 {event_text}。' if event_text else '',
+    ]
+    experiments = lab['experiments']
+    species = experiments['species']
+    representatives = [s['representative'] for s in species]
+    experiment_lines = [f'累计登记 {experiments["total"]:,} 条实验，覆盖 {len(species)} 个研究方向。']
+    for outcome in ('采用', '候选'):
+        representative = next((r for r in representatives if r['conclusion'] == outcome), None)
+        if representative is not None:
+            r = representative
+            experiment_lines.append(f'{r["id"]}（{outcome}）{r["metrics"]}。')
+
+    return {
+        'STRATEGIES': strategies, 'ANNUAL': annual, 'GROUPS': options, 'ACCOUNTS': accounts, 'MODELS': ''.join(models),
+        'FACTORS': ''.join(f'<li>{escape(line)}</li>' for line in factor_lines if line),
+        'EXPERIMENTS': ''.join(f'<li>{escape(line)}</li>' for line in experiment_lines),
+    }
+
+
 def main():
     m = pd.read_csv(DATA / 'daily_metrics.csv').sort_values('date').reset_index(drop=True)
     m = sentiment(m)
@@ -486,6 +567,9 @@ def main():
     (SITE / 'data.json').write_text(payload, encoding='utf-8')
     tpl = (ROOT / 'scripts' / 'template.html').read_text(encoding='utf-8')
     html = tpl.replace('/*__DATA__*/null', payload.replace('</', '<\\/'))
+    lab = json.loads((SITE / 'lab.json').read_text(encoding='utf-8'))
+    for name, fragment in lab_home_fragments(lab).items():
+        html = html.replace(f'<!--__LAB_{name}__-->', fragment)
     (SITE / 'index.html').write_text(html, encoding='utf-8')
     # 实操页是静态壳，密文 vault.json 部署时从 vault 分支取，不进 main 的历史
     (SITE / 'vault.html').write_text((ROOT / 'scripts' / 'vault.html').read_text(encoding='utf-8'), encoding='utf-8')

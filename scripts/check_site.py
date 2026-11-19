@@ -251,22 +251,24 @@ def stock_name_pattern():
     return re.compile('|'.join(map(re.escape, sorted(names, key=lambda x: (-len(x), x)))), re.I)
 
 
-def check_lab(html, payload):
+def check_lab(html, payload, home=''):
     problems = []
-    for name, source in (('lab.html', normalize(html)), ('lab.json', '\n'.join(map(normalize, lab_strings(payload))))):
+    pages = (('lab.html', html), ('首页研究板块', home))
+    sources = (*pages, ('lab.json', '\n'.join(lab_strings(payload))))
+    for name, source in sources:
         for label, pattern in LAB_FORBIDDEN.items():
-            if re.search(pattern, source, re.I):
+            if re.search(pattern, normalize(source), re.I):
                 problems.append(f'{name} 含禁用内容（{label}）')
     construction = [r['construction'] for key in ('families', 'events') for r in payload['factors'][key]]
     if any(re.search(r'\b[A-Za-z]\w*\s*[+*/^=-]\s*[A-Za-z0-9_]\w*\b', s) for s in construction):
         problems.append('lab.json 含禁用内容（完整因子表达式）')
     names = stock_name_pattern()
     # 再扫描去标签后的可见文本，以识别被内部标签分开的简称。
-    visible = re.sub(r'<(script|style)\b[^>]*>.*?</\1>', '', html, flags=re.I | re.S)
-    visible = re.sub(r'</?(?:span|b|i|em|strong)\b[^>]*>', '', visible, flags=re.I)
-    visible = re.sub(r'<[^>]+>', '\n', visible)
-    for name, source in (('lab.html', html + '\n' + visible),
-                         ('lab.json', '\n'.join(lab_strings(payload)))):
+    for name, source in sources:
+        visible = re.sub(r'<(script|style)\b[^>]*>.*?</\1>', '', source, flags=re.I | re.S)
+        visible = re.sub(r'</?(?:span|b|i|em|strong)\b[^>]*>', '', visible, flags=re.I)
+        visible = re.sub(r'<[^>]+>', '\n', visible)
+        source += '\n' + visible
         if any(names.search(re.sub(r'[ \t\u3000]+', '', line)) for line in normalize(source).splitlines()):
             problems.append(f'{name} 含禁用内容（证券名称）')
     return problems
@@ -284,8 +286,21 @@ def check_script(html, label, problems):
 
 
 def check_lab_artifacts(index, problems):
+    model = re.search(r'<section\b[^>]*\bid="model_sec"[^>]*>(.*?)</section>', index, re.S)
+    home = model[1].partition('<div id="m_lab"')[2] if model else ''
+    for id_ in ('m_lab_strategies', 'm_lab_annual_table', 'm_lab_chart', 'm_lab_accounts',
+                'm_lab_models', 'm_lab_factors'):
+        if f'id="{id_}"' not in home:
+            problems.append(f'首页研究板块缺 {id_}')
+    if '<a class="vault-link" href="lab.html"><b>完整研究看板 →</b></a>' not in home:
+        problems.append('选股模型缺少完整研究看板链接')
+    if '<!--__LAB_' in home:
+        problems.append('首页研究数据没有进入构建产物')
+    nav = re.search(r'<nav\b[^>]*\bid="toc"[^>]*>(.*?)</nav>', index, re.S)
     if '<a href="lab.html">研究</a>' not in index:
         problems.append('首页缺少研究导航')
+    if not nav or 'href="#model_sec"' not in nav[1]:
+        problems.append('首页模型导航配置错误')
     try:
         html = (SITE / 'lab.html').read_text(encoding='utf-8')
         payload = json.loads((SITE / 'lab.json').read_text(encoding='utf-8'))
@@ -297,7 +312,7 @@ def check_lab_artifacts(index, problems):
             if f'id="{id_}"' not in html:
                 problems.append('lab.html 缺少模型或逐年收益控件')
         validate_lab(payload)
-        problems.extend(check_lab(html, payload))
+        problems.extend(check_lab(html, payload, home))
         check_script(html, 'lab.html', problems)
     except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
         # 不回显输入值，避免在失败日志中暴露私有数据。
