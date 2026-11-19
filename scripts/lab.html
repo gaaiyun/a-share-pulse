@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研究看板 · A股盘后</title>
+<meta name="description" content="策略回测、模拟净值、模型与因子、实验和公告数据集。">
+<style>
+@font-face{font-family:Plex;src:url(assets/plexmono-400.woff2) format('woff2');font-display:swap}
+@font-face{font-family:NSC;src:url(assets/serif-sc.woff2) format('woff2');font-weight:600;font-display:swap}
+:root{--paper:#f7f5ef;--ink:#222b28;--muted:#525b54;--line:#d1d1c6;--accent:#28594f;
+  --sans:"PingFang SC","Microsoft YaHei",sans-serif;--serif:NSC,"Songti SC","Noto Serif CJK SC",serif;
+  --mono:Plex,Consolas,var(--sans)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.65 var(--sans)}
+.wrap{max-width:1120px;margin:auto;padding:0 clamp(16px,4.5vw,55px) 56px}
+.mast{padding:16px 0;border-bottom:1px solid var(--ink);font:600 1.05rem var(--serif)}
+a{color:var(--accent);text-underline-offset:.28em}
+nav{display:flex;flex-wrap:wrap;gap:7px 22px;padding:13px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-family:var(--serif);font-weight:600}
+h1{margin:24px 0 14px;font-size:clamp(2.25rem,6vw,4.25rem);letter-spacing:.02em;line-height:1.25}
+h2{font-size:clamp(1.5rem,4vw,2rem)}
+h3{font-size:1.15rem;margin-top:22px}
+section{padding-top:26px;margin-top:32px;border-top:1px solid var(--ink);scroll-margin-top:12px}
+section:first-child{margin-top:20px}
+.lede{max-width:72ch;margin:5px 0 15px}
+.note{margin:7px 0;color:var(--muted);font-size:.88rem}
+.scroll{overflow-x:auto;margin-top:10px}
+table{width:100%;border-collapse:collapse;text-align:left;font-size:.89rem;font-variant-numeric:tabular-nums}
+caption{padding-bottom:8px;text-align:left;color:var(--muted);font-size:.88rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:top}
+thead th{font-weight:600;color:var(--muted);border-bottom-color:var(--ink)}
+tbody th{font-weight:600}
+.num{text-align:right;font-family:var(--mono)}
+.prose{white-space:normal;min-width:12em}
+.chart{width:100%;height:320px;margin-top:10px}
+.chart[hidden]{display:none}
+.figure{margin:12px 0 0}
+#fm-chart{height:340px}
+#annual-chart{height:360px}
+.year-band{display:block;color:var(--muted);font-size:.8em}
+details{margin:16px 0 0}
+summary{cursor:pointer;color:var(--accent)}
+label{display:inline-flex;align-items:center;gap:8px;margin-top:8px}
+select{font:inherit;color:inherit;background:var(--paper);border:1px solid var(--line);padding:4px 8px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:560px){nav{column-gap:15px}section{margin-top:25px}th,td{padding:7px 8px}.chart{height:280px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast"><a href="index.html">A股盘后</a></header>
+  <h1>研究看板</h1>
+  <nav aria-label="研究目录">
+    <a href="#strategies">策略</a><a href="#annual">逐年收益</a><a href="#accounts">模拟账户</a><a href="#models">模型</a>
+    <a href="#factors">因子</a><a href="#experiments">实验</a><a href="#dataset">数据集</a>
+  </nav>
+  <p id="status" class="note" role="status">正在读取研究数据…</p>
+  <main id="content" hidden>
+    <section id="strategies">
+      <h2>策略</h2>
+      <p class="lede">C1 B 在同批组合中回撤幅度最小，10 万元 AW9 随股票比例提高，年化和回撤幅度均扩大。</p>
+      <div id="strategy-table"></div>
+      <p class="note">NN3、T5 与 C1 使用同期配置回放。AW9 纳入整手与最低佣金，按年调回目标比例。路径中位数按指标分别计算。</p>
+      <figure class="figure"><div id="risk-chart" class="chart" role="img" aria-label="策略年化收益与最大回撤散点图"></div></figure>
+    </section>
+    <section id="annual">
+      <h2>逐年绝对收益</h2>
+      <label>图表分组 <select id="annual-picker"></select></label>
+      <figure class="figure"><div id="annual-chart" class="chart" role="img" aria-label="逐年绝对收益分组柱状图"></div></figure>
+      <div id="annual-table"></div>
+      <p class="note">以当年末相对上年末计算，首年以记录起点或账户本金为基准。多路径展示各年中位数及 P10–P90。NN3 十只采用更新后的净值，C1 复用原回测冻结的路径。指数为价格收益。2026 为各行截至日期，首尾未覆盖完整年份时按已有期间计算。— 表示缺少数据。</p>
+    </section>
+    <section id="accounts">
+      <h2>模拟账户</h2>
+      <p class="lede" id="account-readout"></p>
+      <div id="account-table"></div>
+      <label>对照账户 <select id="account-picker"></select></label>
+      <figure class="figure"><div id="nav-chart" class="chart" role="img" aria-label="所选模拟账户净值与同期指数折线图"></div></figure>
+      <p class="note">指数为收盘价归一化。缺少同日行情显示为 —，单点用标记显示。</p>
+    </section>
+    <section id="models">
+      <h2>模型一览</h2>
+      <label>类别 <select id="model-picker"></select></label>
+      <div id="model-table"></div>
+      <p class="note">差值为相对 NN3T1 的配对年化差，单位为百分点。NW t 为 Newey–West t 值。— 表示无同口径统计。模拟启用表示实际记账状态。</p>
+    </section>
+    <section id="factors">
+      <h2>因子</h2>
+      <p class="lede">主力资金字段相关记录已作废，公开事件信号的重排与过滤也未过候选池检验。</p>
+      <h3>FM 按族统计</h3>
+      <p id="fm-note" class="note"></p>
+      <div id="family-table"></div>
+      <h3>FM 按模型统计</h3>
+      <p class="note">入库率按有效入库数除以评估数。模型以匿名序号显示，少量缺模型记录如有则在表中单列。</p>
+      <figure class="figure"><div id="fm-chart" class="chart" role="img" aria-label="FM 各模型有效入库率条形图"></div></figure>
+      <div id="fm-table"></div>
+      <h3>公开事件信号</h3>
+      <div id="event-factor-table"></div>
+      <p class="note">SURP1 与 COV1 展示三档中的最佳配对差，全部档位均未过线。</p>
+    </section>
+    <section id="experiments">
+      <h2>实验总账</h2>
+      <p class="lede">登记保留失败与未测记录，收益上限和覆盖门已拦下多项候选。</p>
+      <div id="species-table"></div>
+      <h3>禁区</h3>
+      <div id="ban-table"></div>
+      <h3>止步门检</h3>
+      <p class="note">乐观收益上限用于筛查研究价值，依赖事后已知结果。</p>
+      <div id="gate-table"></div>
+      <details><summary id="ledger-label">全部登记</summary><div id="ledger-table"></div></details>
+    </section>
+    <section id="dataset">
+      <h2>公告数据集</h2>
+      <p class="lede">严重度的三方一致性最低，公告特征在固定留出中提高崩盘和戴帽预测，仍待新的时间段复核。</p>
+      <p id="dataset-note" class="note"></p>
+      <details><summary>字段说明</summary><div id="field-table"></div></details>
+      <h3>三方标注一致性</h3>
+      <p id="agreement-note" class="note"></p>
+      <div id="agreement-table"></div>
+      <h3>公告事件研究</h3>
+      <p class="note">按公告计权，超额相对同行业同市值组等权收益。各格依次为平均超额、日期聚类 t 值、有效样本数。重复公告、窗口重叠和分组多重比较会影响推断。</p>
+      <div id="event-study-table"></div>
+      <h3>崩盘与戴帽预测</h3>
+      <p class="note">2025–26 固定留出，2026 年只计标签已兑现的窗口。前 1% 命中率与 AUC 使用同组 R1 为增量基准。</p>
+      <div id="prediction-table"></div>
+    </section>
+  </main>
+</div>
+<script src="assets/echarts.min.js"></script>
+<script>
+'use strict';
+const get = id => document.getElementById(id);
+const number = (value, digits = 2) => value == null ? '—' : value.toFixed(digits);
+const percent = (value, digits = 2) => value == null ? '—' : number(value, digits) + '%';
+const count = value => value.toLocaleString('zh-CN');
+const mark = '—';
+
+function table(id, headings, rows, caption = '') {
+  const scroll = document.createElement('div');
+  scroll.className = 'scroll';
+  scroll.tabIndex = 0;
+  const element = document.createElement('table');
+  if (caption) element.createCaption().textContent = caption;
+  const header = element.createTHead().insertRow();
+  for (const heading of headings) {
+    const cell = document.createElement('th');
+    cell.scope = 'col';
+    cell.textContent = heading;
+    header.append(cell);
+  }
+  const body = element.createTBody();
+  for (const row of rows) {
+    const line = body.insertRow();
+    row.forEach((value, i) => {
+      const cell = document.createElement(i === 0 ? 'th' : 'td');
+      if (i === 0) cell.scope = 'row';
+      if (value instanceof Node) cell.append(value);
+      else cell.textContent = value ?? mark;
+      if (i && /^[-+\d—]/.test(cell.textContent) && cell.textContent.length < 24) cell.className = 'num';
+      if (cell.textContent.length > 26) cell.className = 'prose';
+      line.append(cell);
+    });
+  }
+  scroll.append(element);
+  get(id).replaceChildren(scroll);
+}
+
+function strategyTable(rows) {
+  table('strategy-table', ['策略', '配置', '样本期', '路径', '年化', '夏普', '卡玛', '最大回撤', '最差年'],
+    rows.map(r => [r.name, r.rule, r.period.join(' 至 '), r.paths, percent(r.annual_pct),
+      number(r.sharpe), number(r.calmar), percent(r.drawdown_pct), percent(r.worst_year_pct)]));
+}
+
+function accountTable(rows) {
+  table('account-table', ['账户', '起始', '最新', '单位净值', '累计收益', '沪深300', '中证1000', '中证2000'],
+    rows.map(r => [r.name, r.start, r.end, number(r.latest_nav, 4), percent(r.return_pct),
+      ...r.benchmarks.map(b => percent(b.return_pct))]));
+  const comparable = rows.filter(r => r.start < r.end);
+  const best = comparable.reduce((top, row) => !top || row.return_pct > top.return_pct ? row : top, null);
+  get('account-readout').textContent = best
+    ? best.name + ' 在已跨交易日的模拟账户中累计收益最高（' + percent(best.return_pct) + '），各账户起始日不同。'
+    : '已有模拟账户均从起始日开始记录净值。';
+  const picker = get('account-picker');
+  for (const r of rows) {
+    const option = document.createElement('option');
+    option.value = r.name;
+    option.textContent = r.name;
+    picker.append(option);
+  }
+  picker.value = rows.some(r => r.name === 'NN3') ? 'NN3' : rows[0].name;
+}
+
+function fillPicker(id, labels) {
+  const picker = get(id);
+  for (const label of labels) {
+    const option = document.createElement('option');
+    option.value = option.textContent = label;
+    picker.append(option);
+  }
+  return picker;
+}
+
+function modelTable(rows) {
+  const picker = fillPicker('model-picker', ['全部类别', ...new Set(rows.map(r => r.category))]);
+  function draw() {
+    const chosen = rows.filter(r => picker.selectedIndex === 0 || r.category === picker.value);
+    table('model-table', ['模型或实验臂', '类别', '结构', '输入特征', '标签 / 损失', '种子数',
+      '对 NN3T1 Δ（百分点）', 'NW t', '胜年', '结论', '日期'],
+    chosen.map(r => [r.name, r.category, r.structure, r.features, r.target, r.seeds,
+      number(r.delta_pp), number(r.nw_t), r.wins, r.note ? r.conclusion + ' · ' + r.note : r.conclusion, r.date]),
+    chosen.length + ' 项');
+  }
+  picker.addEventListener('change', draw);
+  draw();
+}
+
+const annualYears = ['2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026 截至最新'];
+
+function annualTable(rows) {
+  function cell(value) {
+    if (!value?.band_pct) return percent(value?.return_pct, 1);
+    const display = document.createElement('span');
+    display.textContent = percent(value.return_pct, 1);
+    const band = document.createElement('span');
+    band.className = 'year-band';
+    band.textContent = value.band_pct.map(x => percent(x, 1)).join(' 至 ');
+    display.append(band);
+    return display;
+  }
+  table('annual-table', ['策略 / 参照', '类别', ...annualYears, '截至日期'],
+    rows.map(r => [r.name, r.group, ...r.values.map(cell), r.end]));
+}
+
+function annualChart(rows, palette, axisLine) {
+  const picker = fillPicker('annual-picker', [...new Set(rows.map(r => r.group))]
+    .filter(group => group !== '指数参照'));
+  if (!window.echarts) {
+    picker.closest('label').hidden = true;
+    return;
+  }
+  const chart = makeChart('annual-chart');
+  function draw() {
+    const selected = rows.filter(r => r.group === picker.value || r.group === '指数参照');
+    chart.setOption({
+      animation: false, color: palette,
+      legend: {type: 'scroll', bottom: 0},
+      grid: {left: 54, right: 14, top: 22, bottom: 70},
+      tooltip: {trigger: 'axis', valueFormatter: value => percent(value)},
+      xAxis: {type: 'category', data: annualYears, axisLabel: {rotate: 25}, axisLine},
+      yAxis: {type: 'value', axisLabel: {formatter: '{value}%'}, axisLine},
+      series: selected.map(r => ({
+        name: r.name, type: 'bar', barMaxWidth: 22, data: r.values.map(value => value?.return_pct ?? null),
+      })),
+    }, {notMerge: true});
+  }
+  picker.addEventListener('change', draw);
+  draw();
+}
+
+function factorTables(data) {
+  const headings = ['评估', '历史入库', '有效入库', '作废评估', '适应度中位', '增量 IC 中位', '2024 验证 IC 中位'];
+  const metrics = r => [count(r.evaluated), count(r.historical_admitted), count(r.admitted), count(r.invalid),
+    number(r.fitness_median, 5), number(r.incremental_ic_median, 5), number(r.validation_2024_median, 5)];
+  get('fm-note').textContent = '共 ' + data.rounds + ' 轮。中位数取未作废的有效数值。作废记录保留历史计数。';
+  table('family-table', ['因子族', '构造思路', '判定', ...headings],
+    data.families.map(r => [r.name, r.construction, r.void ? '数据不可信，已作废' : '探索', ...metrics(r)]));
+  table('fm-table', ['模型', ...headings], data.models.map(r => [r.name, ...metrics(r)]));
+  table('event-factor-table', ['信号', '构造思路', '覆盖率', '残差秩 IC', '差值（百分点）', 'NW t', '胜年', '结论'],
+    data.events.map(r => [r.name, r.construction, percent(r.coverage_pct), number(r.residual_ic, 3),
+      number(r.delta_pp, 3), number(r.nw_t), r.wins, r.conclusion]));
+}
+
+function experimentTables(data) {
+  table('species-table', ['物种', '状态', '登记数', '代表实验', '结果', '结论'],
+    data.species.map(s => [s.name, s.status, s.records.length, s.representative.id,
+      s.representative.metrics || mark, s.representative.conclusion]));
+  table('ban-table', ['禁区方向', '代表实验', '结果'], data.bans);
+  table('gate-table', ['实验', '停在哪一关', '观察值', '结论'], data.gates);
+  get('ledger-label').textContent = '全部 ' + count(data.total) + ' 条登记';
+  table('ledger-table', ['实验', '物种', '主要数字', '结论'],
+    data.species.flatMap(s => s.records.map(r => [r.id, s.name, r.metrics || mark, r.conclusion])));
+}
+
+function datasetTables(d) {
+  get('dataset-note').textContent = d.period.join(' 至 ') + '，共 ' + count(d.samples)
+    + ' 条标注，' + count(d.unavailable_days) + ' 条缺最早可用交易日。';
+  get('agreement-note').textContent = '复核样本 ' + count(d.review_count) + ' 条。括号内为 Cohen κ。';
+  table('field-table', ['字段', '说明'], d.fields);
+  table('agreement-table', ['对比', ...d.agreement_fields], d.agreement.map(r => [
+    r.pair, ...r.rates.map((rate, i) => percent(rate, 1) + (r.kappa ? '（κ ' + number(r.kappa[i]) + '）' : ''))
+  ]));
+  table('event-study-table', ['分组', '公告数', ...d.event_windows],
+    d.events.map(r => [r.name, count(r.n), ...r.windows.map(w => percent(w[0]) + '（' + number(w[1]) + '） / ' + count(w[2]))]));
+  table('prediction-table', ['目标', '输入', '样本', '正例', '周均 AUC（增量）', '合并 AUC（增量）', '前 1% 命中率（增量）'],
+    d.predictions.map(r => [r.target, r.name, count(r.n), count(r.positive),
+      number(r.weekly_auc, 4) + '（' + number(r.weekly_delta, 4) + '）',
+      number(r.pooled_auc, 4) + '（' + number(r.pooled_delta, 4) + '）',
+      percent(r.hit_pct) + '（' + number(r.hit_delta_pp) + ' pp）']));
+}
+
+const colors = ['#28594f', '#87544a', '#576b76'];
+const axisLine = {lineStyle: {color: '#92988d'}};
+const splitLine = {lineStyle: {color: '#dedfd6'}};
+const topLegend = {top: 0, textStyle: {color: '#525b54'}};
+
+function makeChart(id) {
+  const el = get(id);
+  const chart = echarts.init(el);
+  new ResizeObserver(() => chart.resize()).observe(el);
+  return chart;
+}
+
+function renderCharts(data) {
+  annualChart(data.annual, [...colors, '#916e26', 'rgb(105,85,130)', 'rgb(53,116,135)',
+    'rgb(116,115,70)', '#9c5c76'], axisLine);
+  if (!window.echarts) {
+    for (const el of document.querySelectorAll('.chart')) el.hidden = true;
+    get('status').textContent = '图表资源不可用，可继续查看下方表格。';
+    get('status').hidden = false;
+    return;
+  }
+  const nav = makeChart('nav-chart');
+  const picker = get('account-picker');
+  function showAccount() {
+    const r = data.accounts.find(a => a.name === picker.value);
+    const lines = [r, ...r.benchmarks.filter(b => b.series.length)];
+    const days = [...new Set(lines.flatMap(s => s.series.map(point => point[0])))].sort();
+    nav.setOption({
+      animation: false, color: colors, legend: topLegend, grid: {left: 56, right: 22, top: 47, bottom: 42},
+      tooltip: {trigger: 'axis', renderMode: 'richText', confine: true, valueFormatter: v => number(v, 4)},
+      xAxis: {type: 'category', data: days, axisLine, axisLabel: {formatter: day => day.slice(5)}},
+      yAxis: {type: 'value', scale: true, splitLine, axisLabel: {formatter: v => number(v, 3)}},
+      series: lines.map((line, i) => {
+        const values = new Map(line.series);
+        return {type: 'line', name: line.name, showSymbol: line.series.length === 1, symbolSize: 7,
+          lineStyle: {type: i ? 'dashed' : 'solid'}, data: days.map(day => values.get(day) ?? null)};
+      })
+    }, true);
+  }
+  picker.addEventListener('change', showAccount);
+  showAccount();
+
+  const risk = makeChart('risk-chart');
+  const groups = [...new Set(data.strategies.map(row => row.group))];
+  risk.setOption({
+    animation: false, color: colors, legend: topLegend, grid: {left: 55, right: 24, top: 54, bottom: 63},
+    tooltip: {trigger: 'item', renderMode: 'richText', confine: true, formatter: item => item.name
+      + '\n最大回撤幅度 ' + percent(item.value[0]) + '\n年化 ' + percent(item.value[1])},
+    xAxis: {type: 'value', min: 0, axisLine, splitLine, name: '最大回撤幅度（%）', nameLocation: 'middle', nameGap: 34},
+    yAxis: {type: 'value', axisLine, splitLine, name: '年化（%）'},
+    series: groups.map(group => ({
+      name: group, type: 'scatter', symbolSize: 11, data: data.strategies
+        .filter(r => r.group === group && r.drawdown_pct != null && r.annual_pct != null)
+        .map(r => ({name: r.name, value: [Math.abs(r.drawdown_pct), r.annual_pct]}))
+    }))
+  });
+
+  const fm = makeChart('fm-chart');
+  const models = data.factors.models.filter(model => model.name !== '未记模型');
+  fm.setOption({
+    animation: false, color: [colors[0]], grid: {left: 69, right: 25, top: 12, bottom: 42},
+    tooltip: {trigger: 'item', renderMode: 'richText', confine: true,
+      formatter: item => item.name + '\n入库率 ' + percent(item.value) + '（'
+        + item.data.admitted + '/' + item.data.evaluated + '）'},
+    xAxis: {type: 'value', axisLine, splitLine, axisLabel: {formatter: '{value}%'}},
+    yAxis: {type: 'category', inverse: true, data: models.map(r => r.name), axisLine},
+    series: [{type: 'bar', barMaxWidth: 15, data: models.map(r => ({
+      value: 100 * r.admitted / r.evaluated, admitted: r.admitted, evaluated: r.evaluated
+    }))}]
+  });
+}
+
+async function showLab() {
+  const response = await fetch('./lab.json');
+  if (!response.ok) throw new Error('无法读取研究数据');
+  const d = await response.json();
+  if (d.schema !== 2) throw new Error('研究数据版本不匹配');
+  strategyTable(d.strategies);
+  annualTable(d.annual);
+  accountTable(d.accounts);
+  modelTable(d.models);
+  factorTables(d.factors);
+  experimentTables(d.experiments);
+  datasetTables(d.dataset);
+  get('content').hidden = false;
+  get('status').hidden = true;
+  renderCharts(d);
+}
+showLab().catch(() => {
+  get('status').hidden = false;
+  get('status').textContent = get('content').hidden ? '研究数据读取失败。' : '图表加载失败，可继续查看表格。';
+});
+</script>
+</body>
+</html>

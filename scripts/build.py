@@ -489,6 +489,7 @@ def main():
     (SITE / 'index.html').write_text(html, encoding='utf-8')
     # 实操页是静态壳，密文 vault.json 部署时从 vault 分支取，不进 main 的历史
     (SITE / 'vault.html').write_text((ROOT / 'scripts' / 'vault.html').read_text(encoding='utf-8'), encoding='utf-8')
+    (SITE / 'lab.html').write_text((ROOT / 'scripts' / 'lab.html').read_text(encoding='utf-8'), encoding='utf-8')
     print('built', asof, 'temp', today['temp'], stg, f'{len(html) / 1024:.0f}KB')
 
 
