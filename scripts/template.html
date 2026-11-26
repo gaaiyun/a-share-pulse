@@ -241,6 +241,9 @@ tbody tr:hover td{background:var(--panel2)}
 
 /* 轮动圈：整幅黑底 */
 .plate{position:relative;z-index:1;grid-column:1/-1;margin:0 calc(50% - 50vw) 44px;background:#0B0E13;color:#E8EBF0;padding:clamp(26px,4vw,56px) 0 clamp(22px,3vw,40px)}
+/* 通栏深色底会和左列吸顶标题（跨满整节）叠在一起：含 plate 的节里标题只占第一行，plate 与标题留出间距 */
+section:has(> .plate:not([hidden])) > .sh{grid-row:1;position:static}
+section > .plate{margin-top:28px}
 .plate-in{max-width:1360px;margin:0 auto;padding:0 var(--gut);display:grid;grid-template-columns:minmax(250px,340px) minmax(0,1fr);gap:clamp(20px,4vw,64px);align-items:start}
 .plate h3{margin:0;font:600 clamp(30px,3.6vw,48px)/1.2 var(--serif);letter-spacing:.02em}
 .plate .when{margin:14px 0 2px;font:500 42px/1 var(--disp);letter-spacing:.01em;font-variant-numeric:lining-nums}
