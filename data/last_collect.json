@@ -1,75 +1,80 @@
 {
  "date": "2026-11-26",
- "at": "2026-11-26 15:46",
+ "at": "2026-11-26 18:44",
  "wave": "close",
  "next": "2026-11-27",
- "ok": 14,
- "total": 14,
+ "ok": 15,
+ "total": 15,
  "steps": [
   {
    "step": "指数日线",
    "ok": true,
-   "sec": 4.6
+   "sec": 5.9
   },
   {
    "step": "乐咕估值与宽度",
    "ok": true,
-   "sec": 86.9
+   "sec": 18.3
   },
   {
    "step": "两融账户",
    "ok": true,
-   "sec": 17.8
+   "sec": 22.8
   },
   {
    "step": "国债收益率",
    "ok": true,
-   "sec": 2.8
+   "sec": 2.7
   },
   {
    "step": "涨停池回填",
    "ok": true,
-   "sec": 19.9
+   "sec": 0.0
   },
   {
    "step": "新浪全市场截面",
    "ok": true,
-   "sec": 55.4
+   "sec": 68.8
   },
   {
    "step": "当日涨停池",
    "ok": true,
-   "sec": 3.9
+   "sec": 4.4
   },
   {
    "step": "行业与概念板块",
    "ok": true,
-   "sec": 69.3
+   "sec": 6.7
+  },
+  {
+   "step": "龙虎榜",
+   "ok": true,
+   "sec": 5.3
   },
   {
    "step": "上交所宽基ETF份额",
    "ok": true,
-   "sec": 11.5
+   "sec": 9.3
   },
   {
    "step": "赚钱效应(乐咕)",
    "ok": true,
-   "sec": 0.9
+   "sec": 1.9
   },
   {
    "step": "财报与股东户数",
    "ok": true,
-   "sec": 57.3
+   "sec": 0.0
   },
   {
    "step": "解禁",
    "ok": true,
-   "sec": 15.3
+   "sec": 3.9
   },
   {
    "step": "新股与股息率",
    "ok": true,
-   "sec": 7.7
+   "sec": 9.6
   },
   {
    "step": "全市场聚合",
