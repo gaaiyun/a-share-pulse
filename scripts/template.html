@@ -164,6 +164,7 @@ tbody tr:hover td{background:var(--panel2)}
 .scroll{overflow-x:auto}
 #pure_style_table{min-width:540px;white-space:nowrap}
 #pure_style_table tbody th{color:var(--ink);font-size:13.5px;border-bottom:1px solid var(--line)}
+#pure_style_table .weak{color:var(--ink3);font-size:11px}
 #s_pure_style .coverage{margin:8px 0 22px;color:var(--ink2);font-size:12.5px}
 #s_pure_style .chart{margin-top:4px}
 .legend-note{font-size:12.5px;line-height:1.65;color:var(--ink3);margin:10px 0 0;max-width:62em}
@@ -429,6 +430,11 @@ tbody tr:hover td{background:var(--panel2)}
       <h3>今年以来累计收益</h3>
       <p class="sub">日因子收益累加（%），从有数据的交易日开始</p>
       <div class="chart tall" id="c_pure_style" role="img" aria-label="今年以来八项风格因子累计收益曲线"></div>
+    </div>
+    <div class="card" id="pure_style_long" hidden>
+      <h3>长期累计收益</h3>
+      <p class="sub" id="pure_style_long_sub">日因子收益累加（%）</p>
+      <div class="chart tall" id="c_pure_style_long" role="img" aria-label="长期八项风格因子累计收益曲线"></div>
     </div>
     <details class="more"><summary>怎么算的</summary>
       <p class="lede">用前一交易日收盘暴露对当日复权涨跌做截面回归，控制市场、申万一级行业和其余风格，按流通市值的平方根加权，并令行业收益按流通市值加权后相加为零。样本为非 ST、在快照中满 60 个交易日且八项暴露齐备的股票。</p>
@@ -939,11 +945,14 @@ function renderX() {
     coverage += F.reference_n ? ' 近一月分位参考此前 ' + F.reference_n + ' 个完整窗口。' : ' 近一月历史窗口尚不足。';
     $('pure_style_coverage').textContent = coverage;
     $('pure_style_table').append(h('thead', null, h('tr', null,
-      ...['风格', '今天', '近一周', '近一月', '今年以来', '近一月分位'].map((v, i) => h('th', {scope: 'col', class: i ? 'r' : ''}, v)))),
+      ...['风格', '今天', '近一周', '近一月', '今年以来', '近一月分位', '长期年化'].map((v, i) => h('th', {scope: 'col', class: i ? 'r' : ''}, v)))),
       h('tbody', null, F.rows.map(r => h('tr', null, h('th', {scope: 'row'}, r.name),
         ...[r.d1, r.d5, r.d20, r.ytd].map(v => h('td', {class: 'r num ' + cls(v)}, pct(v))),
-        h('td', {class: 'r num'}, ps(r.p20))))));
-    for (const id of ['pure_style_scroll', 'pure_style_coverage', 'pure_style_chart']) $(id).hidden = false;
+        h('td', {class: 'r num'}, ps(r.p20)),
+        h('td', {class: 'r num ' + cls(r.ann), title: r.t == null ? '' : 't = ' + r.t.toFixed(1)},
+          r.ann == null ? '—' : pct(r.ann), r.t != null && Math.abs(r.t) < 2 ? h('small', {class: 'weak'}, ' 不显著') : '')))));
+    if (F.since) $('pure_style_long_sub').textContent = '日因子收益累加（%），' + F.since + ' 起；2026-11 前用历史行情回算';
+    for (const id of ['pure_style_scroll', 'pure_style_coverage', 'pure_style_chart', 'pure_style_long']) if (id !== 'pure_style_long' || F.d_all) $(id).hidden = false;
   });
   for (const [id, k] of [['v_play', 'play'], ['v_feel', 'feel'], ['v_style', 'style'], ['v_sector', 'sector'], ['v_say', 'say']]) if ($(id) && V[k]) $(id).textContent = V[k];
   guard('四问', () => { if (X.four) $('four').append(...X.four.map(r => h('a', {href: '#' + r.to, style: '--tone:var(--' + (r.tone === 'amber' ? 'amber' : r.tone) + ')'}, h('small', null, r.q), h('b', null, r.a), h('p', null, r.text)))); });
@@ -1078,6 +1087,7 @@ function rotation() {
   const px = (p) => { const r = Math.hypot(p[0], p[1]) || 1e-6, k = rad(r) / r; return [S / 2 + p[0] * k, S / 2 - p[1] * k]; };
   const fit = () => { dpr = Math.min(devicePixelRatio || 1, 2.5); S = cv.clientWidth; cv.width = cv.height = Math.round(S * dpr); };
   function draw() {
+    if (RAD() <= 0) return;  // 画布尚未布局（后台标签页、折叠时）宽度为 0，半径为负会抛错
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, S, S);
     const c = S / 2, RR = RAD();
     const g = ctx.createRadialGradient(c, c, 0, c, c, RR); g.addColorStop(0, 'rgba(232,235,240,.075)'); g.addColorStop(.7, 'rgba(232,235,240,.02)'); g.addColorStop(1, 'rgba(232,235,240,0)');
@@ -1292,6 +1302,14 @@ function drawCharts() {
       series: F.rows.map((r, i) => line(r.name, F.curves[r.key], colors[i], 1.6, {
         showSymbol: F.d.length === 1, connectNulls: false,
         lineStyle: {width: 1.6, color: colors[i], type: i === 1 || i === 7 ? 'dashed' : 'solid'}
+      }))});
+    if (F.d_all) mk('c_pure_style_long', {xAxis: {data: F.d_all}, grid: {top: 38},
+      legend: {type: 'scroll', top: 0, left: 0, right: 0, itemWidth: 14, itemHeight: 8,
+        textStyle: {color: css('--ink2'), fontSize: 12}, pageTextStyle: {color: css('--ink2')},
+        pageIconColor: css('--ink2'), pageIconInactiveColor: css('--line2')},
+      tooltip: {valueFormatter: v => pct(v)}, yAxis: {axisLabel: {formatter: '{value}%'}},
+      series: F.rows.map((r, i) => line(r.name, F.curves_all[r.key], colors[i], 1.4, {
+        showSymbol: false, lineStyle: {width: 1.4, color: colors[i], type: i === 1 || i === 7 ? 'dashed' : 'solid'}
       }))});
   }
   const S = D.sent_series, S1 = S;

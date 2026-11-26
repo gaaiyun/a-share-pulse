@@ -12,6 +12,9 @@ import pandas as pd
 
 from market import FACTORS, PLAYS, SIZE_NAMES, VALUE_NAMES
 from style import FACTORS as PURE_STYLES
+# 因子收益为负时，赢的是反方向的股票
+PURE_OPPOSITE = {'SIZE': '小市值', 'BETA': '低贝塔', 'MOM': '弱势股', 'RESVOL': '低波动', 'LIQ': '低换手',
+                 'BTOP': '高市净率', 'EYLD': '低盈利收益率'}
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / 'data'
@@ -174,10 +177,27 @@ def style_returns(daily, calendar, asof):
                 directions.append(f'{pos}风格跑赢 {v:.2f}%')
             else:
                 directions.append(f'{pos}风格跑输 {abs(v):.2f}%')
+    # 长期：全样本日均 ×245 年化，t 用简单均值标准误（日收益自相关很弱，只作量级参考）
+    full = s.dropna(how='all')
+    for r in rows:
+        x = full[r['key']].dropna()
+        ok = len(x) >= 250 and x.std() > 0
+        r['ann'] = rd(x.mean() * 245, 1) if ok else None
+        r['t'] = rd(x.mean() / x.std() * np.sqrt(len(x)), 1) if ok else None
+    summary = label + '，' + '，'.join(directions) + '。' if directions else label + '，各风格收益接近持平。'
+    longs = [r for r in rows if r['t'] is not None and abs(r['t']) >= 3 and r['key'] != 'NLSIZE']
+    if longs:
+        top = max(longs, key=lambda r: abs(r['t']))
+        side = PURE_STYLES[top['key']] if top['ann'] > 0 else PURE_OPPOSITE.get(top['key'], '反向')
+        summary += f"长期看（{full.index[0][:4]} 年起），最稳定的是{side}，每年约 {abs(top['ann']):.1f}%。"
+    step = max(1, len(full) // 400)
+    long_idx = full.index[::step].union(full.index[-1:])
     return {'date': end, 'd': list(ytd.index), 'rows': rows,
             'reference_n': len(past), 'ytd_n': int(ytd.notna().all(axis=1).sum()),
             'curves': {k: lst(ytd[k].cumsum()) for k in PURE_STYLES},
-            'summary': label + '，' + '，'.join(directions) + '。' if directions else label + '，各风格收益接近持平。'}
+            'since': full.index[0], 'd_all': list(long_idx),
+            'curves_all': {k: lst(full[k].fillna(0).cumsum().loc[long_idx], 1) for k in PURE_STYLES},
+            'summary': summary}
 
 
 # ================================================================ 行业
