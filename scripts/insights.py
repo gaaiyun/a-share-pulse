@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 
 from market import FACTORS, PLAYS, SIZE_NAMES, VALUE_NAMES
+from style import FACTORS as PURE_STYLES
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / 'data'
@@ -139,6 +140,44 @@ def factors(md):
                      'ytd': rd(ytd, 1), 'p20': pct_of(roll, roll.iloc[-1]), 'ann': rd(s.mean() * 245, 0)})
         curves[k] = lst(s.fillna(0).cumsum().iloc[i], 1)
     return {'rows': rows, 'd': list(md.index[i]), 'curves': curves}
+
+
+def style_returns(daily, calendar, asof):
+    daily = daily.set_index('date').sort_index().loc[:asof]
+    if daily.empty:
+        return None
+    start, end = daily.index[0], daily.index[-1]
+    dates = daily.index.union(calendar[(calendar >= start) & (calendar <= end)]).sort_values()
+    s = daily.reindex(dates)[list(PURE_STYLES)]
+    ytd = s.loc[end[:4] + '-01-01':]
+    week, month = s.rolling(5).sum().iloc[-1], s.rolling(20).sum()
+    past = month.iloc[:-1].dropna()
+    rows = [
+        {'key': k, 'name': name, 'd1': rd(s[k].iloc[-1]), 'd5': rd(week[k]),
+         'd20': rd(month[k].iloc[-1]), 'ytd': rd(ytd[k].sum(min_count=1)),
+         'p20': pct_of(past[k], float(month[k].iloc[-1])) if pd.notna(month[k].iloc[-1]) else None}
+        for k, name in PURE_STYLES.items()
+    ]
+    periods = month.iloc[-1]
+    label = '近一月'
+    if periods.isna().all():
+        periods, label = ytd.sum(min_count=1), '本年可得样本内'
+    directions = []
+    for k in periods.abs().nlargest(2).index:
+        pos = PURE_STYLES[k]
+        v = rd(periods[k])
+        if v:
+            # 非线性市值的解释取决于它对线性市值的正交方式，用收益方向表述。
+            if k == 'NLSIZE':
+                directions.append(f'非线性市值因子收益 {v:+.2f}%')
+            elif v > 0:
+                directions.append(f'{pos}风格跑赢 {v:.2f}%')
+            else:
+                directions.append(f'{pos}风格跑输 {abs(v):.2f}%')
+    return {'date': end, 'd': list(ytd.index), 'rows': rows,
+            'reference_n': len(past), 'ytd_n': int(ytd.notna().all(axis=1).sum()),
+            'curves': {k: lst(ytd[k].cumsum()) for k in PURE_STYLES},
+            'summary': label + '，' + '，'.join(directions) + '。' if directions else label + '，各风格收益接近持平。'}
 
 
 # ================================================================ 行业

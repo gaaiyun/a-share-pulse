@@ -162,6 +162,10 @@ td:first-child{white-space:nowrap}
 td.r,th.r{text-align:right}
 tbody tr:hover td{background:var(--panel2)}
 .scroll{overflow-x:auto}
+#pure_style_table{min-width:540px;white-space:nowrap}
+#pure_style_table tbody th{color:var(--ink);font-size:13.5px;border-bottom:1px solid var(--line)}
+#s_pure_style .coverage{margin:8px 0 22px;color:var(--ink2);font-size:12.5px}
+#s_pure_style .chart{margin-top:4px}
 .legend-note{font-size:12.5px;line-height:1.65;color:var(--ink3);margin:10px 0 0;max-width:62em}
 .pbar{display:grid;grid-template-columns:112px 1fr 92px;align-items:center;gap:10px;padding:5px 0;font-size:13px}
 .pbar .tr{height:1px;background:var(--line2);position:relative}
@@ -318,6 +322,7 @@ tbody tr:hover td{background:var(--panel2)}
   <div class="tape" aria-label="指数行情"><div class="tape-in num" id="tape"></div></div>
   <nav class="toc" id="toc" aria-label="版块目录">
     <a href="#s_play"><b>01</b>打法</a><a href="#s1"><b>02</b>情绪</a><a href="#s2"><b>03</b>涨停</a><a href="#s_feel"><b>04</b>持仓体感</a><a href="#s_style"><b>05</b>风格</a>
+    <a href="#s_pure_style">风格因子收益</a>
     <a href="#s6"><b>06</b>行业</a><a href="#s5"><b>07</b>资金风险</a><a href="#s4"><b>08</b>估值</a><a href="#s_say"><b>09</b>说法</a><a href="#model_sec"><b>10</b>模型</a>
     <a href="lab.html">研究</a>
     <a class="lock" href="vault.html">实操页 · 需密码</a>
@@ -414,6 +419,23 @@ tbody tr:hover td{background:var(--panel2)}
       <div class="card"><h3>微盘 400 vs 中证1000 vs 沪深300</h3><p class="sub">近两年，起点 = 100 · 微盘 400 = 每日按市值最小的 400 只非 ST 股等权</p><div class="chart tall" id="c_style"></div></div>
     </div>
     <div class="card" style="margin-top:18px"><h3>指数表现</h3><p class="sub">位置 = 收盘价在近 250 日高低区间中的百分位，0% 即一年最低</p><div class="scroll"><table id="idx"></table></div></div>
+  </section>
+  <section id="s_pure_style" aria-labelledby="pure_style_heading">
+    <div class="sh"><h2 id="pure_style_heading">风格因子收益</h2><p id="pure_style_date"></p></div>
+    <p class="verdict" id="pure_style_summary">快照暂不足以估计八项风格收益。</p>
+    <div class="scroll" id="pure_style_scroll" role="region" aria-label="风格因子收益表" tabindex="0" hidden><table id="pure_style_table"></table></div>
+    <p class="coverage" id="pure_style_coverage" hidden></p>
+    <div class="card" id="pure_style_chart" hidden>
+      <h3>今年以来累计收益</h3>
+      <p class="sub">日因子收益累加（%），从有数据的交易日开始</p>
+      <div class="chart tall" id="c_pure_style" role="img" aria-label="今年以来八项风格因子累计收益曲线"></div>
+    </div>
+    <details class="more"><summary>怎么算的</summary>
+      <p class="lede">用前一交易日收盘暴露对当日复权涨跌做截面回归，控制市场、申万一级行业和其余风格，按流通市值的平方根加权，并令行业收益按流通市值加权后相加为零。样本为非 ST、在快照中满 60 个交易日且八项暴露齐备的股票。</p>
+      <p class="lede">八项暴露来自总市值对数及其经正交的三次方、250 日市场贝塔、距今 250 日至 20 日复权涨跌、剔除市值与贝塔影响的 60 日波动、剔除市值影响的 20 日与 120 日平均换手对数、账面收益率和盈利收益率。暴露经 MAD 缩尾、市值加权去均值和等权标准化。</p>
+      <p class="lede">收益按一个标准差的暴露差计量，只描述历史表现。近一周、近一月分别取 5、20 个交易日，分位与此前完整的 20 日窗口比较。</p>
+      <p class="lede">2026-11 前用历史行情回算，延续至 11 月 4 日；11 月 5 日起使用看板日快照。行业采用看板现有的申万一级映射。</p>
+    </details>
   </section>
   <section id="s6">
     <div class="sh"><span class="no">06</span><h2>行业与题材</h2><p id="ind_date"></p></div>
@@ -908,6 +930,21 @@ const num2 = (v, n = 2) => v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(n)
 const ps = (v) => v == null ? '—' : Math.round(v) + '%';
 function renderX() {
   const V = X.v || {};
+  guard('风格因子收益', () => {
+    const F = X.style_returns;
+    if (!F) return;
+    $('pure_style_date').textContent = '截至 ' + F.date;
+    $('pure_style_summary').textContent = F.summary;
+    let coverage = '年内可得 ' + F.ytd_n + ' 个交易日，始于 ' + F.d[0] + '。';
+    coverage += F.reference_n ? ' 近一月分位参考此前 ' + F.reference_n + ' 个完整窗口。' : ' 近一月历史窗口尚不足。';
+    $('pure_style_coverage').textContent = coverage;
+    $('pure_style_table').append(h('thead', null, h('tr', null,
+      ...['风格', '今天', '近一周', '近一月', '今年以来', '近一月分位'].map((v, i) => h('th', {scope: 'col', class: i ? 'r' : ''}, v)))),
+      h('tbody', null, F.rows.map(r => h('tr', null, h('th', {scope: 'row'}, r.name),
+        ...[r.d1, r.d5, r.d20, r.ytd].map(v => h('td', {class: 'r num ' + cls(v)}, pct(v))),
+        h('td', {class: 'r num'}, ps(r.p20))))));
+    for (const id of ['pure_style_scroll', 'pure_style_coverage', 'pure_style_chart']) $(id).hidden = false;
+  });
   for (const [id, k] of [['v_play', 'play'], ['v_feel', 'feel'], ['v_style', 'style'], ['v_sector', 'sector'], ['v_say', 'say']]) if ($(id) && V[k]) $(id).textContent = V[k];
   guard('四问', () => { if (X.four) $('four').append(...X.four.map(r => h('a', {href: '#' + r.to, style: '--tone:var(--' + (r.tone === 'amber' ? 'amber' : r.tone) + ')'}, h('small', null, r.q), h('b', null, r.a), h('p', null, r.text)))); });
   guard('打法', () => {
@@ -1244,6 +1281,19 @@ function drawCharts() {
   charts.splice(0).forEach(c => c.dispose());
   // 图表配色单独校验过（深浅两套都过色觉检查），不直接用界面强调色
   const up = css('--up'), down = css('--down'), amber = css('--s3'), cyan = css('--s2'), ink = css('--ink'), ink3 = css('--ink3'), s4 = css('--s4');
+  const F = X.style_returns;
+  if (F) {
+    const colors = [ink, ink3, s4, up, amber, cyan, down, ink];
+    mk('c_pure_style', {xAxis: {data: F.d}, grid: {top: 38},
+      legend: {type: 'scroll', top: 0, left: 0, right: 0, itemWidth: 14, itemHeight: 8,
+        textStyle: {color: css('--ink2'), fontSize: 12}, pageTextStyle: {color: css('--ink2')},
+        pageIconColor: css('--ink2'), pageIconInactiveColor: css('--line2')},
+      tooltip: {valueFormatter: v => pct(v)}, yAxis: {axisLabel: {formatter: '{value}%'}},
+      series: F.rows.map((r, i) => line(r.name, F.curves[r.key], colors[i], 1.6, {
+        showSymbol: F.d.length === 1, connectNulls: false,
+        lineStyle: {width: 1.6, color: colors[i], type: i === 1 || i === 7 ? 'dashed' : 'solid'}
+      }))});
+  }
   const S = D.sent_series, S1 = S;
   const Y1 = 245, Y2 = 490;
   mk('c_temp', {view: Y2, xAxis: {data: S.d}, yAxis: {min: 0, max: 100, scale: false},

@@ -42,6 +42,7 @@ jobs:
         if: steps.collect.outputs.skipped != 'true'
         run: |
           python tests/test_market.py
+          python tests/test_style.py
           python scripts/check_site.py
       - name: commit data
         if: steps.collect.outputs.skipped != 'true'

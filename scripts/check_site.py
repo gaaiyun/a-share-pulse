@@ -285,6 +285,18 @@ def check_script(html, label, problems):
             problems.append(f'{label} 脚本语法错误')
 
 
+def check_style_data(style, problems):
+    """仅检查风格收益的数据。"""
+    code = LAB_FORBIDDEN['证券代码']
+    path = r'[A-Za-z]:[\\/]|\\\\|(?:^|[\s=:(])(?:~|[\w.-]+)?[/\\][\w.-]+'
+    if any(re.search(code, normalize(value)) for value in lab_strings(style)) or re.search(
+        r'(?:\[|:|,)\d{6}(?=[,}\]])', json.dumps(style, separators=(',', ':'))
+    ):
+        problems.append('风格因子收益含六位证券代码')
+    if any(re.search(path, normalize(value)) for value in lab_strings(style)):
+        problems.append('风格因子收益含路径')
+
+
 def check_lab_artifacts(index, problems):
     model = re.search(r'<section\b[^>]*\bid="model_sec"[^>]*>(.*?)</section>', index, re.S)
     home = model[1].partition('<div id="m_lab"')[2] if model else ''
@@ -326,6 +338,7 @@ def main():
         if not D.get(k):
             problems.append(f'缺 {k}')
     X = D.get('x') or {}
+    check_style_data(X.get('style_returns'), problems)
     for k in ('plays', 'feel', 'sectors', 'sayings', 'four'):
         if not X.get(k):
             problems.append(f'判断块 {k} 为空')

@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 
 import insights
+from style import update as update_style
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / 'data'
@@ -208,6 +209,7 @@ def lab_home_fragments(lab):
 
 
 def main():
+    update_style()
     m = pd.read_csv(DATA / 'daily_metrics.csv').sort_values('date').reset_index(drop=True)
     m = sentiment(m)
     last = m.iloc[-1]
@@ -560,6 +562,9 @@ def main():
         'factor_research': json.loads((DATA / 'factor_research.json').read_text(encoding='utf-8')) if (DATA / 'factor_research.json').exists() else None,
     }
     D['x'] = insights.build(D, mm, piv)
+    style_path = DATA / 'style_daily.csv'
+    if style_path.exists():
+        D['x']['style_returns'] = insights.style_returns(pd.read_csv(style_path), mm.index, asof)
     D['takeaways'] = takeaways(D)
     D['headline'] = headline(D)
     SITE.mkdir(exist_ok=True)
