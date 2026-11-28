@@ -320,6 +320,8 @@ def check_lab_artifacts(index, problems):
             problems.append('lab.html 与构建模板不一致')
         if not re.search(r"""fetch\(\s*['"]\./lab\.json['"]\s*\)""", html):
             problems.append('lab.html 缺少数据加载入口')
+        if 'href="#ten-stock-review"' not in html or '<section id="ten-stock-review">' not in html:
+            problems.append('研究页缺少十只策略复核或其导航入口')
         for id_ in ('annual-chart', 'annual-table', 'annual-picker', 'model-table', 'model-picker'):
             if f'id="{id_}"' not in html:
                 problems.append('lab.html 缺少模型或逐年收益控件')

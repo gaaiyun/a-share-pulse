@@ -737,8 +737,8 @@ function texts() {
   const B = D.lhb;
   if (B) {
     $('lhb_sub').textContent = B.date + ' · 共 ' + B.n + ' 只上榜 · 净买额亿元';
-    const row = (r) => h('tr', null, h('td', null, r.name, h('div', {style: 'color:var(--ink3);font-size:11.5px'}, String(r.reason || '').slice(0, 24))), h('td', {class: 'r'}, span(r.pct)),
-      h('td', {class: 'r num ' + cls(r.net_yi)}, (r.net_yi > 0 ? '+' : '') + r.net_yi.toFixed(2)), h('td', {style: 'color:var(--ink2);font-size:12px'}, r.note || ''));
+    const row = (r) => h('tr', null, h('td', null, r.name || '—', h('div', {style: 'color:var(--ink3);font-size:11.5px'}, (r.reason || '—').slice(0, 24))), h('td', {class: 'r'}, span(r.pct)),
+      h('td', {class: 'r num ' + cls(r.net_yi)}, (r.net_yi > 0 ? '+' : '') + fx(r.net_yi, 2)), h('td', {style: 'color:var(--ink2);font-size:12px'}, r.note || '—'));
     $('lhb').append(h('thead', null, h('tr', null, h('th', null, '股票 / 上榜原因'), h('th', {class: 'r'}, '涨跌'), h('th', {class: 'r'}, '净买'), h('th', null, '解读'))),
       h('tbody', null, B.buy.map(row), h('tr', null, h('td', {colspan: 4, style: 'color:var(--ink3);font-size:12px'}, '净卖出前列')), B.sell.map(row)));
     $('seat_sub').textContent = '机构专用合计 ' + (B.inst_net > 0 ? '+' : '') + (B.inst_net ?? 0).toFixed(2) + ' 亿 · 陆股通专用合计 ' + (B.hk_net > 0 ? '+' : '') + (B.hk_net ?? 0).toFixed(2) + ' 亿 · 下表为其余净买入最多的营业部';

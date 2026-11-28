@@ -53,11 +53,23 @@ select{font:inherit;color:inherit;background:var(--paper);border:1px solid var(-
   <header class="mast"><a href="index.html">A股盘后</a></header>
   <h1>研究看板</h1>
   <nav aria-label="研究目录">
-    <a href="#strategies">策略</a><a href="#annual">逐年收益</a><a href="#accounts">模拟账户</a><a href="#models">模型</a>
+    <a href="#ten-stock-review">十只策略复核</a><a href="#strategies">策略</a><a href="#annual">逐年收益</a><a href="#accounts">模拟账户</a><a href="#models">模型</a>
     <a href="#factors">因子</a><a href="#experiments">实验</a><a href="#dataset">数据集</a>
   </nav>
-  <p id="status" class="note" role="status">正在读取研究数据…</p>
-  <main id="content" hidden>
+  <main>
+    <section id="ten-stock-review">
+      <h2>十只策略复核</h2>
+      <p class="note">研究快照 · <time datetime="2026-11-28">2026 年 11 月 28 日</time> · 以下收益差均为候选 B_PV2 减去基线 NN3T1。</p>
+      <h3>连续持仓回测</h3>
+      <p class="lede">2019 年至 2026 年 11 月 6 日，两批持仓交替调仓。复算 20 条路径，平均年化收益差为 <strong>+1.445 个百分点</strong>。按 20 个交易日分块重抽样，95% 区间为 −0.613 至 +3.567 个百分点，包含零。</p>
+      <h3>持有 20 个交易日的历史回放</h3>
+      <p class="lede">按现行规则逐周从空仓选十只，可配对的 82 批中，候选 <strong>34 胜、48 负</strong>，每批净收益差平均为 <strong>−0.397 个百分点</strong>。各批持有期有重叠，不能把 82 批当作独立样本。</p>
+      <h3>开盘前的研究记录</h3>
+      <p class="lede">两个模型各用 11 月 27 日的收盘数据选出一组十只组合，11 月 28 日 12:32（北京时间）在独立研究账本封存。<strong>已封存 2 组，已结算 0 组。</strong>预计 11 月 30 日入场，12 月 25 日到期。正式影子账户另行记账。</p>
+      <p class="note">同日切换行情来源，基线前百名单完全相同，仍有 35 只名次变化，最终十只换了 4 只。候选前百有 99 只相同，最终十只换了 2 只。</p>
+    </section>
+    <p id="status" class="note" role="status">正在读取研究数据…</p>
+    <div id="content" hidden>
     <section id="strategies">
       <h2>策略</h2>
       <p class="lede">C1 B 在同批组合中回撤幅度最小，10 万元 AW9 随股票比例提高，年化和回撤幅度均扩大。</p>
@@ -84,7 +96,7 @@ select{font:inherit;color:inherit;background:var(--paper);border:1px solid var(-
       <h2>模型一览</h2>
       <label>类别 <select id="model-picker"></select></label>
       <div id="model-table"></div>
-      <p class="note">差值为相对 NN3T1 的配对年化差，单位为百分点。NW t 为 Newey–West t 值。— 表示无同口径统计。模拟启用表示实际记账状态。</p>
+      <p class="note">表内差值为各模型在所列实验中的配对年化差，基线为 NN3T1，单位为百分点。NW t 为 Newey–West t 值。— 表示缺少同口径统计。模拟启用状态按各行日期记录。</p>
     </section>
     <section id="factors">
       <h2>因子</h2>
@@ -92,6 +104,7 @@ select{font:inherit;color:inherit;background:var(--paper);border:1px solid var(-
       <h3>FM 按族统计</h3>
       <p id="fm-note" class="note"></p>
       <div id="family-table"></div>
+      <p class="note">11 月 27 日同一截面更换行情输入后，157 个可比因子的排序相关系数中位数接近 1，最低为 0.929。这次复算只比较当日排序，尚无后续收益观测。</p>
       <h3>FM 按模型统计</h3>
       <p class="note">入库率按有效入库数除以评估数。模型以匿名序号显示，少量缺模型记录如有则在表中单列。</p>
       <figure class="figure"><div id="fm-chart" class="chart" role="img" aria-label="FM 各模型有效入库率条形图"></div></figure>
@@ -101,15 +114,15 @@ select{font:inherit;color:inherit;background:var(--paper);border:1px solid var(-
       <p class="note">SURP1 与 COV1 展示三档中的最佳配对差，全部档位均未过线。</p>
     </section>
     <section id="experiments">
-      <h2>实验总账</h2>
-      <p class="lede">登记保留失败与未测记录，收益上限和覆盖门已拦下多项候选。</p>
+      <h2>实验登记</h2>
+      <p class="lede">本页收录的实验包括失败和未测记录。部分候选在收益上限或数据覆盖检查时停止。</p>
       <div id="species-table"></div>
       <h3>禁区</h3>
       <div id="ban-table"></div>
       <h3>止步门检</h3>
       <p class="note">乐观收益上限用于筛查研究价值，依赖事后已知结果。</p>
       <div id="gate-table"></div>
-      <details><summary id="ledger-label">全部登记</summary><div id="ledger-table"></div></details>
+      <details><summary id="ledger-label">本页收录的登记</summary><div id="ledger-table"></div></details>
     </section>
     <section id="dataset">
       <h2>公告数据集</h2>
@@ -126,6 +139,7 @@ select{font:inherit;color:inherit;background:var(--paper);border:1px solid var(-
       <p class="note">2025–26 固定留出，2026 年只计标签已兑现的窗口。前 1% 命中率与 AUC 使用同组 R1 为增量基准。</p>
       <div id="prediction-table"></div>
     </section>
+    </div>
   </main>
 </div>
 <script src="assets/echarts.min.js"></script>
@@ -278,7 +292,7 @@ function experimentTables(data) {
       s.representative.metrics || mark, s.representative.conclusion]));
   table('ban-table', ['禁区方向', '代表实验', '结果'], data.bans);
   table('gate-table', ['实验', '停在哪一关', '观察值', '结论'], data.gates);
-  get('ledger-label').textContent = '全部 ' + count(data.total) + ' 条登记';
+  get('ledger-label').textContent = '本页收录 ' + count(data.total) + ' 条登记';
   table('ledger-table', ['实验', '物种', '主要数字', '结论'],
     data.species.flatMap(s => s.records.map(r => [r.id, s.name, r.metrics || mark, r.conclusion])));
 }

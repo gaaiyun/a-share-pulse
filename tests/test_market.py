@@ -1,4 +1,5 @@
 """market.py 的口径测试：用手算得出答案的小面板核对。  python tests/test_market.py"""
+import json
 import sys
 from pathlib import Path
 
@@ -6,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'scripts'))
+import build  # noqa: E402
 import insights  # noqa: E402
 import market  # noqa: E402
 
@@ -36,6 +38,18 @@ def panel():
                 px = 11 if j < 24 else (6.6 if k == 1 else 13.2)
                 rows.append(frame(d, code, 10 if j < 24 else px, 10 if j < 24 else px, 10 if j < 24 else px))
     return pd.DataFrame(rows), days
+
+
+def test_lhb_missing_fields():
+    rows = pd.DataFrame([
+        ('甲', 0.0, 3.5, '已披露', np.nan),
+        ('乙', np.nan, -2.0, None, '已有解读'),
+        ('丙', 2.0, np.nan, '已披露', '已有解读'),
+    ], columns=['name', 'pct', 'net_yi', 'reason', 'note'])
+    rankings = json.loads(json.dumps(build.lhb_rankings(rows), allow_nan=False))
+    assert [r['name'] for r in rankings['buy']] == ['甲', '乙']
+    assert rankings['buy'][0]['note'] is None and rankings['buy'][0]['pct'] == 0.0
+    assert rankings['sell'][0] == dict(name='乙', pct=None, net_yi=-2.0, reason=None, note='已有解读')
 
 
 def test_t_plus_1():

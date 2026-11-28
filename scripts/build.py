@@ -40,6 +40,16 @@ def read(name, **kw):
     return pd.read_csv(p, **kw) if p.exists() else None
 
 
+def lhb_rankings(rows):
+    fields = ['name', 'pct', 'net_yi', 'reason', 'note']
+    ranked = rows[fields].replace([np.inf, -np.inf], np.nan).dropna(subset=['net_yi'])
+    ranked = ranked.sort_values('net_yi', ascending=False)
+    # CSV 空白可能成为浮点 NaN；先转 object 才能把缺少的解读等字段保留为 JSON null。
+    ranked = ranked.astype(object).where(ranked.notna(), None)
+    return {'buy': ranked.head(8).to_dict('records'),
+            'sell': ranked.tail(5).iloc[::-1].to_dict('records')}
+
+
 def pct_rank_last(s):
     """窗口内最后一个值的分位（0-1），并列取中间。"""
     a = np.asarray(s, dtype=float)
@@ -194,7 +204,7 @@ def lab_home_fragments(lab):
     experiments = lab['experiments']
     species = experiments['species']
     representatives = [s['representative'] for s in species]
-    experiment_lines = [f'累计登记 {experiments["total"]:,} 条实验，覆盖 {len(species)} 个研究方向。']
+    experiment_lines = [f'本页收录 {experiments["total"]:,} 条实验，覆盖 {len(species)} 个研究方向。']
     for outcome in ('采用', '候选'):
         representative = next((r for r in representatives if r['conclusion'] == outcome), None)
         if representative is not None:
@@ -520,10 +530,8 @@ def main():
     ld = read('lhb_daily.csv', dtype={'code': str})
     ls = read('lhb_seat_daily.csv')
     if ld is not None and len(ld):
-        x = ld[ld['date'] == ld['date'].max()].sort_values('net_yi', ascending=False)
-        lhb = {'date': x['date'].iloc[0], 'n': len(x),
-               'buy': x.head(8)[['name', 'pct', 'net_yi', 'reason', 'note']].to_dict('records'),
-               'sell': x.tail(5).iloc[::-1][['name', 'pct', 'net_yi', 'reason', 'note']].to_dict('records')}
+        x = ld[ld['date'] == ld['date'].max()]
+        lhb = {'date': x['date'].iloc[0], 'n': len(x), **lhb_rankings(x)}
         if ls is not None and len(ls):
             y = ls[ls['date'] == ls['date'].max()]
             inst = y[y['seat'].str.contains('机构专用')]['net_yi'].sum()
